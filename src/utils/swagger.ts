@@ -26,14 +26,7 @@ const options = {
         description: "Development server",
       },
     ],
-    tags: [
-      { description: "All APIs to interact with auth", name: "Auth" },
-      { description: "All APIs to interact with users", name: "Users" },
-      {
-        description: "All APIs to interact with services",
-        name: "Services",
-      },
-    ],
+    tags: [{ description: "All APIs to interact with auth", name: "Auth" }],
     components: {
       securitySchemes: {
         bearerAuth: {

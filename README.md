@@ -47,17 +47,6 @@
 - POST `auth/validation/send`: Send activation code
 - POST `auth/validation/verify`: Verify activation code
 
-#### User routes
-
-- GET `users/api-status`: Get user apis status
-- GET `users`: Get users
-- POST `users`: Create users
-- PATCH `users/many`: Update users
-- DELETE `users/many`: Delete users
-- GET `users/{id}`: Get user by id
-- PATCH `users/{id}`: Update user by id
-- DELETE`users/{id}`: Delete user by id
-
 ### 3.2 Services
 
 ## 4. Before starting the server
@@ -65,19 +54,19 @@
 - Install dependencies by yarn commands
 
 ```cmd
-  yarn / yarn install
+  yarn / yarn install / npm install
 ```
 
 or commands in `package.json` file
 
 ```cmd
-  yarn reset
+  npm run / yarn reset
 ```
 
 - Run Docker command in `package.json` file
 
 ```cmd
-  yarn docker:dev
+  npm run / yarn docker:dev
 ```
 
 - Set up the .env file before starting the server (you can check the `default environment variables` in [env.config.ts](./src/configs/env.config.ts))
@@ -111,6 +100,15 @@ or commands in `package.json` file
 ```
 
 ## 5. Starting the server
+
+- Output: (default port: 3000)
+
+```bash
+  2024-09-20 21:36:40PM] 41687f33-5571-46b6-a54f-a95ed6946a9d E Learning Management Backend - info :     Running database prescript
+[2024-09-20 21:36:40PM] 2347e59e-81df-460b-8838-18f0fc4cd026 E Learning Management Backend - info :     Server is running on http://localhost:8000
+[2024-09-20 21:36:40PM] d4cedb26-ff4d-4e9a-b5ad-d7a8479858b2 E Learning Management Backend - info :     Swagger Docs is avaliable at http://localhost:8000/docs
+[2024-09-20 21:36:40PM] 7e86f822-7ac5-49a0-87c0-095a579a1b86 E Learning Management Backend - info :     E Learning Management database is connected
+```
 
 - Commands table in `package.json` file
 
