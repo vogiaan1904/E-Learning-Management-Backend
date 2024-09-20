@@ -118,7 +118,7 @@ or commands in `package.json` file
 | --------------------- | ------------------------------------------------------- |
 | `yarn start:dev`      | Runing the server in development mode with no debugging |
 | `yarn start:debug`    | Runing the server in development mode with debugging    |
-| `yarn start:dev`      | Runing the server in production mode                    |
+| `yarn start:prod`     | Runing the server in production mode                    |
 | `yarn prebuild`       | Cleaning dist/build folder before building production   |
 | `yarn build`          | Building production                                     |
 | `yarn reset`          | Cleaning dependencies and reinstall it                  |
