@@ -104,7 +104,7 @@ or commands in `package.json` file
 - Output: (default port: 3000)
 
 ```bash
-  2024-09-20 21:36:40PM] 41687f33-5571-46b6-a54f-a95ed6946a9d E Learning Management Backend - info :     Running database prescript
+[2024-09-20 21:36:40PM] 41687f33-5571-46b6-a54f-a95ed6946a9d E Learning Management Backend - info :     Running database prescript
 [2024-09-20 21:36:40PM] 2347e59e-81df-460b-8838-18f0fc4cd026 E Learning Management Backend - info :     Server is running on http://localhost:8000
 [2024-09-20 21:36:40PM] d4cedb26-ff4d-4e9a-b5ad-d7a8479858b2 E Learning Management Backend - info :     Swagger Docs is avaliable at http://localhost:8000/docs
 [2024-09-20 21:36:40PM] 7e86f822-7ac5-49a0-87c0-095a579a1b86 E Learning Management Backend - info :     E Learning Management database is connected
