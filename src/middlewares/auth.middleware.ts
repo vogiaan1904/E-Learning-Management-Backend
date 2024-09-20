@@ -1,9 +1,9 @@
 import { CustomError, envConfig } from "@/configs";
-import * as userService from "@/services/user.service";
-import { SignInProps } from "@/types/auth";
+import { PreSigninProps, SignInProps } from "@/types/auth";
 import { CustomRequest } from "@/types/request";
 import { AccessTokenProps, RefreshTokenProps } from "@/types/token";
 import { verifyToken } from "@/utils/jwt";
+import { validateEmail } from "@/utils/validate";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import _ from "lodash";
@@ -11,18 +11,22 @@ import { v4 as uuidv4 } from "uuid";
 
 // Prioritize logging in by email
 export const preSignInMiddleware = (
-  req: CustomRequest<SignInProps>,
+  req: CustomRequest<PreSigninProps | SignInProps>,
   res: Response,
   next: NextFunction,
 ) => {
-  const { email, username } = req.body;
-  if (!email) {
-    req.body.email = `fakeemail${uuidv4()}@mail.com`;
-  }
-  if (!username) {
-    req.body.username = `fakeusername${uuidv4().replace(/-/g, "")}`;
-  }
-  req.body.method = email ? "email" : "username";
+  const { account, password } = req.body as PreSigninProps;
+
+  const isEmail = validateEmail(account);
+  const signInProps: SignInProps = {
+    email: isEmail ? account : `fakeemail${uuidv4()}@mail.com`,
+    username: !isEmail ? account : `fakeusername${uuidv4().replace(/-/g, "")}`,
+    password: password,
+    method: isEmail ? "email" : "username",
+  };
+
+  req.body = signInProps;
+
   next();
 };
 
@@ -70,15 +74,15 @@ export const accessTokenMiddleware = async (
       accessToken,
       envConfig.ACCESS_TOKEN_SECRET,
     );
-    const foundUser = await userService.getUser(
-      {
-        id: data.id,
-      },
-      { type: "id" },
-    );
-    if (!foundUser) {
-      throw new CustomError("User not found", StatusCodes.NOT_FOUND);
-    }
+    // const foundUser = await userService.getUser(
+    //   {
+    //     id: data.id,
+    //   },
+    //   { type: "id" },
+    // );
+    // if (!foundUser) {
+    //   throw new CustomError("User not found", StatusCodes.NOT_FOUND);
+    // }
     _.merge(req, { auth: data });
     next();
   } catch (error) {

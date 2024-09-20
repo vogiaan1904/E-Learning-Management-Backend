@@ -1,5 +1,5 @@
-import { CustomError, envConfig } from "@/configs";
-import * as otherService from "@/services/other.service";
+import { CustomError } from "@/configs";
+import logger from "@/configs/logger.config";
 import * as userService from "@/services/user.service";
 import {
   SendCodeProps,
@@ -8,36 +8,17 @@ import {
   VerifyCodeProps,
 } from "@/types/auth";
 import { CustomRequest } from "@/types/request";
-import { TokenType } from "@/types/token";
-import { compareHashData } from "@/utils/bcrypt";
-import { generateJwtToken } from "@/utils/jwt";
-import { generateMailOptions } from "@/utils/mail";
-import { generateVerificationCode } from "@/utils/token";
-import { User } from "@prisma/client";
-import { addDays, isAfter } from "date-fns";
+import { compareHashData, hashData } from "@/utils/bcrypt";
+import { generateMailOptions, sendMail } from "@/utils/mail";
+import { removeFieldsFromObject } from "@/utils/object";
+import { generateVerificationCode, getJwtTokens } from "@/utils/token";
+import { isAfter } from "date-fns";
 import { NextFunction, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { v4 as uuidv4 } from "uuid";
 
-const generatePayload = (
-  user: User,
-  tokenType: TokenType,
-  tokenId?: string,
-) => {
-  if (tokenType === "at") {
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    };
-  } else {
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      tokenId: tokenId,
-    };
-  }
+const generateCustomAvatarUrl = (firstName: string, lastName: string) => {
+  return `https://avatar.iran.liara.run/username?username=${firstName}+${lastName}`;
 };
 
 export const signUp = async (
@@ -47,31 +28,50 @@ export const signUp = async (
 ) => {
   try {
     const { username, password, email, firstName, lastName } = req.body;
-    const existedUser = await userService.getUser(
-      {
-        email: email,
-      },
-      {
-        type: "email",
-      },
-    );
+    const existedUser = await userService.getAUser({
+      username: username,
+      email: email,
+    });
     if (existedUser) {
-      throw new CustomError("User is already existed", StatusCodes.CONFLICT);
+      throw new CustomError(
+        "User is already existed. Please sign in",
+        StatusCodes.CONFLICT,
+      );
     }
-    const userProfile = await userService.createUserProfile(
-      firstName,
-      lastName,
-    );
-    const user = await userService.createUser(
-      username,
-      password,
-      email,
-      userProfile.id,
-    );
-    return res.status(StatusCodes.CREATED).json({
-      message: "User sign up success",
-      status: "success",
+    const userProfile = await userService.createAUserProfile({
+      firstName: firstName,
+      lastName: lastName,
+      avatar: generateCustomAvatarUrl(firstName, lastName),
+    });
+    const user = await userService.createAUser({
+      username: username,
+      email: email,
+      password: hashData(password),
+      profileId: userProfile.id,
+    });
+    const verificationCode = generateVerificationCode();
+    const userVerification = await userService.createAUserVerification({
       userId: user.id,
+      code: verificationCode,
+    });
+    const mailOptions = generateMailOptions({
+      receiverEmail: user.email,
+      subject: "Verification code",
+      template: "verification-code",
+      context: {
+        name: user.username,
+        activationCode: verificationCode,
+      },
+    });
+    await sendMail(mailOptions);
+    logger.info("New use sign up success");
+    return res.status(StatusCodes.CREATED).json({
+      message: "Sign up success. Please check your email to verify the account",
+      status: "success",
+      userVerification: {
+        id: userVerification.id,
+        userId: userVerification.userId,
+      },
     });
   } catch (error) {
     next(error);
@@ -84,61 +84,66 @@ export const signIn = async (
   next: NextFunction,
 ) => {
   try {
-    let user;
-    const { username, password, email, method } = req.body;
-    if (method === "username") {
-      user = await userService.getUser(
-        {
-          email: username,
-        },
-        {
-          type: "username",
-        },
-      );
-    } else if (method === "email") {
-      user = await userService.getUser(
-        {
-          email: email,
-        },
-        {
-          type: "email",
-        },
-      );
-    }
+    const { email, username, password, method } = req.body;
+    const user = await userService.getAUser({
+      email: method === "email" ? email : "",
+      username: method === "username" ? username : "",
+    });
     if (!user) {
-      throw new CustomError("User not found", StatusCodes.NOT_FOUND);
+      throw new CustomError(
+        "User not found. Please sign up",
+        StatusCodes.NOT_FOUND,
+      );
     }
     if (!compareHashData(password, user.password)) {
-      throw new CustomError("Incorrect password", StatusCodes.UNAUTHORIZED);
+      throw new CustomError("Invalid credentials", StatusCodes.UNAUTHORIZED);
     }
     if (!user.isVerified) {
-      throw new CustomError("User is not verified", StatusCodes.UNAUTHORIZED, {
-        id: user.id,
+      const verificationCode = generateVerificationCode();
+      const userVerification = await userService.createAUserVerification({
+        userId: user.id,
+        code: verificationCode,
       });
-    }
-    const tokenId = uuidv4();
-    const accessToken = generateJwtToken(generatePayload(user, "at"), "at");
-    const refreshToken = generateJwtToken(
-      generatePayload(user, "rt", tokenId),
-      "rt",
-    );
-    res
-      .status(StatusCodes.OK)
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: false,
-        secure: true,
-        path: "/",
-        sameSite: envConfig.NODE_ENV === "development" ? "strict" : "none",
-        expires: addDays(Date.now(), 1), // 1 day
-      })
-      .json({
-        message: "User sign in success",
-        status: "success",
-        data: {
-          accessToken: accessToken,
-          refreshToken: refreshToken,
+      const mailOptions = generateMailOptions({
+        receiverEmail: user.email,
+        subject: "Verification code",
+        template: "verification-code",
+        context: {
+          name: user.username,
+          activationCode: verificationCode,
         },
       });
+      await sendMail(mailOptions);
+      return res.status(StatusCodes.OK).json({
+        userVerification: {
+          id: userVerification.id,
+          userId: userVerification.userId,
+        },
+        message:
+          "User is not verified. Please check your email to verify the account.",
+        status: "failed",
+        code: StatusCodes.UNAUTHORIZED,
+      });
+    }
+    const tokens = await getJwtTokens({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      tokenId: uuidv4(),
+    });
+    await userService.createAUserToken({
+      id: tokens.tokenId,
+      token: tokens.refreshToken,
+      userId: user.id,
+    });
+    logger.info("User sign in success");
+    removeFieldsFromObject(tokens, ["tokenId"]);
+    return res.status(StatusCodes.OK).json({
+      tokens,
+      message: "Sign in in success",
+      status: "success",
+      code: StatusCodes.OK,
+    });
   } catch (error) {
     next(error);
   }
@@ -150,38 +155,51 @@ export const sendCode = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, email } = req.body;
-    const user = await userService.getUser(
-      {
-        id: id,
-      },
-      {
-        type: "id",
-      },
-    );
+    const { id, userId } = req.body;
+    const user = await userService.getAUser({
+      id: userId,
+    });
     if (!user) {
-      throw new CustomError("User not found", StatusCodes.NOT_FOUND);
+      throw new CustomError(
+        "User not found. Please sign up",
+        StatusCodes.NOT_FOUND,
+      );
     }
     if (user.isVerified) {
-      throw new CustomError("User is verified", StatusCodes.UNAUTHORIZED);
+      throw new CustomError(
+        "User is already verified",
+        StatusCodes.BAD_REQUEST,
+      );
     }
-    const receiverEmail = email || user.email;
-    const code = generateVerificationCode();
-    await userService.saveUserVerification(code, "", user.id);
+    const userVerification = await userService.getAUserVerification({
+      id: id,
+    });
+    if (!userVerification) {
+      throw new CustomError(
+        "User verification not found",
+        StatusCodes.NOT_FOUND,
+      );
+    }
+    const verificationCode = generateVerificationCode();
+    await userService.updateAUserVerification({
+      id: id,
+      code: verificationCode,
+    });
     const mailOptions = generateMailOptions({
-      receiverEmail: receiverEmail,
-      subject: `Verification code - ${envConfig.NAME}`,
+      receiverEmail: user.email,
+      subject: "Verification code",
       template: "verification-code",
       context: {
-        appName: envConfig.NAME,
         name: user.username,
-        activationCode: code,
+        activationCode: verificationCode,
       },
     });
-    await otherService.sendEmail(mailOptions);
-    res.status(StatusCodes.OK).json({
-      message: `Email sent successfully to ${receiverEmail}`,
-      status: "success",
+    await sendMail(mailOptions);
+    logger.info("Send code to user success");
+    return res.status(StatusCodes.OK).json({
+      message: "Please check your email to verify the account",
+      status: "failed",
+      code: StatusCodes.UNAUTHORIZED,
     });
   } catch (error) {
     next(error);
@@ -194,22 +212,25 @@ export const verifyCode = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, code } = req.body;
-    const user = await userService.getUser(
-      {
-        id: id,
-      },
-      {
-        type: "id",
-      },
-    );
+    const { id, code, userId } = req.body;
+    const user = await userService.getAUser({
+      id: userId,
+    });
     if (!user) {
-      throw new CustomError("User not found", StatusCodes.NOT_FOUND);
+      throw new CustomError(
+        "User not found. Please sign up",
+        StatusCodes.NOT_FOUND,
+      );
     }
     if (user.isVerified) {
-      throw new CustomError("User is verified", StatusCodes.UNAUTHORIZED);
+      throw new CustomError(
+        "User is already verified",
+        StatusCodes.BAD_REQUEST,
+      );
     }
-    const userVerification = await userService.getUserVerificationById(id);
+    const userVerification = await userService.getAUserVerification({
+      id: id,
+    });
     if (!userVerification) {
       throw new CustomError(
         "User verification not found",
@@ -217,8 +238,7 @@ export const verifyCode = async (
       );
     }
     const requestTime = new Date();
-    const expiredTime = new Date(userVerification.expiredAt || Date.now());
-    if (isAfter(requestTime, expiredTime)) {
+    if (isAfter(requestTime, userVerification.expiredAt || Date.now())) {
       throw new CustomError(
         "Verification code is expired",
         StatusCodes.BAD_REQUEST,
@@ -230,13 +250,35 @@ export const verifyCode = async (
         StatusCodes.UNAUTHORIZED,
       );
     }
-    await userService.updateUser(userVerification.userId, {
-      isVerified: true,
+    await userService.updateAUser(
+      {
+        id: userVerification.userId,
+      },
+      {
+        isVerified: true,
+      },
+    );
+    await userService.deleteAUserVerification({
+      id: userVerification.id,
     });
-    await userService.deleteUserVerification(userVerification.userId);
-    res.status(StatusCodes.OK).json({
-      message: "User is verified",
+    const tokens = await getJwtTokens({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      tokenId: uuidv4(),
+    });
+    await userService.createAUserToken({
+      id: tokens.tokenId,
+      token: tokens.refreshToken,
+      userId: user.id,
+    });
+    removeFieldsFromObject(tokens, ["tokenId"]);
+    logger.info("User verify success");
+    return res.status(StatusCodes.OK).json({
+      tokens,
+      message: "Verified success",
       status: "success",
+      code: StatusCodes.OK,
     });
   } catch (error) {
     next(error);

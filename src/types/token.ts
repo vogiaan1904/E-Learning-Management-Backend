@@ -12,3 +12,9 @@ export interface RefreshTokenProps
     JwtPayload {
   tokenId: string;
 }
+
+export interface JwtFieldProps extends Pick<User, "id" | "email" | "role"> {
+  tokenId: string;
+}
+
+export interface CustomTokenProps extends Pick<User, "id"> {}

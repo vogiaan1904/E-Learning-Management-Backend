@@ -15,24 +15,27 @@ interface GenerateMailOptionsProps {
   context?: object;
 }
 
-export const sendEmail = async (mailOptions: ExtendedMailOptions) => {
+export const sendMail = async (mailOptions: ExtendedMailOptions) => {
   await mailTransporter.sendMail(mailOptions);
-  logger.info("Mail sent successfully");
+  logger.info(`Mail sent successfully to ${mailOptions.to}`);
 };
 
 export const generateMailOptions = ({
   receiverEmail,
   subject = "Testing nodemailer",
-  template = "TestEmail",
+  template = "test-email",
   context = {
-    name: "testing123",
+    name: "testing",
   },
 }: GenerateMailOptionsProps): ExtendedMailOptions => {
   return {
-    from: envConfig.NODEMAILER_DEFAULT_SENDER,
+    from: `"No Reply" <${envConfig.NODEMAILER_DEFAULT_SENDER}>`,
     to: receiverEmail,
     subject: subject,
     template: template,
-    context: context,
+    context: {
+      ...context,
+      appName: envConfig.NAME,
+    },
   };
 };

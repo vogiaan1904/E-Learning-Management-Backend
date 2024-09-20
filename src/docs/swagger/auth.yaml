@@ -132,25 +132,22 @@ components:
           example: "Pham"
         username:
           type: string
-          example: "phuc123"
+          example: "acus"
         email: 
           type: string
           example: "acuscodinghcm@gmail.com"
         password:
           type: string
-          example: "123"
+          example: "acus123"
     ReqAuthSignIn:
       type: object
       properties:
-        email: 
+        account: 
           type: string
-          example: "acuscodinghcm@gmail.com"
+          example: "acus"
         password:
           type: string
-          example: "123"
-        username:
-          type: string,
-          example: "phuc123"
+          example: "acus123"
     ResAuthSignUp:
       type: object
       properties: 
@@ -184,6 +181,8 @@ components:
       type: object
       properties:
         id: 
+          type: string
+        userId:
           type: string
         code:
           type: string

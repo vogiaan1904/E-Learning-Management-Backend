@@ -6,9 +6,8 @@ interface AuthRouteProps extends DefaultRouteProps {
   sendCode: string;
   verifyCode: string;
   signOut: string;
-  deleteAccount: string;
-  recoverAccount: string;
-  forgetCredential: string;
+  forgotPassword: string;
+  resetPasssword: string;
 }
 
 export const authRoute: AuthRouteProps = {
@@ -20,7 +19,6 @@ export const authRoute: AuthRouteProps = {
   sendCode: "/validation/send",
   verifyCode: "/validation/verify",
   signOut: "/signout",
-  deleteAccount: "/delete",
-  recoverAccount: "/recover",
-  forgetCredential: "/forget",
+  forgotPassword: "/forgot-password",
+  resetPasssword: "/reset-password",
 };

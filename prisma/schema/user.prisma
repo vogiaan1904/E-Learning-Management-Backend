@@ -16,7 +16,7 @@ model User {
   deletedAt  DateTime?
   profileId  String
 
-  userProfile      UserProfifle       @relation(fields: [profileId], references: [id])
+  userProfile      UserProfifle       @relation(fields: [profileId], references: [id], onDelete: Cascade)
   UserVerification UserVerification[]
   UserToken        UserToken[]
 
@@ -30,6 +30,7 @@ model UserProfifle {
   lastName    String
   birth       DateTime?
   gender      Gender    @default(CUSTOM)
+  avatar      String
   phoneNumber String?
   address     String?
   createdAt   DateTime  @default(now())
@@ -53,7 +54,7 @@ model UserVerification {
 }
 
 model UserToken {
-  id        String    @id @default(uuid())
+  id        String    @id
   userId    String
   token     String
   createdAt DateTime  @default(now())
