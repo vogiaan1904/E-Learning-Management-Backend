@@ -1,0 +1,78 @@
+paths:
+  /services/api-status:
+    get:
+      tags:
+        - Services
+      summary: Check service APIs status
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResService"
+  /services/email:
+    post:
+      tags:
+        - Services
+      summary: Send email
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqEmailSerive"
+      responses:
+        200: 
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResService"
+        400: 
+          description: Bad Request
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+components:
+  schemas:
+    ResService:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
+    ResError:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
+        stack:
+          type: string
+          description: "Return in development mode"
+    ReqEmailSerive:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Pham Gia Phuc"
+        email:
+          type: string
+          example: "acuscodinghcm@gmail.com"
+
+

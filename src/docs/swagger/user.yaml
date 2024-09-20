@@ -1,0 +1,185 @@
+paths:
+  /users/api-status:
+    get:
+      tags:
+        - Users
+      summary: Check user APIs status
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserStatus"
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      parameters:
+        - in: query
+          name: profile
+          schema:
+            type: boolean
+          description: Get the user profile.
+        - in: query
+          name: isDeleted
+          schema:
+            type: boolean
+          description: If isDeleted is true, return deleted users
+      responses:
+        200: 
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetUser"
+    post:
+      tags:
+        - Users
+      summary: Create users
+      parameters:
+        - in: query
+          name: profile
+          schema:
+            type: boolean
+          description: Get the user profile
+      responses:
+        200: 
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetUser"
+  /users/many:
+    patch:
+      tags:
+        - Users
+      summary: Update all users
+      responses:
+        200: 
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUser"
+    delete:
+      tags:
+        - Users
+      summary: Delete all users
+      parameters:
+        - in: query
+          name: action
+          schema:
+            type: string
+            enum:
+              - soft
+              - hard
+          description: Delete action
+      responses:
+        200: 
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUser"
+  /users/{id}:
+    get:
+      tags: 
+        - Users
+      summary: Get user by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user id
+        - in: query
+          name: profile
+          schema:
+            type: boolean
+          description: Get the user profile
+        - in: query
+          name: isDeleted
+          schema:
+            type: boolean
+          description: Return deleted user if isDeleted is true.
+      responses:
+        200: 
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetUser"
+    patch:
+      tags: 
+        - Users
+      summary: Update user by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user id
+      responses:
+        200: 
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUser"
+    delete:
+      tags: 
+        - Users
+      summary: Delete user by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user id
+        - in: query
+          name: action
+          schema:
+            type: string
+            enum:
+              - soft
+              - hard
+          description: Delete action
+      responses:
+        200: 
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUser"
+components:
+  schemas:
+    ResUserStatus:
+      type: object
+      properties: 
+        message: 
+          type: string
+        status:
+          type: string
+    ResGetUser:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+        data:
+          type: object
+    ResUser:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+
+

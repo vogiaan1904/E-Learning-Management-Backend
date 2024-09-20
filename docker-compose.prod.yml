@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: bitnami/postgresql:16.0.0
+    container_name: postgres-db
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRESQL_DATABASE: ${POSTGRES_DB:-postgres}
+    volumes:
+      - ./data/postgres:/data/postgres
+    networks:
+      - database-network
+    # restart: unless-stopped
+
+  pgadmin:
+    container_name: postgres-pgadmin
+    image: dpage/pgadmin4:8.8
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - database-network
+    # restart: unless-stopped
+
+  server:
+    container_name: express-ts-server
+    image: express-ts:0.0.1
+    env_file:
+      - .env.prod
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      - postgres
+    networks:
+      - database-network
+    command: sh -c "npx prisma migrate deploy && yarn start:prod"
+networks:
+  database-network:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
