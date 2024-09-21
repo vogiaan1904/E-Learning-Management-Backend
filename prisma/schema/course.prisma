@@ -1,0 +1,110 @@
+enum LessonType {
+    VIDEO
+    BLOG
+}
+
+model Course {
+    id           String             @id @default(uuid())
+    name         String
+    description  String
+    enrollments  Enrollment[]
+    modules      Module[]
+    categories   CourseToCategory[]
+    courseDetail CourseDetail?
+    createdAt    DateTime           @default(now())
+    updatedAt    DateTime           @updatedAt
+
+    @@map("courses")
+}
+
+model CourseDetail {
+    id               String   @id @default(uuid())
+    courseId         String   @unique
+    course           Course   @relation(fields: [courseId], references: [id])
+    courseDifficulty String
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @default(now())
+
+    @@map("courseDetails")
+}
+
+model CourseCategory {
+    categoryType String             @id
+    name         String             @unique
+    courses      CourseToCategory[]
+
+    @@map("courseCategories")
+}
+
+model CourseToCategory {
+    courseId     String
+    categoryType String
+    course       Course         @relation(fields: [courseId], references: [id])
+    category     CourseCategory @relation(fields: [categoryType], references: [categoryType])
+
+    @@id([courseId, categoryType])
+    @@map("courseToCategory")
+}
+
+model Module {
+    id        String   @id @default(uuid())
+    index     Int
+    courseId  String
+    course    Course   @relation(fields: [courseId], references: [id])
+    lessons   Lesson[]
+    quizzes   Quizz[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
+
+    @@map("modules")
+}
+
+model Quizz {
+    id              String            @id @default(uuid())
+    title           String
+    slug            String
+    description     String
+    deadline        DateTime
+    moduleId        String
+    module          Module            @relation(fields: [moduleId], references: [id])
+    questions       Question[]
+    submissions     QuizzSubmission[]
+    questionAnswers QuestionAnswer[]
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @default(now())
+
+    @@map("quizzes")
+}
+
+model Question {
+    id              String           @id @default(uuid())
+    quizzId         String
+    quizz           Quizz            @relation(fields: [quizzId], references: [id])
+    type            QuestionType
+    score           Int
+    content         String
+    createdAt       DateTime         @default(now())
+    updatedAt       DateTime         @default(now())
+    questionAnswers QuestionAnswer[]
+
+    @@map("questions")
+}
+
+model QuestionAnswer {
+    id         String   @id @default(uuid())
+    quizzId    String
+    questionId String
+    quizz      Quizz    @relation(fields: [quizzId], references: [id])
+    question   Question @relation(fields: [questionId], references: [id])
+    isCorrect  Boolean  @default(false)
+    content    String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @default(now())
+
+    @@map("questionAnswers")
+}
+
+enum QuestionType {
+    MUTIPLE_CHOICE
+    TEXT
+}

@@ -1,0 +1,11 @@
+model Lesson {
+    id         String     @id @default(uuid())
+    index      Int
+    lessonType LessonType
+    moduleId   String
+    module     Module     @relation(fields: [moduleId], references: [id])
+    videoId    String?
+    blogId     Int?
+
+    @@map("lessons")
+}

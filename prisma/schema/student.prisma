@@ -1,0 +1,54 @@
+model Student {
+    id          String       @id @default(uuid())
+    userId      String       @unique
+    user        User         @relation(fields: [userId], references: [id])
+    enrollments Enrollment[]
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+
+    @@map("students")
+}
+
+model Enrollment {
+    studentId           String
+    courseId            String
+    student             Student             @relation(fields: [studentId], references: [id])
+    course              Course              @relation(fields: [courseId], references: [id])
+    enrolledAt          DateTime            @default(now())
+    cancelled           Boolean             @default(true)
+    studentCourseDetail StudenCourseDetail?
+    quizzSubmissions    QuizzSubmission[]
+
+    @@id([studentId, courseId])
+    @@map("enrollments")
+}
+
+model StudenCourseDetail {
+    studentId  String
+    courseId   String
+    grade      Int
+    feedback   String
+    status     String
+    completion Int
+    enrollment Enrollment @relation(fields: [studentId, courseId], references: [studentId, courseId])
+    createdAt  DateTime   @default(now())
+
+    @@id([studentId, courseId])
+    @@map("studentCourseDetails")
+}
+
+model QuizzSubmission {
+    id          String           @id @default(uuid())
+    studentId   String
+    courseId    String
+    quizzId     String
+    quizz       Quizz            @relation(fields: [quizzId], references: [id])
+    status      SubmissionStatus @default(UNFINISHED)
+    enrollment  Enrollment       @relation(fields: [studentId, courseId], references: [studentId, courseId])
+    submittedAt DateTime         @default(now())
+}
+
+enum SubmissionStatus {
+    FINISHED
+    UNFINISHED
+}
