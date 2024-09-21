@@ -4,26 +4,22 @@ enum Gender {
   CUSTOM
 }
 
-enum Role {
-  STUDENT
-  TEACHER
-  ADMIN
-}
-
 model User {
-  id               String             @id @default(uuid())
-  email            String             @unique
-  username         String             @unique
-  password         String
-  role             Role               @default(STUDENT)
-  isVerified       Boolean            @default(false)
-  profileId        String
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @default(now())
-  deletedAt        DateTime?
-  userProfile      UserProfifle?
-  student          Student?
-  teacher          Teacher?
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  username           String              @unique
+  password           String
+  role               String              @default("user")
+  isVerified         Boolean             @default(false)
+  enrollments        Enrollment[]
+  courseInvolvements CourseInvolvement[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  profileId        String             @unique
+  userProfile      UserProfifle       @relation(fields: [profileId], references: [id], onDelete: Cascade)
   UserVerification UserVerification[]
   UserToken        UserToken[]
 
@@ -40,10 +36,9 @@ model UserProfifle {
   avatar      String
   phoneNumber String?
   address     String?
-  userId      String    @unique
-  user        User      @relation(fields: [userId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
+  User        User?
 
   @@map("UserProfiles")
 }

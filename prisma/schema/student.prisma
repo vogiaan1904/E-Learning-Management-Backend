@@ -1,50 +1,39 @@
-model Student {
-    id          String       @id @default(uuid())
-    userId      String       @unique
-    user        User         @relation(fields: [userId], references: [id])
-    enrollments Enrollment[]
-    createdAt   DateTime     @default(now())
-    updatedAt   DateTime     @updatedAt
-
-    @@map("students")
-}
-
 model Enrollment {
-    studentId           String
+    userId              String
     courseId            String
-    student             Student             @relation(fields: [studentId], references: [id])
+    user                User                @relation(fields: [userId], references: [id])
     course              Course              @relation(fields: [courseId], references: [id])
     enrolledAt          DateTime            @default(now())
     cancelled           Boolean             @default(true)
     studentCourseDetail StudenCourseDetail?
     quizzSubmissions    QuizzSubmission[]
 
-    @@id([studentId, courseId])
-    @@map("enrollments")
+    @@id([userId, courseId])
+    @@map("Enrollments")
 }
 
 model StudenCourseDetail {
-    studentId  String
+    userId     String
     courseId   String
     grade      Int
     feedback   String
     status     String
     completion Int
-    enrollment Enrollment @relation(fields: [studentId, courseId], references: [studentId, courseId])
+    enrollment Enrollment @relation(fields: [userId, courseId], references: [userId, courseId])
     createdAt  DateTime   @default(now())
 
-    @@id([studentId, courseId])
-    @@map("studentCourseDetails")
+    @@id([userId, courseId])
+    @@map("StudentCourseDetails")
 }
 
 model QuizzSubmission {
     id                String             @id @default(uuid())
-    studentId         String
+    userId            String
     courseId          String
     quizzId           String
     quizz             Quizz              @relation(fields: [quizzId], references: [id])
     status            SubmissionStatus   @default(UNFINISHED)
-    enrollment        Enrollment         @relation(fields: [studentId, courseId], references: [studentId, courseId])
+    enrollment        Enrollment         @relation(fields: [userId, courseId], references: [userId, courseId])
     submissionAnswers SubmissionAnswer[]
     submittedAt       DateTime           @default(now())
 }

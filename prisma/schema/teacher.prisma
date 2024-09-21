@@ -1,9 +1,11 @@
-model Teacher {
-    id        String   @id @default(uuid())
-    userId    String   @unique
-    user      User     @relation(fields: [userId], references: [id])
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model CourseInvolvement {
+    userId     String
+    courseId   String
+    user       User     @relation(fields: [userId], references: [id])
+    course     Course   @relation(fields: [courseId], references: [id])
+    enrolledAt DateTime @default(now())
+    cancelled  Boolean  @default(true)
 
-    @@map("teachers")
+    @@id([userId, courseId])
+    @@map("CourseInvolvements")
 }
