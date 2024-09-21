@@ -38,14 +38,27 @@ model StudenCourseDetail {
 }
 
 model QuizzSubmission {
-    id          String           @id @default(uuid())
-    studentId   String
-    courseId    String
-    quizzId     String
-    quizz       Quizz            @relation(fields: [quizzId], references: [id])
-    status      SubmissionStatus @default(UNFINISHED)
-    enrollment  Enrollment       @relation(fields: [studentId, courseId], references: [studentId, courseId])
-    submittedAt DateTime         @default(now())
+    id                String             @id @default(uuid())
+    studentId         String
+    courseId          String
+    quizzId           String
+    quizz             Quizz              @relation(fields: [quizzId], references: [id])
+    status            SubmissionStatus   @default(UNFINISHED)
+    enrollment        Enrollment         @relation(fields: [studentId, courseId], references: [studentId, courseId])
+    submissionAnswers SubmissionAnswer[]
+    submittedAt       DateTime           @default(now())
+}
+
+model SubmissionAnswer {
+    id                String          @id @default(uuid())
+    questionAnswerId  String
+    questionAnswer    QuestionAnswer  @relation(fields: [questionAnswerId], references: [id])
+    quizzSubmissionId String
+    quizzSubmission   QuizzSubmission @relation(fields: [quizzSubmissionId], references: [id])
+    createdAt         DateTime        @default(now())
+    updatedAt         DateTime        @default(now())
+
+    @@map("submissionAnswers")
 }
 
 enum SubmissionStatus {

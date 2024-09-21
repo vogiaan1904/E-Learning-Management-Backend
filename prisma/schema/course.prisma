@@ -67,7 +67,7 @@ model Quizz {
     deadline        DateTime
     moduleId        String
     module          Module            @relation(fields: [moduleId], references: [id])
-    questions       Question[]
+    questionBanks   QuestionBank[]
     submissions     QuizzSubmission[]
     questionAnswers QuestionAnswer[]
     createdAt       DateTime          @default(now())
@@ -76,10 +76,19 @@ model Quizz {
     @@map("quizzes")
 }
 
+model QuestionBank {
+    quizzId    String
+    questionId String
+    question   Question @relation(fields: [questionId], references: [id])
+    quizz      Quizz    @relation(fields: [quizzId], references: [id])
+
+    @@id([quizzId, questionId])
+    @@map("questionBanks")
+}
+
 model Question {
     id              String           @id @default(uuid())
-    quizzId         String
-    quizz           Quizz            @relation(fields: [quizzId], references: [id])
+    questionBanks   QuestionBank[]
     type            QuestionType
     score           Int
     content         String
@@ -91,15 +100,16 @@ model Question {
 }
 
 model QuestionAnswer {
-    id         String   @id @default(uuid())
-    quizzId    String
-    questionId String
-    quizz      Quizz    @relation(fields: [quizzId], references: [id])
-    question   Question @relation(fields: [questionId], references: [id])
-    isCorrect  Boolean  @default(false)
-    content    String?
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @default(now())
+    id                String             @id @default(uuid())
+    quizzId           String
+    questionId        String
+    quizz             Quizz              @relation(fields: [quizzId], references: [id])
+    question          Question           @relation(fields: [questionId], references: [id])
+    isCorrect         Boolean            @default(false)
+    content           String?
+    submissionAnswers SubmissionAnswer[]
+    createdAt         DateTime           @default(now())
+    updatedAt         DateTime           @default(now())
 
     @@map("questionAnswers")
 }
