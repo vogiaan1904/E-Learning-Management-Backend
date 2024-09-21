@@ -92,7 +92,7 @@ export const signIn = async (
     if (!user) {
       throw new CustomError(
         "User not found. Please sign up",
-        StatusCodes.NOT_FOUND,
+        StatusCodes.BAD_REQUEST,
       );
     }
     if (!compareHashData(password, user.password)) {
@@ -162,7 +162,7 @@ export const sendCode = async (
     if (!user) {
       throw new CustomError(
         "User not found. Please sign up",
-        StatusCodes.NOT_FOUND,
+        StatusCodes.BAD_REQUEST,
       );
     }
     if (user.isVerified) {
@@ -177,7 +177,7 @@ export const sendCode = async (
     if (!userVerification) {
       throw new CustomError(
         "User verification not found",
-        StatusCodes.NOT_FOUND,
+        StatusCodes.BAD_REQUEST,
       );
     }
     const verificationCode = generateVerificationCode();
