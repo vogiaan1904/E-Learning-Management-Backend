@@ -1,0 +1,66 @@
+enum Gender {
+  MALE
+  FEMALE
+  CUSTOM
+}
+
+model User {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  username   String    @unique
+  password   String
+  role       String    @default("user")
+  isVerified Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now())
+  deletedAt  DateTime?
+  profileId  String
+
+  userProfile      UserProfifle       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  UserVerification UserVerification[]
+  UserToken        UserToken[]
+
+  @@index([email, username, deletedAt])
+  @@map("Users")
+}
+
+model UserProfifle {
+  id          String    @id @default(uuid())
+  firstName   String
+  lastName    String
+  birth       DateTime?
+  gender      Gender    @default(CUSTOM)
+  avatar      String
+  phoneNumber String?
+  address     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  User        User[]
+
+  @@map("UserProfiles")
+}
+
+model UserVerification {
+  id        String    @id @default(uuid())
+  userId    String
+  code      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  expiredAt DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("UserVerifications")
+}
+
+model UserToken {
+  id        String    @id
+  userId    String
+  token     String
+  createdAt DateTime  @default(now())
+  expiredAt DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("UserTokens")
+}

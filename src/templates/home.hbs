@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Express Typescript Template</title>
+  <link rel="icon" type="image/svg+xml" href="./logo.svg" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      background-color: #fff;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+    .links {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+    }
+
+    h1,
+    p {
+      color: #000;
+    }
+
+    h1 {
+      margin: 0px;
+    }
+
+    a {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    a:hover {
+      background-color: #0056b3;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Welcome to {{name}}</h1>
+    <p>This is a simple HTML page served with Express and TypeScript.</p>
+    <div class="links">
+      <a href="/api/v1">Go to APIs</a>
+      <a href="/docs">Go to Swagger Docs</a>
+    </div>
+  </div>
+</body>
+</html>

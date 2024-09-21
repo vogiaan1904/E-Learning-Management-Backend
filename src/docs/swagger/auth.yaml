@@ -1,0 +1,206 @@
+paths:
+  /auth/api-status:
+    get:
+      tags:
+        - Auth
+      summary: Check auth APIs status
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthStatus"
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Sign up
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqAuthSignUp"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthSignUp"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthError"
+  /auth/signin:
+    post:
+      tags:
+        - Auth
+      summary: Sign in
+      requestBody:
+        description: Request body (sign in by email or username)
+        content:
+          application/json:
+            type: application/json
+            schema:
+              $ref: "#/components/schemas/ReqAuthSignIn"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthSignIn"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthError"
+  /auth/validation/send: 
+    post: 
+      tags:
+        - Auth
+      summary: Send verification code
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            type: application/json
+            schema:
+              $ref: "#/components/schemas/ReqAuthSendCode"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthSendCode"
+  /auth/validation/verify:
+    post: 
+      tags:
+        - Auth
+      summary: Validate verification code
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            type: application/json
+            schema:
+              $ref: "#/components/schemas/ReqAuthVerifyCode"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthSendCode"
+components:
+  schemas:
+    ResAuthStatus:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
+    ReqAuthSignUp:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "Gia Phuc"
+        lastName:
+          type: string
+          example: "Pham"
+        username:
+          type: string
+          example: "acus"
+        email: 
+          type: string
+          example: "acuscodinghcm@gmail.com"
+        password:
+          type: string
+          example: "acus123"
+    ReqAuthSignIn:
+      type: object
+      properties:
+        account: 
+          type: string
+          example: "acus"
+        password:
+          type: string
+          example: "acus123"
+    ResAuthSignUp:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
+        userId: 
+          type: string
+    ResAuthSignIn:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
+        data: 
+          type: object
+    ReqAuthSendCode:
+      type: object
+      properties:
+        id: 
+          type: string
+        email:
+          type: string
+    ReqAuthVerifyCode:
+      type: object
+      properties:
+        id: 
+          type: string
+        userId:
+          type: string
+        code:
+          type: string
+    ResAuthSendCode:
+      type: object
+      properties: 
+        message: 
+          type: string
+        status:
+          type: string
+        code:
+          type: number
+    ResAuthError:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
