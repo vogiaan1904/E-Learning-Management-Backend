@@ -5,23 +5,23 @@ enum Gender {
 }
 
 model User {
-  id                 String              @id @default(uuid())
-  email              String              @unique
-  username           String              @unique
-  password           String
-  role               String              @default("user")
-  isVerified         Boolean             @default(false)
-  enrollments        Enrollment[]
-  courseInvolvements CourseInvolvement[]
+  id                String              @id @default(uuid())
+  email             String              @unique
+  username          String              @unique
+  password          String
+  role              String              @default("user")
+  isVerified        Boolean             @default(false)
+  profileId         String              @unique
+  userProfile       UserProfifle        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  UserVerification  UserVerification[]
+  UserToken         UserToken[]
+  Student           Student[]
+  Enrollment        Enrollment[]
+  CourseInvolvement CourseInvolvement[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())
   deletedAt DateTime?
-
-  profileId        String             @unique
-  userProfile      UserProfifle       @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  UserVerification UserVerification[]
-  UserToken        UserToken[]
 
   @@index([email, username, deletedAt])
   @@map("Users")
