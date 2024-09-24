@@ -1,0 +1,6 @@
+model Teacher {
+    userId  String   @id
+    user    User     @relation(fields: [userId], references: [id])
+    field   String
+    courses Course[]
+}
