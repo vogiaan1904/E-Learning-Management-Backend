@@ -6,24 +6,29 @@ export const prisma = new PrismaClient();
 const clients = [
   {
     client: prisma,
-    database_name: "E Learning Management",
+    database_name: "Express TypeScript Template",
   },
 ];
 
-export const connectMultipleDB = () => {
-  clients.forEach(({ client, database_name }) =>
+export const connectMultipleDB = async () => {
+  const promises = clients.map(({ client, database_name }) =>
     connectToDB(client, database_name),
   );
+  await Promise.all(promises);
 };
 
-export const disconnectMultipleDB = () => {
-  clients.forEach(({ client, database_name }) =>
+export const disconnectMultipleDB = async () => {
+  const promises = clients.map(({ client, database_name }) =>
     disconnectToDB(client, database_name),
   );
+  await Promise.all(promises);
 };
 
-export const connectToDB = (client: PrismaClient, database_name: string) => {
-  client
+export const connectToDB = async (
+  client: PrismaClient,
+  database_name: string,
+) => {
+  await client
     .$connect()
     .then(() => {
       logger.info(`${database_name} database is connected`);

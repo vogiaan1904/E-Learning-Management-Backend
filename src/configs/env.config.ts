@@ -2,19 +2,21 @@ import "dotenv/config";
 
 export const envConfig = {
   // Server
-  NAME: "E Learning Management Backend",
+  NAME: "Express Typescript Template",
   PORT: process.env.PORT || 3000,
   LOG_FILE: "server_info.log",
   NODE_ENV: process.env.NODE_ENV || "development",
   APIS: process.env.APIS || "/api/v1",
   LOG_LEVEL: process.env.LOG_LEVEL || "info",
+  SESSION_SECRET: process.env.SESSION_SECRET || "session-secret",
 
   // Secret keys
   ACCESS_TOKEN_SECRET:
-    process.env.ACCESS_TOKEN_SECRET || "e-learning-management-backend-at",
+    process.env.ACCESS_TOKEN_SECRET || "express-typescript-template-backend-at",
   ACCESS_TOKEN_EXPIRED: process.env.ACCESS_TOKEN_EXPIRED || "30m", // 30 mins
   REFRESH_TOKEN_SECRET:
-    process.env.REFRESH_TOKEN_SECRET || "e-learning-management-backend-rt",
+    process.env.REFRESH_TOKEN_SECRET ||
+    "express-typescript-template-backend-rt",
   REFRESH_TOKEN_EXPIRED: process.env.REFRESH_TOKEN_EXPIRED || "1d", // 1 day
 
   // Models
@@ -31,6 +33,11 @@ export const envConfig = {
   DB_HOST: process.env.POSTGRES_HOST || "db_host",
   DB_PORT: Number(process.env.POSTGRES_PORT) || 5432,
 
+  // Redis
+  REDIS_HOST: process.env.REDIS_HOST || "localhost",
+  REDIS_PORT: process.env.REDIS_PORT || "6379",
+  REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
+
   // Email Service
   NODEMAILER_USER:
     process.env.NODEMAILER_USER || "acusvncodingprojects@gmail.com",
@@ -38,4 +45,16 @@ export const envConfig = {
   NODEMAILER_DEFAULT_SENDER:
     process.env.NODEMAILER_USER || "acusvncodingprojects@gmail.com",
   NODEMAILER_DEFAULT_RECEIVER: "acuscodinghcm@gmail.com",
+
+  // Google OAuth 2.0
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "google-client-id",
+  GOOGLE_CLIENT_SECRET:
+    process.env.GOOGLE_CLIENT_SECRET || "google-client-secret",
+  GOOGLE_DIRECT_URL: process.env.GOOGLE_DIRECT_URL || "google-direct-url",
+
+  // Facebook Auth
+  FACEBOOK_CLIENT_ID: process.env.FACEBOOK_CLIENT_ID || "facebook-client-id",
+  FACEBOOK_CLIENT_SECRET:
+    process.env.FACEBOOK_CLIENT_SECRET || "facebook-client-secret",
+  FACEBOOK_DIRECT_URL: process.env.FACEBOOK_DIRECT_URL || "facebook-direct-url",
 };

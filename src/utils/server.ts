@@ -7,12 +7,10 @@ import { IncomingMessage, Server, ServerResponse } from "http";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
-export const handleServerShutDown = (
+export const handleServerShutDown = async (
   server: Server<typeof IncomingMessage, typeof ServerResponse>,
 ) => {
-  // Close db connection
-  disconnectMultipleDB();
-  // Close server
+  await disconnectMultipleDB();
   server.close(() => {
     logger.info("Server shut down");
   });

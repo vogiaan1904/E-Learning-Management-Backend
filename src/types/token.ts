@@ -4,12 +4,15 @@ import { JwtPayload } from "jsonwebtoken";
 export type TokenType = "at" | "rt";
 
 export interface AccessTokenProps
-  extends Pick<User, "id" | "email" | "role">,
-    JwtPayload {}
+  extends Pick<User, "email" | "role">,
+    JwtPayload {
+  sub: string;
+}
 
 export interface RefreshTokenProps
-  extends Pick<User, "id" | "email" | "role">,
+  extends Pick<User, "email" | "role">,
     JwtPayload {
+  sub: string;
   tokenId: string;
 }
 
