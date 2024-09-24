@@ -24,6 +24,7 @@ CREATE TABLE "UserProfiles" (
     "lastName" TEXT NOT NULL,
     "birth" TIMESTAMP(3),
     "gender" "Gender" NOT NULL DEFAULT 'CUSTOM',
+    "avatar" TEXT NOT NULL,
     "phoneNumber" TEXT,
     "address" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -44,17 +45,6 @@ CREATE TABLE "UserVerifications" (
     CONSTRAINT "UserVerifications_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "UserTokens" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "token" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "expiredAt" TIMESTAMP(3),
-
-    CONSTRAINT "UserTokens_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
 
@@ -62,13 +52,13 @@ CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
 CREATE UNIQUE INDEX "Users_username_key" ON "Users"("username");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Users_profileId_key" ON "Users"("profileId");
+
+-- CreateIndex
 CREATE INDEX "Users_email_username_deletedAt_idx" ON "Users"("email", "username", "deletedAt");
 
 -- AddForeignKey
-ALTER TABLE "Users" ADD CONSTRAINT "Users_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "UserProfiles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Users" ADD CONSTRAINT "Users_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "UserProfiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserVerifications" ADD CONSTRAINT "UserVerifications_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UserTokens" ADD CONSTRAINT "UserTokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

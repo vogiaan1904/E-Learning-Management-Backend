@@ -54,12 +54,17 @@ paths:
             schema:
               $ref: "#/components/schemas/ReqAuthSignIn"
       responses:
-        201:
-          description: Created
+        200:
+          description: Ok
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResAuthSignIn"
+          headers: 
+            Set-Cookie:
+              schema: 
+                type: string
+                example: refreshToken=eyJhb...; Path=/; Expires=Sun, 22 Sep 2024 20:39:53 GMT;
         409:
           description: Conflict
           content:
@@ -72,6 +77,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResAuthError"
+  /auth/signout:
+    post:
+      tags:
+        - Auth
+      summary: Sign out
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthSignOut"
   /auth/validation/send: 
     post: 
       tags:
@@ -110,6 +127,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResAuthSendCode"
+  /auth/refresh-token:
+    post: 
+      tags:
+        - Auth
+      summary: Refresh token
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthRefreshToken"
 components:
   schemas:
     ResAuthStatus:
@@ -153,23 +182,36 @@ components:
       properties: 
         message: 
           type: string
-        success:
+        status:
           type: boolean
-        code:
-          type: number
-        userId: 
-          type: string
+        userVerification: 
+          type: object
+          properties:
+            id:
+              type: string
+            userId:
+              type: string
     ResAuthSignIn:
       type: object
-      properties: 
+      properties:
+        tokens:
+          type: object
+          properties:
+            accessToken:
+              type: string
+            refreshToken:
+              type: string
         message: 
           type: string
         success:
           type: boolean
-        code:
-          type: number
-        data: 
-          type: object
+    ResAuthSignOut:
+      type: object
+      properties:
+        message: 
+          type: string
+        success:
+          type: boolean
     ReqAuthSendCode:
       type: object
       properties:
@@ -195,12 +237,23 @@ components:
           type: string
         code:
           type: number
-    ResAuthError:
+    ResAuthRefreshToken:
       type: object
-      properties: 
+      properties:
+        tokens:
+          type: object
+          properties:
+            accessToken:
+              type: string
         message: 
           type: string
         success:
           type: boolean
-        code:
-          type: number
+    ResAuthError:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+          example: "failed"
