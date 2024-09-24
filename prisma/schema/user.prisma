@@ -14,11 +14,13 @@ model User {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @default(now())
   deletedAt  DateTime?
-  profileId  String
+
+  profileId String @unique
 
   userProfile      UserProfifle       @relation(fields: [profileId], references: [id], onDelete: Cascade)
   UserVerification UserVerification[]
-  UserToken        UserToken[]
+  Teacher          Teacher[]
+  Student          Student[]
 
   @@index([email, username, deletedAt])
   @@map("Users")
@@ -35,7 +37,8 @@ model UserProfifle {
   address     String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
-  User        User[]
+
+  User User?
 
   @@map("UserProfiles")
 }
@@ -51,16 +54,4 @@ model UserVerification {
   user User @relation(fields: [userId], references: [id])
 
   @@map("UserVerifications")
-}
-
-model UserToken {
-  id        String    @id
-  userId    String
-  token     String
-  createdAt DateTime  @default(now())
-  expiredAt DateTime?
-
-  user User @relation(fields: [userId], references: [id])
-
-  @@map("UserTokens")
 }

@@ -11,7 +11,6 @@ router.get(
     res.status(StatusCodes.OK).json({
       message: "Server APIs",
       status: "success",
-      code: StatusCodes.OK,
     });
   },
 );

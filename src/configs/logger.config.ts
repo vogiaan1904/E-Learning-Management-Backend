@@ -5,29 +5,35 @@ import winston, { format, transports } from "winston";
 
 const timestamp = formatDate(new Date(), "ddMMyyyy_HHmmss");
 
-const logger = winston.createLogger({
-  level: envConfig.LOG_LEVEL,
-  defaultMeta: { service: envConfig.NAME },
-  format: format.combine(
-    format.metadata(),
-    format.timestamp({
-      format: "YYYY-MM-DD HH:mm:ssA",
-    }),
-  ),
-  transports: [
-    new transports.Console({
-      format: format.combine(
-        format.colorize(),
-        format.simple(),
-        format.align(),
-        format.printf(({ timestamp, level, message, metadata }) => {
-          const { service, ...rest } = metadata;
-          return `[${timestamp}] ${uuidv4()} ${service} - ${level} : ${message} ${Object.keys(rest).length > 0 ? `,${JSON.stringify(rest)}` : ""}`;
-        }),
-      ),
-    }),
-  ],
-});
+export const createWinstonLogger = (section?: string) => {
+  return winston.createLogger({
+    level: envConfig.LOG_LEVEL,
+    defaultMeta: {
+      service: section ? `${envConfig.NAME} [${section}]` : envConfig.NAME,
+    },
+    format: format.combine(
+      format.metadata(),
+      format.timestamp({
+        format: "YYYY-MM-DD HH:mm:ssA",
+      }),
+    ),
+    transports: [
+      new transports.Console({
+        format: format.combine(
+          format.colorize(),
+          format.simple(),
+          format.align(),
+          format.printf(({ timestamp, level, message, metadata }) => {
+            const { service, ...rest } = metadata;
+            return `[${timestamp}] ${uuidv4()} ${service} - ${level} : ${message} ${Object.keys(rest).length > 0 ? `,${JSON.stringify(rest)}` : ""}`;
+          }),
+        ),
+      }),
+    ],
+  });
+};
+
+const logger = createWinstonLogger();
 
 if (envConfig.NODE_ENV === "production") {
   logger.add(
