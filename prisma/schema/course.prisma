@@ -68,9 +68,11 @@ model Quizz {
     id          String            @id @default(uuid())
     name        String
     description String
+    score       Int
     timeLimit   Int //minutes
     moduleId    String
     module      Module            @relation(fields: [moduleId], references: [id])
+    questions   Question[]
     submissions QuizzSubmission[]
     createdAt   DateTime          @default(now())
     updatedAt   DateTime          @default(now())
@@ -79,28 +81,32 @@ model Quizz {
 }
 
 model Question {
-    id                     String                  @id @default(uuid())
+    id                     String                 @id @default(uuid())
+    index                  Int
     content                String
-    shortAnswerQuestion    ShortAnswerQuesions?
-    multipleChoiceQuestion MultipleChoiceQuesions?
-    createdAt              DateTime                @default(now())
-    updatedAt              DateTime                @default(now())
+    score                  Int
+    quizzId                String
+    quizz                  Quizz                  @relation(fields: [quizzId], references: [id])
+    shortAnswerQuestion    ShortAnswerQuesion?
+    multipleChoiceQuestion MultipleChoiceQuesion?
+    createdAt              DateTime               @default(now())
+    updatedAt              DateTime               @default(now())
 
     @@map("Questions")
 }
 
-model ShortAnswerQuesions {
+model ShortAnswerQuesion {
     id         String   @id @default(uuid())
-    questionId String
+    questionId String   @unique
     question   Question @relation(fields: [questionId], references: [id])
     wordLimit  Int
 
     @@map("ShortAnswerQuestions")
 }
 
-model MultipleChoiceQuesions {
+model MultipleChoiceQuesion {
     id         String   @id @default(uuid())
-    questionId String
+    questionId String   @unique
     question   Question @relation(fields: [questionId], references: [id])
     options    Json // [
     // {content: "D...", isCorrect: false},

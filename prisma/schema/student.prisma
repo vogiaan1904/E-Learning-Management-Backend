@@ -9,13 +9,13 @@ model Enrollment {
     courseId         String
     student          Student           @relation(fields: [studentId], references: [userId])
     course           Course            @relation(fields: [courseId], references: [id])
-    enrolledAt       DateTime          @default(now())
-    cancelledAt      DateTime
     quizzSubmissions QuizzSubmission[]
     grade            Int
     feedback         String
     status           String
     completion       Int
+    enrolledAt       DateTime          @default(now())
+    cancelledAt      DateTime
 
     @@id([studentId, courseId])
     @@map("Enrollments")
@@ -23,9 +23,10 @@ model Enrollment {
 
 model QuizzSubmission {
     id                String             @id @default(uuid())
-    studentId         String
-    courseId          String
     quizzId           String
+    courseId          String
+    studentId         String
+    score             Int
     quizz             Quizz              @relation(fields: [quizzId], references: [id])
     status            SubmissionStatus   @default(UNFINISHED)
     enrollment        Enrollment         @relation(fields: [studentId, courseId], references: [studentId, courseId])
@@ -35,12 +36,11 @@ model QuizzSubmission {
 
 model SubmissionAnswer {
     id                String          @id @default(uuid())
-    questionAnswerId  String
-    questionAnswer    QuestionAnswer  @relation(fields: [questionAnswerId], references: [id])
+    // questionAnswerId  String
+    // questionAnswer    QuestionAnswer  @relation(fields: [questionAnswerId], references: [id])
     quizzSubmissionId String
     quizzSubmission   QuizzSubmission @relation(fields: [quizzSubmissionId], references: [id])
     createdAt         DateTime        @default(now())
-    updatedAt         DateTime        @default(now())
 
     @@map("submissionAnswers")
 }
