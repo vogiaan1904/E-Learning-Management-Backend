@@ -15,6 +15,7 @@ model User {
   updatedAt  DateTime  @default(now())
   deletedAt  DateTime?
   profileId  String
+
   userProfile      UserProfifle       @relation(fields: [profileId], references: [id], onDelete: Cascade)
   UserVerification UserVerification[]
   UserToken        UserToken[]
@@ -35,6 +36,7 @@ model UserProfifle {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
   User        User[]
+
   @@map("UserProfiles")
 }
 
