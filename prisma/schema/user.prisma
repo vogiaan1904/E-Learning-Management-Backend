@@ -14,7 +14,6 @@ model User {
   profileId        String             @unique
   userProfile      UserProfifle       @relation(fields: [profileId], references: [id], onDelete: Cascade)
   UserVerification UserVerification[]
-  UserToken        UserToken[]
   Student          Student?
   Teacher          Teacher?
 
@@ -53,16 +52,4 @@ model UserVerification {
   user User @relation(fields: [userId], references: [id])
 
   @@map("UserVerifications")
-}
-
-model UserToken {
-  id        String    @id
-  userId    String
-  token     String
-  createdAt DateTime  @default(now())
-  expiredAt DateTime?
-
-  user User @relation(fields: [userId], references: [id])
-
-  @@map("UserTokens")
 }
