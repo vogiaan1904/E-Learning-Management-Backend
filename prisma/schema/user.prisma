@@ -19,8 +19,6 @@ model User {
 
   userProfile      UserProfifle       @relation(fields: [profileId], references: [id], onDelete: Cascade)
   UserVerification UserVerification[]
-  Teacher          Teacher[]
-  Student          Student[]
 
   @@index([email, username, deletedAt])
   @@map("Users")
