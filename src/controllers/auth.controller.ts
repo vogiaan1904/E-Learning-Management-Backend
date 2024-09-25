@@ -1,5 +1,6 @@
 import { CustomError, envConfig } from "@/configs";
 import { createWinstonLogger } from "@/configs/logger.config";
+import authService from "@/services/auth.service";
 import redisService from "@/services/redis.service";
 import tokenService from "@/services/token.service";
 import userService from "@/services/user.service";
@@ -12,8 +13,7 @@ import {
 } from "@/types/auth";
 import { CustomRequest, CustomUserRequest } from "@/types/request";
 import { RefreshTokenProps } from "@/types/token";
-import { generateCustomAvatarUrl } from "@/utils/avatar";
-import { compareHashData, hashData } from "@/utils/bcrypt";
+import { compareHashData } from "@/utils/bcrypt";
 import { convertToMilliseconds, convertToSeconds } from "@/utils/date";
 import { generateMailOptions, sendMail } from "@/utils/mail";
 import { removeFieldsFromObject } from "@/utils/object";
@@ -21,7 +21,6 @@ import { isAfter } from "date-fns";
 import { NextFunction, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { v4 as uuidv4 } from "uuid";
-
 class authController {
   private readonly logger = createWinstonLogger(authController.name);
 
@@ -57,44 +56,7 @@ class authController {
     next: NextFunction,
   ) => {
     try {
-      const { username, password, email, firstName, lastName } = req.body;
-      const existedUser = await userService.getAUser({
-        username: username,
-        email: email,
-      });
-      if (existedUser) {
-        throw new CustomError(
-          "User is already existed. Please sign in",
-          StatusCodes.CONFLICT,
-        );
-      }
-      const userProfile = await userService.createAUserProfile({
-        firstName: firstName,
-        lastName: lastName,
-        avatar: generateCustomAvatarUrl(firstName, lastName),
-      });
-      const user = await userService.createAUser({
-        username: username,
-        email: email,
-        password: hashData(password),
-        profileId: userProfile.id,
-      });
-      const verificationCode = tokenService.generateVerificationCode();
-      const userVerification = await userService.createAUserVerification({
-        userId: user.id,
-        code: verificationCode,
-      });
-      const mailOptions = generateMailOptions({
-        receiverEmail: user.email,
-        subject: "Verification code",
-        template: "verification-code",
-        context: {
-          name: user.username,
-          activationCode: verificationCode,
-        },
-      });
-      await sendMail(mailOptions);
-      this.logger.info("New use sign up success");
+      const { userVerification } = await authService.signUp(req.body);
       return res.status(StatusCodes.CREATED).json({
         message:
           "Sign up success. Please check your email to verify the account",

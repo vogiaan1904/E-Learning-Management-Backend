@@ -1,9 +1,8 @@
 import { prisma } from "@/database/connect.db";
-import { Optional } from "@/types/object";
+import userRepo from "@/repositories/user.repo";
 import { hashData } from "@/utils/bcrypt";
-import { Prisma, User, UserProfifle, UserVerification } from "@prisma/client";
+import { Prisma, User, UserVerification } from "@prisma/client";
 import { addMinutes } from "date-fns";
-
 interface UserFields extends Omit<User, "id"> {}
 interface UserOptions {
   type?: "email" | "username" | "id";
@@ -25,8 +24,8 @@ class UserService {
   getAUser = async (fields: Prisma.UserWhereInput, options?: UserOptions) => {
     const { id, email, username } = fields;
     const { includeProfile } = options || {};
-    return await this.prismaClient.user.findFirst({
-      where: {
+    return await userRepo.getOne(
+      {
         OR: [
           {
             id: id,
@@ -39,24 +38,12 @@ class UserService {
           },
         ],
       },
-      include: {
-        userProfile: includeProfile || false,
+      {
+        include: {
+          userProfile: includeProfile,
+        },
       },
-    });
-  };
-
-  createAUser = async (
-    data: Optional<
-      Pick<
-        User,
-        "email" | "username" | "password" | "profileId" | "isVerified" | "role"
-      >,
-      "isVerified" | "role"
-    >,
-  ) => {
-    return await this.prismaClient.user.create({
-      data: data,
-    });
+    );
   };
 
   updateAUser = async (fields: Pick<User, "id">, user: Partial<UserFields>) => {
@@ -70,12 +57,8 @@ class UserService {
    * Model UserProfile
    */
 
-  createAUserProfile = async (
-    data: Pick<UserProfifle, "firstName" | "lastName" | "avatar">,
-  ) => {
-    return await this.prismaClient.userProfifle.create({
-      data: data,
-    });
+  createAUserProfile = async (data: Prisma.UserProfifleCreateInput) => {
+    return await userRepo.createProfile(data);
   };
 
   /**
