@@ -1,0 +1,140 @@
+enum LessonType {
+    VIDEO
+    BLOG
+}
+
+model Course {
+    id             String             @id @default(uuid())
+    name           String
+    teacherId      String
+    teacher        Teacher            @relation(fields: [teacherId], references: [userId])
+    description    String
+    isPublic       Boolean
+    modules        Module[]
+    categories     CourseToCategory[]
+    enrollments    Enrollment[]
+    numEnrollments Int
+    createdAt      DateTime           @default(now())
+    updatedAt      DateTime           @updatedAt
+
+    @@map("Courses")
+}
+
+model CourseCategory {
+    id           String             @id @default(uuid())
+    categoryType String
+    courses      CourseToCategory[]
+
+    @@map("CourseCategories")
+}
+
+model CourseToCategory {
+    courseId   String
+    categoryId String
+    course     Course         @relation(fields: [courseId], references: [id])
+    category   CourseCategory @relation(fields: [categoryId], references: [id])
+
+    @@id([courseId, categoryId])
+    @@map("CourseToCategories")
+}
+
+model Module {
+    id          String   @id @default(uuid())
+    name        String
+    description String
+    lessons     Lesson[]
+    numLessons  Int
+    quizzes     Quizz[]
+    courseId    String
+    course      Course   @relation(fields: [courseId], references: [id])
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now())
+
+    @@map("Modules")
+}
+
+model Lesson {
+    id          String @id @default(uuid())
+    name        Int
+    description String
+    moduleId    String
+    module      Module @relation(fields: [moduleId], references: [id])
+    content     Json
+
+    @@map("Lessons")
+}
+
+model Quizz {
+    id          String            @id @default(uuid())
+    name        String
+    description String
+    score       Int
+    timeLimit   Int //minutes
+    moduleId    String
+    module      Module            @relation(fields: [moduleId], references: [id])
+    questions   Question[]
+    submissions QuizzSubmission[]
+    createdAt   DateTime          @default(now())
+    updatedAt   DateTime          @default(now())
+
+    @@map("Quizzes")
+}
+
+model Question {
+    id                     String                 @id @default(uuid())
+    index                  Int
+    content                String
+    score                  Int
+    quizzId                String
+    quizz                  Quizz                  @relation(fields: [quizzId], references: [id])
+    shortAnswerQuestion    ShortAnswerQuesion?
+    multipleChoiceQuestion MultipleChoiceQuesion?
+    createdAt              DateTime               @default(now())
+    updatedAt              DateTime               @default(now())
+
+    @@map("Questions")
+}
+
+model ShortAnswerQuesion {
+    id         String   @id @default(uuid())
+    questionId String   @unique
+    question   Question @relation(fields: [questionId], references: [id])
+    wordLimit  Int
+
+    @@map("ShortAnswerQuestions")
+}
+
+model MultipleChoiceQuesion {
+    id         String   @id @default(uuid())
+    questionId String   @unique
+    question   Question @relation(fields: [questionId], references: [id])
+    options    Json // [
+    // {content: "D...", isCorrect: false},
+    // {content: "B...", isCorrect: false},
+    // {content: "A...", isCorrect: false}
+    // ]
+
+    correctOption Json // {content: "C...", isCorrect: true}
+
+    @@map("MultipleChoiceQuestions")
+}
+
+// model QuestionAnswer {
+//     id                String             @id @default(uuid())
+//     quizzId           String
+//     questionId        String
+//     quizz             Quizz              @relation(fields: [quizzId], references: [id])
+//     question          Question           @relation(fields: [questionId], references: [id])
+//     isCorrect         Boolean            @default(false)
+//     content           String?
+//     submissionAnswers SubmissionAnswer[]
+//     createdAt         DateTime           @default(now())
+//     updatedAt         DateTime           @default(now())
+
+//     @@map("QuestionAnswers")
+// }
+
+enum QuestionType {
+    MUTIPLE_CHOICE
+    TEXT
+}
