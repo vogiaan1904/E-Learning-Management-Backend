@@ -47,10 +47,7 @@ class UserService {
   };
 
   updateAUser = async (fields: Pick<User, "id">, user: Partial<UserFields>) => {
-    return await this.prismaClient.user.update({
-      where: fields,
-      data: user,
-    });
+    return await userRepo.update(fields, user);
   };
 
   /**
@@ -66,9 +63,7 @@ class UserService {
    */
 
   getAUserVerification = async (fields: Pick<UserVerification, "id">) => {
-    return await this.prismaClient.userVerification.findUnique({
-      where: fields,
-    });
+    return await userRepo.getVerification(fields);
   };
 
   createAUserVerification = async (
@@ -80,13 +75,11 @@ class UserService {
     const now = new Date();
     const { userId, code } = data;
     const expiredAt = options?.customExpriredDate || addMinutes(now, 5);
-    return await this.prismaClient.userVerification.create({
-      data: {
-        userId: userId,
-        code: hashData(code),
-        expiredAt: expiredAt,
-        updatedAt: now,
-      },
+    return await userRepo.createVerification({
+      userId: userId,
+      code: hashData(code),
+      expiredAt: expiredAt,
+      updatedAt: now,
     });
   };
 
@@ -99,30 +92,24 @@ class UserService {
     const now = new Date();
     const { id, code } = data;
     const expiredAt = options?.customExpriredDate || addMinutes(now, 5);
-    return await this.prismaClient.userVerification.update({
-      where: {
-        id: id,
-      },
-      data: {
+    return await userRepo.updateVerification(
+      { id },
+      {
         code: hashData(code),
         expiredAt: expiredAt,
         updatedAt: now,
       },
-    });
+    );
   };
 
   deleteAUserVerification = async (fields: Pick<UserVerification, "id">) => {
-    return await this.prismaClient.userVerification.delete({
-      where: fields,
-    });
+    return await userRepo.deleteVerification(fields);
   };
 
   deleteUserVerifications = async (
     fields: Prisma.UserVerificationWhereInput,
   ) => {
-    return await this.prismaClient.userVerification.deleteMany({
-      where: fields,
-    });
+    return await userRepo.deleteVerifications(fields);
   };
 }
 

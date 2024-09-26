@@ -78,60 +78,9 @@ class authController {
     next: NextFunction,
   ) => {
     try {
-      const { email, username, password, method } = req.body;
-      const user = await userService.getAUser({
-        email: method === "email" ? email : "",
-        username: method === "username" ? username : "",
-      });
-      if (!user) {
-        throw new CustomError(
-          "User not found. Please sign up",
-          StatusCodes.NOT_FOUND,
-        );
-      }
-      if (!compareHashData(password, user.password)) {
-        throw new CustomError("Invalid credentials", StatusCodes.UNAUTHORIZED);
-      }
-      if (!user.isVerified) {
-        const verificationCode = tokenService.generateVerificationCode();
-        const userVerification = await userService.createAUserVerification({
-          userId: user.id,
-          code: verificationCode,
-        });
-        const mailOptions = generateMailOptions({
-          receiverEmail: user.email,
-          subject: "Verification code",
-          template: "verification-code",
-          context: {
-            name: user.username,
-            activationCode: verificationCode,
-          },
-        });
-        await sendMail(mailOptions);
-        return res.status(StatusCodes.UNAUTHORIZED).json({
-          userVerification: {
-            id: userVerification.id,
-            userId: userVerification.userId,
-          },
-          message:
-            "User is not verified. Please check your email to verify the account.",
-          status: "failed",
-        });
-      }
-      const tokens = await tokenService.getJwtTokens({
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        tokenId: uuidv4(),
-      });
-      await redisService.setKey(
-        tokenService.generateUserSessionKey(tokens.tokenId),
-        tokens.refreshToken,
-        convertToSeconds(envConfig.REFRESH_TOKEN_EXPIRED),
-      );
-      this.logger.info("User sign in success");
+      const result = await authService.signIn(req.body);
       return res
-        .cookie("refreshToken", tokens.refreshToken, {
+        .cookie("refreshToken", result.tokens.refreshToken, {
           httpOnly: false,
           secure: false,
           path: "/",
@@ -142,7 +91,7 @@ class authController {
         .status(StatusCodes.OK)
         .json({
           tokens: {
-            ...removeFieldsFromObject(tokens, ["tokenId"]),
+            ...removeFieldsFromObject(result.tokens, ["tokenId"]),
           },
           message: "Sign in success",
           status: "success",

@@ -1,6 +1,17 @@
-import { PrismaClient, Prisma, UserProfifle } from "@prisma/client";
-import { User } from "@prisma/client";
+import {
+  Prisma,
+  PrismaClient,
+  User,
+  UserProfifle,
+  UserVerification,
+} from "@prisma/client";
 
+export interface UserVerificationInterface {
+  userId: string;
+  code: string;
+  expiredAt: Date;
+  updatedAt: Date;
+}
 const prisma = new PrismaClient();
 class UserRepository {
   async create(data: Prisma.UserCreateInput): Promise<User> {
@@ -61,6 +72,56 @@ class UserRepository {
       where: filter,
     });
     return deletedUser;
+  }
+
+  async createVerification(
+    data: UserVerificationInterface,
+    options?: object,
+  ): Promise<UserVerification> {
+    const userVerification = await prisma.userVerification.create({
+      data,
+      ...options,
+    });
+    return userVerification;
+  }
+
+  async getVerification(
+    filter: Prisma.UserVerificationWhereInput,
+  ): Promise<UserVerification | null> {
+    const userVerification = await prisma.userVerification.findFirst({
+      where: filter,
+    });
+    return userVerification;
+  }
+
+  async updateVerification(
+    filter: Prisma.UserVerificationWhereUniqueInput,
+    data: Prisma.UserVerificationUpdateInput,
+  ): Promise<UserVerification> {
+    const userVerification = await prisma.userVerification.update({
+      where: filter,
+      data: data,
+    });
+    return userVerification;
+  }
+
+  async deleteVerification(
+    filter: Prisma.UserVerificationWhereUniqueInput,
+  ): Promise<UserVerification> {
+    const userVerification = await prisma.userVerification.delete({
+      where: filter,
+    });
+
+    return userVerification;
+  }
+
+  async deleteVerifications(
+    filter: Prisma.UserVerificationWhereInput,
+  ): Promise<{ count: number }> {
+    const result = await prisma.userVerification.deleteMany({
+      where: filter,
+    });
+    return result;
   }
 }
 
