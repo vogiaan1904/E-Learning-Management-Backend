@@ -1,16 +1,23 @@
 import { CustomError, createWinstonLogger, envConfig } from "@/configs";
 import userRepo from "@/repositories/user.repo";
-import { SignInProps, SignUpProps } from "@/types/auth";
+import {
+  SendCodeProps,
+  SignInProps,
+  SignUpProps,
+  VerifyCodeProps,
+} from "@/types/auth";
+import { RefreshTokenProps } from "@/types/token";
 import { generateCustomAvatarUrl } from "@/utils/avatar";
 import { compareHashData, hashData } from "@/utils/bcrypt";
+import { convertToSeconds } from "@/utils/date";
 import { generateMailOptions, sendMail } from "@/utils/mail";
 import { Role } from "@prisma/client";
+import { isAfter } from "date-fns";
 import { StatusCodes } from "http-status-codes";
+import { v4 as uuidv4 } from "uuid";
+import redisService from "./redis.service";
 import tokenService from "./token.service";
 import userService from "./user.service";
-import redisService from "./redis.service";
-import { convertToSeconds } from "@/utils/date";
-import { v4 as uuidv4 } from "uuid";
 
 class AuthService {
   private readonly logger = createWinstonLogger(AuthService.name);
@@ -146,6 +153,145 @@ class AuthService {
     return {
       tokens,
     };
+  }
+
+  async sendCode(data: SendCodeProps) {
+    const { id, userId } = data;
+    const user = await userService.getAUser({
+      id: userId,
+    });
+    if (!user) {
+      throw new CustomError(
+        "User not found. Please sign up",
+        StatusCodes.NOT_FOUND,
+      );
+    }
+    if (user.isVerified) {
+      throw new CustomError(
+        "User is already verified",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+    const userVerification = await userService.getAUserVerification({
+      id: id,
+    });
+    if (!userVerification) {
+      throw new CustomError(
+        "User verification not found",
+        StatusCodes.NOT_FOUND,
+      );
+    }
+    const verificationCode = tokenService.generateVerificationCode();
+    await userService.updateAUserVerification({
+      id: id,
+      code: verificationCode,
+    });
+    const mailOptions = generateMailOptions({
+      receiverEmail: user.email,
+      subject: "Verification code",
+      template: "verification-code",
+      context: {
+        name: user.username,
+        activationCode: verificationCode,
+      },
+    });
+    await sendMail(mailOptions);
+    this.logger.info("Send code to user success");
+    return {
+      message: "Please check your email to verify the account",
+      status: "failed",
+    };
+  }
+
+  async verifyCode(data: VerifyCodeProps) {
+    const { id, code, userId } = data;
+    const user = await userService.getAUser({
+      id: userId,
+    });
+    if (!user) {
+      throw new CustomError(
+        "User not found. Please sign up",
+        StatusCodes.NOT_FOUND,
+      );
+    }
+    if (user.isVerified) {
+      throw new CustomError(
+        "User is already verified",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+    const userVerification = await userService.getAUserVerification({
+      id: id,
+    });
+    if (!userVerification) {
+      throw new CustomError(
+        "User verification not found",
+        StatusCodes.NOT_FOUND,
+      );
+    }
+    const requestTime = new Date();
+    if (isAfter(requestTime, userVerification.expiredAt || Date.now())) {
+      throw new CustomError(
+        "Verification code is expired",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+    if (!compareHashData(code, userVerification.code)) {
+      throw new CustomError(
+        "Verification code is wrong",
+        StatusCodes.UNAUTHORIZED,
+      );
+    }
+    await userService.updateAUser(
+      {
+        id: userVerification.userId,
+      },
+      {
+        isVerified: true,
+      },
+    );
+    await userService.deleteAUserVerification({
+      id: userVerification.id,
+    });
+    const tokens = await tokenService.getJwtTokens({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      tokenId: uuidv4(),
+    });
+    await redisService.setKey(
+      tokenService.generateUserSessionKey(tokens.tokenId),
+      tokens.refreshToken,
+      convertToSeconds(envConfig.REFRESH_TOKEN_EXPIRED),
+    );
+    this.logger.info("User verify success");
+    return { tokens };
+  }
+
+  async refreshToken(data: RefreshTokenProps) {
+    const { sub, tokenId, email, role } = data;
+    const foundUser = await userService.getAUser({
+      id: sub,
+    });
+    if (!foundUser) {
+      throw new CustomError("User not found", StatusCodes.NOT_FOUND);
+    }
+    const foundToken = await redisService.getKey(
+      tokenService.generateUserSessionKey(tokenId),
+    );
+    if (!foundToken) {
+      throw new CustomError("Refresh token not found", StatusCodes.NOT_FOUND);
+    }
+    const accessToken = await tokenService.generateJwtToken(
+      {
+        id: sub,
+        tokenId: tokenId,
+        email: email,
+        role: role,
+      },
+      "at",
+    );
+    return { accessToken };
   }
 }
 

@@ -1,8 +1,6 @@
-import { CustomError, envConfig } from "@/configs";
+import { envConfig } from "@/configs";
 import { createWinstonLogger } from "@/configs/logger.config";
 import authService from "@/services/auth.service";
-import redisService from "@/services/redis.service";
-import tokenService from "@/services/token.service";
 import userService from "@/services/user.service";
 import {
   FacebookProfileProps,
@@ -13,14 +11,10 @@ import {
 } from "@/types/auth";
 import { CustomRequest, CustomUserRequest } from "@/types/request";
 import { RefreshTokenProps } from "@/types/token";
-import { compareHashData } from "@/utils/bcrypt";
-import { convertToMilliseconds, convertToSeconds } from "@/utils/date";
-import { generateMailOptions, sendMail } from "@/utils/mail";
+import { convertToMilliseconds } from "@/utils/date";
 import { removeFieldsFromObject } from "@/utils/object";
-import { isAfter } from "date-fns";
 import { NextFunction, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { v4 as uuidv4 } from "uuid";
 class authController {
   private readonly logger = createWinstonLogger(authController.name);
 
@@ -124,51 +118,8 @@ class authController {
     next: NextFunction,
   ) => {
     try {
-      const { id, userId } = req.body;
-      const user = await userService.getAUser({
-        id: userId,
-      });
-      if (!user) {
-        throw new CustomError(
-          "User not found. Please sign up",
-          StatusCodes.NOT_FOUND,
-        );
-      }
-      if (user.isVerified) {
-        throw new CustomError(
-          "User is already verified",
-          StatusCodes.BAD_REQUEST,
-        );
-      }
-      const userVerification = await userService.getAUserVerification({
-        id: id,
-      });
-      if (!userVerification) {
-        throw new CustomError(
-          "User verification not found",
-          StatusCodes.NOT_FOUND,
-        );
-      }
-      const verificationCode = tokenService.generateVerificationCode();
-      await userService.updateAUserVerification({
-        id: id,
-        code: verificationCode,
-      });
-      const mailOptions = generateMailOptions({
-        receiverEmail: user.email,
-        subject: "Verification code",
-        template: "verification-code",
-        context: {
-          name: user.username,
-          activationCode: verificationCode,
-        },
-      });
-      await sendMail(mailOptions);
-      this.logger.info("Send code to user success");
-      return res.status(StatusCodes.OK).json({
-        message: "Please check your email to verify the account",
-        status: "failed",
-      });
+      const result = await authService.sendCode(req.body);
+      return res.status(StatusCodes.OK).json(result);
     } catch (error) {
       this.logger.error(error);
       next(error);
@@ -181,69 +132,9 @@ class authController {
     next: NextFunction,
   ) => {
     try {
-      const { id, code, userId } = req.body;
-      const user = await userService.getAUser({
-        id: userId,
-      });
-      if (!user) {
-        throw new CustomError(
-          "User not found. Please sign up",
-          StatusCodes.NOT_FOUND,
-        );
-      }
-      if (user.isVerified) {
-        throw new CustomError(
-          "User is already verified",
-          StatusCodes.BAD_REQUEST,
-        );
-      }
-      const userVerification = await userService.getAUserVerification({
-        id: id,
-      });
-      if (!userVerification) {
-        throw new CustomError(
-          "User verification not found",
-          StatusCodes.NOT_FOUND,
-        );
-      }
-      const requestTime = new Date();
-      if (isAfter(requestTime, userVerification.expiredAt || Date.now())) {
-        throw new CustomError(
-          "Verification code is expired",
-          StatusCodes.BAD_REQUEST,
-        );
-      }
-      if (!compareHashData(code, userVerification.code)) {
-        throw new CustomError(
-          "Verification code is wrong",
-          StatusCodes.UNAUTHORIZED,
-        );
-      }
-      await userService.updateAUser(
-        {
-          id: userVerification.userId,
-        },
-        {
-          isVerified: true,
-        },
-      );
-      await userService.deleteAUserVerification({
-        id: userVerification.id,
-      });
-      const tokens = await tokenService.getJwtTokens({
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        tokenId: uuidv4(),
-      });
-      await redisService.setKey(
-        tokenService.generateUserSessionKey(tokens.tokenId),
-        tokens.refreshToken,
-        convertToSeconds(envConfig.REFRESH_TOKEN_EXPIRED),
-      );
-      this.logger.info("User verify success");
+      const result = await authService.verifyCode(req.body);
       return res
-        .cookie("refreshToken", tokens.refreshToken, {
+        .cookie("refreshToken", result.tokens.refreshToken, {
           httpOnly: false,
           secure: false,
           path: "/",
@@ -254,7 +145,7 @@ class authController {
         .status(StatusCodes.OK)
         .json({
           tokens: {
-            ...removeFieldsFromObject(tokens, ["tokenId"]),
+            ...removeFieldsFromObject(result.tokens, ["tokenId"]),
           },
           message: "Verify success",
           status: "success",
@@ -271,31 +162,10 @@ class authController {
     next: NextFunction,
   ) => {
     try {
-      const { sub, tokenId, email, role } = req.body;
-      const foundUser = await userService.getAUser({
-        id: sub,
-      });
-      if (!foundUser) {
-        throw new CustomError("User not found", StatusCodes.NOT_FOUND);
-      }
-      const foundToken = await redisService.getKey(
-        tokenService.generateUserSessionKey(tokenId),
-      );
-      if (!foundToken) {
-        throw new CustomError("Refresh token not found", StatusCodes.NOT_FOUND);
-      }
-      const accessToken = await tokenService.generateJwtToken(
-        {
-          id: sub,
-          tokenId: tokenId,
-          email: email,
-          role: role,
-        },
-        "at",
-      );
+      const result = await authService.refreshToken(req.body);
       return res.status(StatusCodes.OK).json({
         tokens: {
-          accessToken: accessToken,
+          accessToken: result.accessToken,
         },
         message: "Refresh token success",
         status: "success",
