@@ -1,9 +1,8 @@
 import { prisma } from "@/database/connect.db";
-import { Optional } from "@/types/object";
+import userRepo from "@/repositories/user.repo";
 import { hashData } from "@/utils/bcrypt";
-import { Prisma, User, UserProfifle, UserVerification } from "@prisma/client";
+import { Prisma, User, UserVerification } from "@prisma/client";
 import { addMinutes } from "date-fns";
-
 interface UserFields extends Omit<User, "id"> {}
 interface UserOptions {
   type?: "email" | "username" | "id";
@@ -25,8 +24,8 @@ class UserService {
   getAUser = async (fields: Prisma.UserWhereInput, options?: UserOptions) => {
     const { id, email, username } = fields;
     const { includeProfile } = options || {};
-    return await this.prismaClient.user.findFirst({
-      where: {
+    return await userRepo.getOne(
+      {
         OR: [
           {
             id: id,
@@ -39,43 +38,24 @@ class UserService {
           },
         ],
       },
-      include: {
-        userProfile: includeProfile || false,
+      {
+        include: {
+          userProfile: includeProfile,
+        },
       },
-    });
-  };
-
-  createAUser = async (
-    data: Optional<
-      Pick<
-        User,
-        "email" | "username" | "password" | "profileId" | "isVerified" | "role"
-      >,
-      "isVerified" | "role"
-    >,
-  ) => {
-    return await this.prismaClient.user.create({
-      data: data,
-    });
+    );
   };
 
   updateAUser = async (fields: Pick<User, "id">, user: Partial<UserFields>) => {
-    return await this.prismaClient.user.update({
-      where: fields,
-      data: user,
-    });
+    return await userRepo.update(fields, user);
   };
 
   /**
    * Model UserProfile
    */
 
-  createAUserProfile = async (
-    data: Pick<UserProfifle, "firstName" | "lastName" | "avatar">,
-  ) => {
-    return await this.prismaClient.userProfifle.create({
-      data: data,
-    });
+  createAUserProfile = async (data: Prisma.UserProfifleCreateInput) => {
+    return await userRepo.createProfile(data);
   };
 
   /**
@@ -83,9 +63,7 @@ class UserService {
    */
 
   getAUserVerification = async (fields: Pick<UserVerification, "id">) => {
-    return await this.prismaClient.userVerification.findUnique({
-      where: fields,
-    });
+    return await userRepo.getVerification(fields);
   };
 
   createAUserVerification = async (
@@ -97,13 +75,11 @@ class UserService {
     const now = new Date();
     const { userId, code } = data;
     const expiredAt = options?.customExpriredDate || addMinutes(now, 5);
-    return await this.prismaClient.userVerification.create({
-      data: {
-        userId: userId,
-        code: hashData(code),
-        expiredAt: expiredAt,
-        updatedAt: now,
-      },
+    return await userRepo.createVerification({
+      userId: userId,
+      code: hashData(code),
+      expiredAt: expiredAt,
+      updatedAt: now,
     });
   };
 
@@ -116,30 +92,24 @@ class UserService {
     const now = new Date();
     const { id, code } = data;
     const expiredAt = options?.customExpriredDate || addMinutes(now, 5);
-    return await this.prismaClient.userVerification.update({
-      where: {
-        id: id,
-      },
-      data: {
+    return await userRepo.updateVerification(
+      { id },
+      {
         code: hashData(code),
         expiredAt: expiredAt,
         updatedAt: now,
       },
-    });
+    );
   };
 
   deleteAUserVerification = async (fields: Pick<UserVerification, "id">) => {
-    return await this.prismaClient.userVerification.delete({
-      where: fields,
-    });
+    return await userRepo.deleteVerification(fields);
   };
 
   deleteUserVerifications = async (
     fields: Prisma.UserVerificationWhereInput,
   ) => {
-    return await this.prismaClient.userVerification.deleteMany({
-      where: fields,
-    });
+    return await userRepo.deleteVerifications(fields);
   };
 }
 

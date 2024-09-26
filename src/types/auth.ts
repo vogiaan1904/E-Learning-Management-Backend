@@ -12,7 +12,7 @@ export interface SignInProps
 export interface SignUpProps
   extends Pick<
     User & UserProfifle,
-    "username" | "password" | "email" | "firstName" | "lastName"
+    "username" | "password" | "email" | "firstName" | "lastName" | "role"
   > {}
 
 export interface SendCodeProps
