@@ -9,11 +9,11 @@ model Course {
     teacherId      String
     teacher        Teacher            @relation(fields: [teacherId], references: [userId])
     description    String
-    isPublic       Boolean
+    isPublic       Boolean            @default(true)
     modules        Module[]
     categories     CourseToCategory[]
     enrollments    Enrollment[]
-    numEnrollments Int
+    numEnrollments Int                @default(0)
     createdAt      DateTime           @default(now())
     updatedAt      DateTime           @updatedAt
 

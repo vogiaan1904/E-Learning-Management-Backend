@@ -17,4 +17,4 @@ export interface UpdateUsersProps {
   data: Array<User>;
 }
 
-export interface UpdateUserProps extends Partial<User> {}
+export interface UpdateUserProps extends Partial<User & UserProfifle> {}
