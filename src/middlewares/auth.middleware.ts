@@ -49,7 +49,7 @@ export const refreshTokenMiddleware = async (
       refreshToken,
       envConfig.REFRESH_TOKEN_SECRET,
     );
-    req.body = data;
+    req.user = data;
     next();
   } catch (error) {
     next(error);
