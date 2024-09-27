@@ -1,5 +1,5 @@
 import { passwordRegex } from "@/types/regex";
-import { UpdateUserProps } from "@/types/user";
+import { CreateUserProps, UpdateUserProps } from "@/types/user";
 import Joi from "joi";
 
 export const UpdateUserSchema = Joi.object<UpdateUserProps>()
@@ -15,3 +15,11 @@ export const UpdateUserSchema = Joi.object<UpdateUserProps>()
     avatar: Joi.string().optional(),
   })
   .min(1);
+
+export const CreateUserSchema = Joi.object<CreateUserProps>().keys({
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  username: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().regex(passwordRegex).required(),
+});

@@ -1,6 +1,7 @@
 import { routesConfig } from "@/configs";
 import authController from "@/controllers/auth.controller";
 import {
+  accessTokenMiddleware,
   preSignInMiddleware,
   refreshTokenMiddleware,
 } from "@/middlewares/auth.middleware";
@@ -87,7 +88,7 @@ router.get(
   },
 );
 
-router.get("/me", (req, res) => {
+router.get(authRoute.me, accessTokenMiddleware, (req, res) => {
   res.status(StatusCodes.OK).json({
     ...req.user,
   });

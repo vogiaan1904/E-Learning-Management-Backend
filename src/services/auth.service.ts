@@ -151,6 +151,7 @@ class AuthService {
     this.logger.info("User sign in success");
 
     return {
+      user,
       tokens,
     };
   }

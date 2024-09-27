@@ -2,6 +2,7 @@ import { DefaultRouteProps } from "@/types/routes/default";
 
 interface UserRouteProps extends DefaultRouteProps {
   getUsers: string;
+  createUser: string;
   createUsers: string;
   updateUsers: string;
   deleteUsers: string;
@@ -11,14 +12,15 @@ interface UserRouteProps extends DefaultRouteProps {
 }
 
 export const userRoute: UserRouteProps = {
-  index: "/users",
+  index: "/user",
   default: "/",
   status: "/api-status",
-  getUsers: "/",
-  createUsers: "/many",
-  updateUsers: "/many",
-  deleteUsers: "/many",
   getUser: "/:id",
+  getUsers: "/",
+  createUser: "/",
+  createUsers: "/many",
   updateUser: "/:id",
+  updateUsers: "/many",
   deleteUser: "/:id",
+  deleteUsers: "/many",
 };

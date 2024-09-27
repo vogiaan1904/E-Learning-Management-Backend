@@ -84,6 +84,9 @@ class authController {
         })
         .status(StatusCodes.OK)
         .json({
+          user: {
+            ...removeFieldsFromObject(result.user, ["password"]),
+          },
           tokens: {
             ...removeFieldsFromObject(result.tokens, ["tokenId"]),
           },

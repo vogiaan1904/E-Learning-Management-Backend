@@ -1,1 +1,1 @@
-export const unallowedRoles = ["users"];
+export const unallowedRoles = ["user", "teacher"];

@@ -1,0 +1,116 @@
+paths: 
+  /user/api-status:
+    get:
+      tags:
+        - User
+      summary: Check user APIs status
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserStatus"
+  /users/{id}:
+    patch:
+      tags:
+        - User
+      summary: Update a user's details
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The user's ID
+      requestBody:
+        description: Fields to update for the user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqUpdateUser"
+      responses:
+        200:
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUpdateUser"
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    ReqUpdateUser:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "acus@example.com"
+        username:
+          type: string
+          description: User's username
+          example: "acus"
+        password:
+          type: string
+          description: New password for the user (if updating)
+          example: "newpassword123"
+        role:
+          type: string
+          description: Role of the user
+          example: "ADMIN"
+          enum: 
+            - USER
+            - ADMIN
+        isVerified:
+          type: boolean
+          description: Whether the user's email is verified
+          example: true
+    ResUpdateUser:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "User updated successfully"
+        user:
+          $ref: "#/components/schemas/User"
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+        isVerified:
+          type: boolean
+        userProfileId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string

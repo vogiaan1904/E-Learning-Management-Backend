@@ -22,6 +22,7 @@ model User {
   userProfile      UserProfifle       @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
   student          Student?
   teacher          Teacher?
+  admin            Admin?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())

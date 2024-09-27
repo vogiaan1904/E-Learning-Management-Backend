@@ -2,6 +2,7 @@ import { routesConfig } from "@/configs";
 import { authApis } from "@/routes/auth.route";
 import { serverApis } from "@/routes/server.route";
 import { Router } from "express";
+import { userApis } from "./user.route";
 
 interface ConfigsProps {
   index: string;
@@ -18,6 +19,10 @@ const apiConfigs: ConfigsProps[] = [
   {
     index: routesConfig.authRoute.index,
     api: authApis,
+  },
+  {
+    index: routesConfig.userRoute.index,
+    api: userApis,
   },
 ];
 

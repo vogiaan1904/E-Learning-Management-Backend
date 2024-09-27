@@ -73,7 +73,8 @@ export const accessTokenMiddleware = async (
       accessToken,
       envConfig.ACCESS_TOKEN_SECRET,
     );
-    req.body = data;
+    console.log(data);
+    req.user = data;
     next();
   } catch (error) {
     next(error);

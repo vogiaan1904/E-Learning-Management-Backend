@@ -1,7 +1,7 @@
 import { createWinstonLogger } from "@/configs";
 import userService from "@/services/user.service";
 import { CustomRequest } from "@/types/request";
-import { UpdateUserProps } from "@/types/user";
+import { CreateUserProps, GetUserProps, UpdateUserProps } from "@/types/user";
 import { NextFunction, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
@@ -9,6 +9,23 @@ class userController {
   private readonly logger = createWinstonLogger(userController.name);
 
   constructor() {}
+
+  createAUser = async (
+    req: CustomRequest<CreateUserProps>,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const user = await userService.createAUser(req.body);
+      return res.status(StatusCodes.OK).json({
+        message: "Get user successfully",
+        data: user,
+      });
+    } catch (error) {
+      this.logger.error(error);
+      next(error);
+    }
+  };
 
   updateUser = async (
     req: CustomRequest<UpdateUserProps>,
@@ -31,6 +48,23 @@ class userController {
       return res.status(StatusCodes.OK).json({
         message: "User updated successfully",
         data: result,
+      });
+    } catch (error) {
+      this.logger.error(error);
+      next(error);
+    }
+  };
+
+  getUser = async (
+    req: CustomRequest<GetUserProps>,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const user = await userService.getAUser(req.body);
+      return res.status(StatusCodes.OK).json({
+        message: "Get user successfully",
+        data: user,
       });
     } catch (error) {
       this.logger.error(error);
