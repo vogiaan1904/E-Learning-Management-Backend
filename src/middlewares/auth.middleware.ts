@@ -1,13 +1,14 @@
 import { CustomError, envConfig } from "@/configs";
+import userRepo from "@/repositories/user.repo";
 import tokenService from "@/services/token.service";
 import { PreSigninProps, SignInProps } from "@/types/auth";
 import { CustomRequest } from "@/types/request";
 import { AccessTokenProps, RefreshTokenProps } from "@/types/token";
+import { removeFieldsFromObject } from "@/utils/object";
 import { validateEmail } from "@/utils/validate";
 import { NextFunction, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { v4 as uuidv4 } from "uuid";
-
 // Prioritize signing in by email
 export const preSignInMiddleware = (
   req: CustomRequest<PreSigninProps | SignInProps>,
@@ -73,8 +74,11 @@ export const accessTokenMiddleware = async (
       accessToken,
       envConfig.ACCESS_TOKEN_SECRET,
     );
-    console.log(data);
-    req.user = data;
+    const user = await userRepo.getOne({ email: data.email });
+    if (!user) {
+      throw new CustomError("User not found", StatusCodes.BAD_REQUEST);
+    }
+    req.user = removeFieldsFromObject(user, ["password"]);
     next();
   } catch (error) {
     next(error);

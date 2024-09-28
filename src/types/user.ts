@@ -1,12 +1,16 @@
-import { User, UserProfifle } from "@prisma/client";
+import { Role, User, UserProfifle } from "@prisma/client";
 
-export interface CreateUserProps
-  extends Pick<
-    User & UserProfifle,
-    "username" | "password" | "email" | "firstName" | "lastName" | "role"
-  > {}
+export interface CreateUserProps {
+  firstName: string;
+  lastName: string;
+  username: string;
+  password: string;
+  email: string;
+  role: Role;
+}
 
 export interface GetUserProps extends Pick<User, "email" | "id" | "username"> {}
+
 export interface CreateUsersProps {
   data: Array<CreateUserProps>;
 }

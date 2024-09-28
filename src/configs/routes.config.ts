@@ -13,8 +13,8 @@ export const routesConfig = {
   },
   apis: "/api/v1",
   serverRoutes: serverRoutes,
-  userRoute: userRoute,
   serviceRoutes: serviceRoutes,
   authRoute: authRoute,
+  userRoute: userRoute,
   courseRoute: courseRoute,
 } as const;

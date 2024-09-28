@@ -1,5 +1,5 @@
 paths: 
-  /user/api-status:
+  /users/api-status:
     get:
       tags:
         - User
@@ -42,13 +42,43 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/ResUserError"
         400:
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/ResUserError"
+  /users:
+    post:
+      tags:
+        - User
+      summary: Create a user
+      requestBody:
+        description: Request body (Include role)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqCreateUser"
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateUser"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
 components:
   schemas:
     ReqUpdateUser:
@@ -84,9 +114,11 @@ components:
         message:
           type: string
           example: "User updated successfully"
+        status:
+          type: string
         user:
           $ref: "#/components/schemas/User"
-    User:
+    ResGetUser:
       type: object
       properties:
         id:
@@ -107,7 +139,55 @@ components:
         updatedAt:
           type: string
           format: date-time
-    ErrorResponse:
+    ReqCreateUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "Gia Phuc"
+        lastName:
+          type: string
+          example: "Pham"
+        username:
+          type: string
+          example: "acus"
+        email: 
+          type: string
+          example: "acuscodinghcm@gmail.com"
+        password:
+          type: string
+          example: "acus123"
+        role:
+          type: string
+          example: "teacher"
+    ResCreateUser:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            firstName:
+              type: string
+              example: "Gia Phuc"
+            lastName:
+              type: string
+              example: "Pham"
+            username:
+              type: string
+              example: "acus"
+            email: 
+              type: string
+              example: "acuscodinghcm@gmail.com"
+            role:
+              type: string
+              example: "acus123"
+    ResUserError:
       type: object
       properties:
         message:

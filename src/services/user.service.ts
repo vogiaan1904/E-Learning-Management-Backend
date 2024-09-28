@@ -28,14 +28,7 @@ class UserService {
   createAUser = async (userData: CreateUserProps) => {
     const { username, password, email, firstName, lastName, role } = userData;
     const existedUser = await userRepo.getOne({
-      OR: [
-        {
-          email: email,
-        },
-        {
-          username: username,
-        },
-      ],
+      OR: [{ email }, { username }],
     });
     if (existedUser) {
       throw new CustomError(
@@ -44,26 +37,14 @@ class UserService {
       );
     }
 
-    const userRoleData = {};
-    if (role === Role.teacher.toString()) {
-      Object.assign(userRoleData, {
-        teacher: {
-          create: {},
-        },
-      });
-    } else if (role === Role.admin.toString()) {
-      Object.assign(userRoleData, {
-        admin: {
-          create: {},
-        },
-      });
-    } else {
-      Object.assign(userRoleData, {
-        student: {
-          create: {},
-        },
-      });
-    }
+    const userRoleData = {
+      [Role.teacher]: { teacher: { create: {} } },
+      [Role.admin]: { admin: { create: {} } },
+      [Role.user]: { student: { create: {} } },
+    };
+
+    const userRole = role in userRoleData ? role : Role.user;
+
     const user = await userRepo.create({
       // nested creattion all sub tables, (userProfile, Student or Teacher)
       username: username,
@@ -77,9 +58,10 @@ class UserService {
           avatar: generateCustomAvatarUrl(firstName, lastName),
         },
       },
-      ...userRoleData, // khi model student và teacher có thêm field thì phải làm giống userProfile
+      role: userRole,
+      ...userRoleData[userRole], // khi model student và teacher có thêm field thì phải làm giống userProfile
     });
-    return { user };
+    return user;
   };
 
   getAUser = async (fields: Prisma.UserWhereInput, options?: UserOptions) => {
