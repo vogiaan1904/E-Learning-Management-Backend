@@ -23,75 +23,64 @@ class AuthService {
   private readonly logger = createWinstonLogger(AuthService.name);
 
   async signUp(userData: SignUpProps) {
-    try {
-      const { username, password, email, firstName, lastName, role } = userData;
-      const existedUser = await userService.getAUser({
-        username: username,
-        email: email,
-      });
-      if (existedUser) {
-        throw new CustomError(
-          "User is already existed. Please sign in",
-          StatusCodes.CONFLICT,
-        );
-      }
-      //   const userProfile = await userService.createAUserProfile({
-      //     firstName,
-      //     lastName,
-      //     avatar: generateCustomAvatarUrl(firstName, lastName),
-      //   });
-
-      const userRoleData = {};
-      if (role === Role.teacher.toString()) {
-        Object.assign(userRoleData, {
-          teacher: {
-            create: {},
-          },
-        });
-      } else {
-        Object.assign(userRoleData, {
-          student: {
-            create: {},
-          },
-        });
-      }
-      const user = await userRepo.create({
-        // nested creattion all sub tables, (userProfile, Student or Teacher)
-        username: username,
-        email: email,
-        password: hashData(password),
-        userProfile: {
-          create: {
-            firstName,
-            lastName,
-            avatar: generateCustomAvatarUrl(firstName, lastName),
-          },
+    const { username, password, email, firstName, lastName, role } = userData;
+    const existedUser = await userRepo.getOne({
+      OR: [
+        {
+          email: email,
         },
-        ...userRoleData, // khi model student và teacher có thêm field thì phải làm giống userProfile
-      });
-
-      const verificationCode = tokenService.generateVerificationCode();
-      const userVerification = await userService.createAUserVerification({
-        userId: user.id,
-        code: verificationCode,
-      });
-      const mailOptions = generateMailOptions({
-        receiverEmail: user.email,
-        subject: "Verification code",
-        template: "verification-code",
-        context: {
-          name: user.username,
-          activationCode: verificationCode,
+        {
+          username: username,
         },
-      });
-      await sendMail(mailOptions);
-      this.logger.info("New user sign up success");
-
-      return { user, userVerification };
-    } catch (error) {
-      this.logger.error(error);
-      throw error;
+      ],
+    });
+    if (existedUser) {
+      throw new CustomError(
+        "User is already existed. Please sign in",
+        StatusCodes.CONFLICT,
+      );
     }
+
+    const createRole = {};
+    Object.assign(createRole, {
+      [role]: {
+        create: {},
+      },
+    });
+
+    const user = await userRepo.create({
+      // nested creattion all sub tables, (userProfile, Student or Teacher)
+      username: username,
+      email: email,
+      password: hashData(password),
+      userProfile: {
+        create: {
+          firstName,
+          lastName,
+          avatar: generateCustomAvatarUrl(firstName, lastName),
+        },
+      },
+      role: Role[role],
+      ...createRole,
+    });
+
+    const verificationCode = tokenService.generateVerificationCode();
+    const userVerification = await userService.createAUserVerification({
+      userId: user.id,
+      code: verificationCode,
+    });
+    const mailOptions = generateMailOptions({
+      receiverEmail: user.email,
+      subject: "Verification code",
+      template: "verification-code",
+      context: {
+        name: user.username,
+        activationCode: verificationCode,
+      },
+    });
+    await sendMail(mailOptions);
+    this.logger.info("New user sign up success");
+    return { user, userVerification };
   }
 
   async signIn(userData: SignInProps) {

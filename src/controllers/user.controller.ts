@@ -1,76 +1,62 @@
-import { createWinstonLogger } from "@/configs";
+import { CustomError, createWinstonLogger } from "@/configs";
 import userService from "@/services/user.service";
 import { CustomRequest } from "@/types/request";
-import { GetUserProps, UpdateUserProps } from "@/types/user";
+import { GetUserProps } from "@/types/user";
+import catchAsync from "@/utils/catchAsync";
 import { removeFieldsFromObject } from "@/utils/object";
-import { NextFunction, Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 class userController {
   private readonly logger = createWinstonLogger(userController.name);
 
   constructor() {}
 
-  createAUser = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const user = await userService.createAUser(req.body);
-      console.log(user);
-      return res.status(StatusCodes.OK).json({
-        message: "Create user successfully",
-        status: "success",
+  createAUser = catchAsync(async (req: Request, res: Response) => {
+    const user = await userService.createAUser(req.body);
+    console.log(user);
+    return res.status(StatusCodes.OK).json({
+      message: "Create user successfully",
+      status: "success",
+      user: {
+        ...removeFieldsFromObject(user, ["password"]),
+      },
+    });
+  });
+
+  updateAUserProfile: RequestHandler = catchAsync(
+    async (req: Request, res: Response) => {
+      const userId = req.params.id;
+
+      if (!userId) {
+        throw new CustomError("User not found!", StatusCodes.BAD_REQUEST);
+      }
+
+      const user = await userService.updateAUserProfile(
+        { id: userId },
+        req.body,
+      );
+
+      res.status(StatusCodes.OK).json({
+        message: "User updated successfully",
         user: {
           ...removeFieldsFromObject(user, ["password"]),
         },
       });
-    } catch (error) {
-      this.logger.error(error);
-      next(error);
-    }
-  };
+    },
+  );
 
-  updateAUser = async (
-    req: CustomRequest<UpdateUserProps>,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
+  getAUser = catchAsync(
+    async (req: CustomRequest<GetUserProps>, res: Response) => {
       const userId = req.params.id;
-      if (!userId) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          message: "User ID is required",
-        });
-      }
-      const result = await userService.updateAUser({ id: userId }, req.body);
-      //   if (!result) {
-      //     return res.status(StatusCodes.NOT_FOUND).json({
-      //       message: "User not found",
-      //     });
-      //   }
-      return res.status(StatusCodes.OK).json({
-        message: "User updated successfully",
-        data: result,
-      });
-    } catch (error) {
-      this.logger.error(error);
-      next(error);
-    }
-  };
-
-  getAUser = async (
-    req: CustomRequest<GetUserProps>,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const user = await userService.getAUser(req.body);
+      const user = await userService.getAUser({ id: userId });
       return res.status(StatusCodes.OK).json({
         message: "Get user successfully",
-        data: user,
+        user: {
+          ...removeFieldsFromObject(user, ["password"]),
+        },
       });
-    } catch (error) {
-      this.logger.error(error);
-      next(error);
-    }
-  };
+    },
+  );
 }
 
 export default new userController();

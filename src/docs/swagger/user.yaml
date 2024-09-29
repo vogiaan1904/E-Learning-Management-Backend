@@ -1,13 +1,13 @@
-paths: 
+paths:
   /users/api-status:
     get:
       tags:
         - User
       summary: Check user APIs status
       responses:
-        200: 
+        200:
           description: OK
-          content: 
+          content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResUserStatus"
@@ -49,6 +49,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResUserError"
+    get:
+      tags:
+        - User
+      summary: Get a user by Id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The user's ID
+      responses:
+        200:
+          description: User got successfully
+          content:
+            application/json:
+              
+        404:
+          description: User not found
+          content:
+            application/json:
+
+        400:
+          description: Bad Request
+          content:
+            application/json:
+
   /users:
     post:
       tags:
@@ -61,9 +88,9 @@ paths:
             schema:
               $ref: "#/components/schemas/ReqCreateUser"
       responses:
-        200: 
+        200:
           description: OK
-          content: 
+          content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResCreateUser"
@@ -101,7 +128,7 @@ components:
           type: string
           description: Role of the user
           example: "ADMIN"
-          enum: 
+          enum:
             - USER
             - ADMIN
         isVerified:
@@ -151,7 +178,7 @@ components:
         username:
           type: string
           example: "acus"
-        email: 
+        email:
           type: string
           example: "acuscodinghcm@gmail.com"
         password:
@@ -163,7 +190,7 @@ components:
     ResCreateUser:
       type: object
       properties:
-        message: 
+        message:
           type: string
         status:
           type: string
@@ -181,7 +208,7 @@ components:
             username:
               type: string
               example: "acus"
-            email: 
+            email:
               type: string
               example: "acuscodinghcm@gmail.com"
             role:

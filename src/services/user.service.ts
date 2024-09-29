@@ -4,10 +4,15 @@ import userRepo from "@/repositories/user.repo";
 import { CreateUserProps } from "@/types/user";
 import { generateCustomAvatarUrl } from "@/utils/avatar";
 import { hashData } from "@/utils/bcrypt";
-import { Prisma, Role, User, UserVerification } from "@prisma/client";
+import {
+  Prisma,
+  Role,
+  User,
+  UserProfifle,
+  UserVerification,
+} from "@prisma/client";
 import { addMinutes } from "date-fns";
 import { StatusCodes } from "http-status-codes";
-interface UserFields extends Omit<User, "id"> {}
 interface UserOptions {
   type?: "email" | "username" | "id";
   includeProfile?: boolean;
@@ -21,9 +26,7 @@ class UserService {
     this.prismaClient = prisma;
   }
 
-  /**
-   * Model User
-   */
+  /* ------------------------------- Model User ------------------------------- */
 
   createAUser = async (userData: CreateUserProps) => {
     const { username, password, email, firstName, lastName, role } = userData;
@@ -88,29 +91,45 @@ class UserService {
       },
     );
     if (!user) {
-      throw new CustomError(
-        "User not found. Please sign up",
-        StatusCodes.NOT_FOUND,
-      );
+      throw new CustomError("User not found", StatusCodes.NOT_FOUND);
     }
     return user;
   };
 
-  updateAUser = async (fields: Pick<User, "id">, user: Partial<UserFields>) => {
-    return await userRepo.update(fields, user);
+  updateAUser = async (
+    filter: Pick<User, "id">,
+    data: Partial<User>,
+    options?: UserOptions,
+  ) => {
+    return await userRepo.update(filter, data, options);
   };
 
-  /**
-   * Model UserProfile
-   */
+  /* --------------------------- Model UserProfifle --------------------------- */
 
   createAUserProfile = async (data: Prisma.UserProfifleCreateInput) => {
     return await userRepo.createProfile(data);
   };
 
-  /**
-   * Model UserVerification
-   */
+  updateAUserProfile = async (
+    filter: Pick<User, "id">,
+    data: Partial<UserProfifle>,
+  ) => {
+    return await userRepo.update(
+      filter,
+      {
+        userProfile: {
+          update: data,
+        },
+      },
+      {
+        include: {
+          userProfile: true,
+        },
+      },
+    );
+  };
+
+  /* ------------------------- Model UserVerification ------------------------- */
 
   getAUserVerification = async (fields: Pick<UserVerification, "id">) => {
     return await userRepo.getVerification(fields);

@@ -22,4 +22,4 @@ export interface UpdateUsersProps {
   data: Array<User>;
 }
 
-export interface UpdateUserProps extends Partial<User & UserProfifle> {}
+export interface UpdateUserProfileProps extends Partial<UserProfifle> {}

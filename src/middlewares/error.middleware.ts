@@ -22,6 +22,8 @@ export const errorMiddleware = (
   if (envConfig.NODE_ENV === "development") {
     _.assign(response, { stack: stack });
   }
+  logger.error(stack);
+
   return res
     .status(statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
     .json(response);

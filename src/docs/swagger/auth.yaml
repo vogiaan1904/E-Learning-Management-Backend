@@ -189,6 +189,9 @@ components:
         password:
           type: string
           example: "acus123"
+        role:
+          type: string
+          exmaple: "student"
     ReqAuthSignIn:
       type: object
       properties:
