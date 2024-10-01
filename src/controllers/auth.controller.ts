@@ -11,21 +11,18 @@ import {
 } from "@/types/auth";
 import { CustomRequest, CustomUserRequest } from "@/types/request";
 import { RefreshTokenProps } from "@/types/token";
+import catchAsync from "@/utils/catchAsync";
 import { convertToMilliseconds } from "@/utils/date";
 import { removeFieldsFromObject } from "@/utils/object";
-import { NextFunction, Response } from "express";
+import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-class authController {
-  private readonly logger = createWinstonLogger(authController.name);
+class AuthController {
+  private readonly logger = createWinstonLogger(AuthController.name);
 
   constructor() {}
 
-  facebookSignIn = async (
-    req: CustomUserRequest<FacebookProfileProps>,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
+  facebookSignIn = catchAsync(
+    async (req: CustomUserRequest<FacebookProfileProps>, res: Response) => {
       const {
         email,
         last_name,
@@ -38,18 +35,18 @@ class authController {
         email: email,
       });
       console.log(last_name, first_name, url, existedUser);
-    } catch (error) {
-      this.logger.error(error);
-      next(error);
-    }
-  };
+      res.json({
+        user: {
+          ...removeFieldsFromObject(existedUser, ["password"]),
+        },
+        message: "Sign in success",
+        status: "success",
+      });
+    },
+  );
 
-  signUp = async (
-    req: CustomRequest<SignUpProps>,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
+  signUp = catchAsync(
+    async (req: CustomRequest<SignUpProps>, res: Response) => {
       const { userVerification } = await authService.signUp(req.body);
       return res.status(StatusCodes.CREATED).json({
         message:
@@ -60,18 +57,11 @@ class authController {
           userId: userVerification.userId,
         },
       });
-    } catch (error) {
-      this.logger.error(error);
-      next(error);
-    }
-  };
+    },
+  );
 
-  signIn = async (
-    req: CustomRequest<SignInProps>,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
+  signIn = catchAsync(
+    async (req: CustomRequest<SignInProps>, res: Response) => {
       const result = await authService.signIn(req.body);
       return res
         .cookie("refreshToken", result.tokens.refreshToken, {
@@ -84,54 +74,36 @@ class authController {
         })
         .status(StatusCodes.OK)
         .json({
+          user: {
+            ...removeFieldsFromObject(result.user, ["password"]),
+          },
           tokens: {
             ...removeFieldsFromObject(result.tokens, ["tokenId"]),
           },
           message: "Sign in success",
           status: "success",
         });
-    } catch (error) {
-      this.logger.error(error);
-      next(error);
-    }
-  };
+    },
+  );
 
-  signOut = async (
-    req: CustomRequest<SendCodeProps>,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
+  signOut = catchAsync(
+    async (req: CustomRequest<SendCodeProps>, res: Response) => {
       return res.status(StatusCodes.OK).clearCookie("refreshToken").json({
         message: "Sign out success",
         status: "success",
       });
-    } catch (error) {
-      this.logger.error(error);
-      next(error);
-    }
-  };
+    },
+  );
 
-  sendCode = async (
-    req: CustomRequest<SendCodeProps>,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
+  sendCode = catchAsync(
+    async (req: CustomRequest<SendCodeProps>, res: Response) => {
       const result = await authService.sendCode(req.body);
       return res.status(StatusCodes.OK).json(result);
-    } catch (error) {
-      this.logger.error(error);
-      next(error);
-    }
-  };
+    },
+  );
 
-  verifyCode = async (
-    req: CustomRequest<VerifyCodeProps>,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
+  verifyCode = catchAsync(
+    async (req: CustomRequest<VerifyCodeProps>, res: Response) => {
       const result = await authService.verifyCode(req.body);
       return res
         .cookie("refreshToken", result.tokens.refreshToken, {
@@ -150,18 +122,11 @@ class authController {
           message: "Verify success",
           status: "success",
         });
-    } catch (error) {
-      this.logger.error(error);
-      next(error);
-    }
-  };
+    },
+  );
 
-  refreshToken = async (
-    req: CustomRequest<RefreshTokenProps>,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
+  refreshToken = catchAsync(
+    async (req: CustomRequest<RefreshTokenProps>, res: Response) => {
       const result = await authService.refreshToken(req.body);
       return res.status(StatusCodes.OK).json({
         tokens: {
@@ -170,11 +135,8 @@ class authController {
         message: "Refresh token success",
         status: "success",
       });
-    } catch (error) {
-      this.logger.error(error);
-      next(error);
-    }
-  };
+    },
+  );
 }
 
-export default new authController();
+export default new AuthController();

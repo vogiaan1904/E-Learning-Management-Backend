@@ -9,12 +9,13 @@ export const createWinstonLogger = (section?: string) => {
   return winston.createLogger({
     level: envConfig.LOG_LEVEL,
     defaultMeta: {
-      service: section ? `${envConfig.NAME} [${section}]` : envConfig.NAME,
+      // service: section ?? "",
+      service: section ? `${section}` : envConfig.NAME,
     },
     format: format.combine(
       format.metadata(),
       format.timestamp({
-        format: "YYYY-MM-DD HH:mm:ssA",
+        format: "DD-MM HH:mm:ss",
       }),
     ),
     transports: [
@@ -22,10 +23,10 @@ export const createWinstonLogger = (section?: string) => {
         format: format.combine(
           format.colorize(),
           format.simple(),
-          format.align(),
+          // format.align(),
           format.printf(({ timestamp, level, message, metadata }) => {
             const { service, ...rest } = metadata;
-            return `[${timestamp}] ${uuidv4()} ${service} - ${level} : ${message} ${Object.keys(rest).length > 0 ? `,${JSON.stringify(rest)}` : ""}`;
+            return `[${timestamp}] [${service}] ${level} :  ${message} ${Object.keys(rest).length > 0 ? `,${JSON.stringify(rest)}` : ""}`;
           }),
         ),
       }),

@@ -1,6 +1,6 @@
 model Teacher {
-    userId  String   @id
-    user    User     @relation(fields: [userId], references: [id])
+    id      String   @id
+    user    User     @relation(fields: [id], references: [id])
     field   String?
     courses Course[]
 

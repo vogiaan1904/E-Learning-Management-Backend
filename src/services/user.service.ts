@@ -1,9 +1,12 @@
+import { CustomError } from "@/configs";
 import { prisma } from "@/database/connect.db";
 import userRepo from "@/repositories/user.repo";
+import { CreateUserProps } from "@/types/user";
+import { generateCustomAvatarUrl } from "@/utils/avatar";
 import { hashData } from "@/utils/bcrypt";
-import { Prisma, User, UserVerification } from "@prisma/client";
+import { Prisma, Role, User, UserVerification } from "@prisma/client";
 import { addMinutes } from "date-fns";
-interface UserFields extends Omit<User, "id"> {}
+import { StatusCodes } from "http-status-codes";
 interface UserOptions {
   type?: "email" | "username" | "id";
   includeProfile?: boolean;
@@ -17,14 +20,51 @@ class UserService {
     this.prismaClient = prisma;
   }
 
-  /**
-   * Model User
-   */
+  /* ------------------------------- Model User ------------------------------- */
+
+  createAUser = async (userData: CreateUserProps) => {
+    const { username, password, email, firstName, lastName, role } = userData;
+    const existedUser = await userRepo.getOne({
+      OR: [{ email }, { username }],
+    });
+    if (existedUser) {
+      throw new CustomError(
+        "User is already existed. Please use another information",
+        StatusCodes.CONFLICT,
+      );
+    }
+
+    const userRoleData = {
+      [Role.teacher]: { teacher: { create: {} } },
+      [Role.admin]: { admin: { create: {} } },
+      [Role.user]: { student: { create: {} } },
+    };
+
+    const userRole = role in userRoleData ? role : Role.user;
+
+    const user = await userRepo.create({
+      // nested creattion all sub tables, (userProfile, Student or Teacher)
+      username: username,
+      email: email,
+      password: hashData(password),
+      isVerified: true,
+      userProfile: {
+        create: {
+          firstName,
+          lastName,
+          avatar: generateCustomAvatarUrl(firstName, lastName),
+        },
+      },
+      role: userRole,
+      ...userRoleData[userRole], // khi model student và teacher có thêm field thì phải làm giống userProfile
+    });
+    return user;
+  };
 
   getAUser = async (fields: Prisma.UserWhereInput, options?: UserOptions) => {
     const { id, email, username } = fields;
     const { includeProfile } = options || {};
-    return await userRepo.getOne(
+    const user = await userRepo.getOne(
       {
         OR: [
           {
@@ -44,23 +84,46 @@ class UserService {
         },
       },
     );
+    if (!user) {
+      throw new CustomError("User not found", StatusCodes.NOT_FOUND);
+    }
+    return user;
   };
 
-  updateAUser = async (fields: Pick<User, "id">, user: Partial<UserFields>) => {
-    return await userRepo.update(fields, user);
+  updateAUser = async (
+    filter: Pick<User, "id">,
+    data: Prisma.UserUpdateInput,
+    options?: UserOptions,
+  ) => {
+    return await userRepo.update(filter, data, options);
   };
 
-  /**
-   * Model UserProfile
-   */
+  /* --------------------------- Model UserProfifle --------------------------- */
 
   createAUserProfile = async (data: Prisma.UserProfifleCreateInput) => {
     return await userRepo.createProfile(data);
   };
 
-  /**
-   * Model UserVerification
-   */
+  updateAUserProfile = async (
+    filter: Pick<User, "id">,
+    data: Prisma.UserProfifleUpdateInput,
+  ) => {
+    return await userRepo.update(
+      filter,
+      {
+        userProfile: {
+          update: data,
+        },
+      },
+      {
+        include: {
+          userProfile: true,
+        },
+      },
+    );
+  };
+
+  /* ------------------------- Model UserVerification ------------------------- */
 
   getAUserVerification = async (fields: Pick<UserVerification, "id">) => {
     return await userRepo.getVerification(fields);

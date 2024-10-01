@@ -1,4 +1,4 @@
-import { CustomError, createWinstonLogger, envConfig } from "@/configs";
+import { CustomError, envConfig } from "@/configs";
 import userRepo from "@/repositories/user.repo";
 import {
   SendCodeProps,
@@ -20,78 +20,71 @@ import tokenService from "./token.service";
 import userService from "./user.service";
 
 class AuthService {
-  private readonly logger = createWinstonLogger(AuthService.name);
-
+  private generateErrorBySection = (
+    message: string,
+    statusCode: number,
+    data?: string | object,
+  ): CustomError => {
+    return new CustomError(message, statusCode, data, AuthService.name);
+  };
   async signUp(userData: SignUpProps) {
-    try {
-      const { username, password, email, firstName, lastName, role } = userData;
-      const existedUser = await userService.getAUser({
-        username: username,
-        email: email,
-      });
-      if (existedUser) {
-        throw new CustomError(
-          "User is already existed. Please sign in",
-          StatusCodes.CONFLICT,
-        );
-      }
-      //   const userProfile = await userService.createAUserProfile({
-      //     firstName,
-      //     lastName,
-      //     avatar: generateCustomAvatarUrl(firstName, lastName),
-      //   });
-
-      const userRoleData = {};
-      if (role === Role.teacher.toString()) {
-        Object.assign(userRoleData, {
-          teacher: {
-            create: {},
-          },
-        });
-      } else {
-        Object.assign(userRoleData, {
-          student: {
-            create: {},
-          },
-        });
-      }
-      const user = await userRepo.create({
-        // nested creattion all sub tables, (userProfile, Student or Teacher)
-        username: username,
-        email: email,
-        password: hashData(password),
-        userProfile: {
-          create: {
-            firstName,
-            lastName,
-            avatar: generateCustomAvatarUrl(firstName, lastName),
-          },
+    const { username, password, email, firstName, lastName, role } = userData;
+    const existedUser = await userRepo.getOne({
+      OR: [
+        {
+          email: email,
         },
-        ...userRoleData, // khi model student và teacher có thêm field thì phải làm giống userProfile
-      });
-
-      const verificationCode = tokenService.generateVerificationCode();
-      const userVerification = await userService.createAUserVerification({
-        userId: user.id,
-        code: verificationCode,
-      });
-      const mailOptions = generateMailOptions({
-        receiverEmail: user.email,
-        subject: "Verification code",
-        template: "verification-code",
-        context: {
-          name: user.username,
-          activationCode: verificationCode,
+        {
+          username: username,
         },
-      });
-      await sendMail(mailOptions);
-      this.logger.info("New user sign up success");
-
-      return { user, userVerification };
-    } catch (error) {
-      this.logger.error(error);
-      throw error;
+      ],
+    });
+    if (existedUser) {
+      throw this.generateErrorBySection(
+        "User is already existed. Please sign in",
+        StatusCodes.CONFLICT,
+      );
     }
+
+    const createRole = {};
+    Object.assign(createRole, {
+      [role]: {
+        create: {},
+      },
+    });
+
+    const user = await userRepo.create({
+      // nested creattion all sub tables, (userProfile, Student or Teacher)
+      username: username,
+      email: email,
+      password: hashData(password),
+      userProfile: {
+        create: {
+          firstName,
+          lastName,
+          avatar: generateCustomAvatarUrl(firstName, lastName),
+        },
+      },
+      role: Role[role],
+      ...createRole,
+    });
+
+    const verificationCode = tokenService.generateVerificationCode();
+    const userVerification = await userService.createAUserVerification({
+      userId: user.id,
+      code: verificationCode,
+    });
+    const mailOptions = generateMailOptions({
+      receiverEmail: user.email,
+      subject: "Verification code",
+      template: "verification-code",
+      context: {
+        name: user.username,
+        activationCode: verificationCode,
+      },
+    });
+    await sendMail(mailOptions);
+    return { user, userVerification };
   }
 
   async signIn(userData: SignInProps) {
@@ -148,9 +141,9 @@ class AuthService {
       tokens.refreshToken,
       convertToSeconds(envConfig.REFRESH_TOKEN_EXPIRED),
     );
-    this.logger.info("User sign in success");
 
     return {
+      user,
       tokens,
     };
   }
@@ -196,7 +189,6 @@ class AuthService {
       },
     });
     await sendMail(mailOptions);
-    this.logger.info("Send code to user success");
     return {
       message: "Please check your email to verify the account",
       status: "failed",
@@ -220,9 +212,7 @@ class AuthService {
         StatusCodes.BAD_REQUEST,
       );
     }
-    const userVerification = await userService.getAUserVerification({
-      id: id,
-    });
+    const userVerification = await userRepo.getVerification({ id });
     if (!userVerification) {
       throw new CustomError(
         "User verification not found",
@@ -250,9 +240,9 @@ class AuthService {
         isVerified: true,
       },
     );
-    await userService.deleteAUserVerification({
-      id: userVerification.id,
-    });
+
+    await userRepo.deleteVerification({ id: userVerification.id });
+
     const tokens = await tokenService.getJwtTokens({
       id: user.id,
       email: user.email,
@@ -264,7 +254,6 @@ class AuthService {
       tokens.refreshToken,
       convertToSeconds(envConfig.REFRESH_TOKEN_EXPIRED),
     );
-    this.logger.info("User verify success");
     return { tokens };
   }
 

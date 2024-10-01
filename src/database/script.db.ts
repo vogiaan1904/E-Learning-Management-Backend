@@ -1,6 +1,5 @@
 import logger from "@/configs/logger.config";
 import userRepo from "@/repositories/user.repo";
-import userService from "@/services/user.service";
 import { generateCustomAvatarUrl } from "@/utils/avatar";
 import { hashData } from "@/utils/bcrypt";
 import { Role } from "@prisma/client";
@@ -24,7 +23,7 @@ export const executePrescriptRedis = async () => {
 };
 
 export const createAdminAccount = async () => {
-  const existedAdmin = await userService.getAUser({
+  const existedAdmin = await userRepo.getOne({
     username: "admin",
   });
   if (existedAdmin) {

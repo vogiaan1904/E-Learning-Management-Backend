@@ -1,13 +1,14 @@
 import { CustomError, envConfig } from "@/configs";
+import userRepo from "@/repositories/user.repo";
 import tokenService from "@/services/token.service";
 import { PreSigninProps, SignInProps } from "@/types/auth";
 import { CustomRequest } from "@/types/request";
 import { AccessTokenProps, RefreshTokenProps } from "@/types/token";
+import { removeFieldsFromObject } from "@/utils/object";
 import { validateEmail } from "@/utils/validate";
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { v4 as uuidv4 } from "uuid";
-
 // Prioritize signing in by email
 export const preSignInMiddleware = (
   req: CustomRequest<PreSigninProps | SignInProps>,
@@ -33,7 +34,7 @@ export const preSignInMiddleware = (
 };
 
 export const refreshTokenMiddleware = async (
-  req: CustomRequest<RefreshTokenProps>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -49,7 +50,7 @@ export const refreshTokenMiddleware = async (
       refreshToken,
       envConfig.REFRESH_TOKEN_SECRET,
     );
-    req.body = data;
+    req.user = data;
     next();
   } catch (error) {
     next(error);
@@ -57,7 +58,7 @@ export const refreshTokenMiddleware = async (
 };
 
 export const accessTokenMiddleware = async (
-  req: CustomRequest<AccessTokenProps>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -73,7 +74,11 @@ export const accessTokenMiddleware = async (
       accessToken,
       envConfig.ACCESS_TOKEN_SECRET,
     );
-    req.body = data;
+    const user = await userRepo.getOne({ email: data.email });
+    if (!user) {
+      throw new CustomError("User not found", StatusCodes.BAD_REQUEST);
+    }
+    req.user = removeFieldsFromObject(user, ["password"]);
     next();
   } catch (error) {
     next(error);

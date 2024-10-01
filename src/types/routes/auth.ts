@@ -3,6 +3,7 @@ import { DefaultRouteProps } from "@/types/routes/default";
 interface AuthRouteProps extends DefaultRouteProps {
   signUp: string;
   signIn: string;
+  me: string;
   sendCode: string;
   verifyCode: string;
   refreshToken: string;
@@ -21,6 +22,7 @@ export const authRoute: AuthRouteProps = {
   status: "/api-status",
   signUp: "/signup",
   signIn: "/signin",
+  me: "/me",
   sendCode: "/validation/send",
   verifyCode: "/validation/verify",
   refreshToken: "/refresh-token",

@@ -1,0 +1,7 @@
+model Admin {
+    userId String  @id
+    user   User    @relation(fields: [userId], references: [id])
+    field  String?
+
+    @@map("Admins")
+}

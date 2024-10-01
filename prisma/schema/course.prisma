@@ -4,38 +4,37 @@ enum LessonType {
 }
 
 model Course {
-    id             String             @id @default(uuid())
+    id             String                @id @default(uuid())
     name           String
     teacherId      String
-    teacher        Teacher            @relation(fields: [teacherId], references: [userId])
+    teacher        Teacher               @relation(fields: [teacherId], references: [id])
     description    String
-    isPublic       Boolean
     modules        Module[]
-    categories     CourseToCategory[]
+    categories     CategoriesOnCourses[]
     enrollments    Enrollment[]
-    numEnrollments Int
-    createdAt      DateTime           @default(now())
-    updatedAt      DateTime           @updatedAt
+    numEnrollments Int                   @default(0)
+    createdAt      DateTime              @default(now())
+    updatedAt      DateTime              @updatedAt
 
     @@map("Courses")
 }
 
-model CourseCategory {
-    id           String             @id @default(uuid())
-    categoryType String
-    courses      CourseToCategory[]
+model Category {
+    id      String                @id @default(uuid())
+    name    String                @unique
+    courses CategoriesOnCourses[]
 
-    @@map("CourseCategories")
+    @@map("Categories")
 }
 
-model CourseToCategory {
+model CategoriesOnCourses {
     courseId   String
     categoryId String
-    course     Course         @relation(fields: [courseId], references: [id])
-    category   CourseCategory @relation(fields: [categoryId], references: [id])
+    course     Course   @relation(fields: [courseId], references: [id])
+    category   Category @relation(fields: [categoryId], references: [id])
 
     @@id([courseId, categoryId])
-    @@map("CourseToCategories")
+    @@map("CategoriesOnCourses")
 }
 
 model Module {

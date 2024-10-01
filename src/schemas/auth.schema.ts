@@ -32,6 +32,7 @@ export const SignUpSchema = Joi.object<SignUpProps>().keys({
   username: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().regex(passwordRegex).required(),
+  role: Joi.string().required(),
 });
 
 export const RefreshTokenSchema = Joi.object<RefreshTokenProps>().keys({

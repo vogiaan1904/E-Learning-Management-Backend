@@ -1,10 +1,5 @@
-import {
-  Prisma,
-  PrismaClient,
-  User,
-  UserProfifle,
-  UserVerification,
-} from "@prisma/client";
+import { prisma } from "@/database/connect.db";
+import { Prisma, User, UserProfifle, UserVerification } from "@prisma/client";
 
 export interface UserVerificationInterface {
   userId: string;
@@ -12,77 +7,98 @@ export interface UserVerificationInterface {
   expiredAt: Date;
   updatedAt: Date;
 }
-const prisma = new PrismaClient();
+
 class UserRepository {
+  /* ---------------------------------- User ---------------------------------- */
   async create(data: Prisma.UserCreateInput): Promise<User> {
-    const user = await prisma.user.create({
+    return await prisma.user.create({
       data,
     });
-
-    return user;
-  }
-
-  async getAll(
-    filter: Prisma.UserWhereInput,
-    options: object,
-  ): Promise<User[]> {
-    const users = await prisma.user.findMany({
-      where: filter,
-      ...options,
-    });
-
-    return users;
   }
 
   async getOne(
     filter: Prisma.UserWhereInput,
     options?: object,
   ): Promise<User | null> {
-    const user = await prisma.user.findFirst({
+    return await prisma.user.findFirst({
       where: filter,
       ...options,
     });
-    return user;
+  }
+
+  async getAll(
+    filter: Prisma.UserWhereInput,
+    options?: object,
+  ): Promise<User[]> {
+    return await prisma.user.findMany({
+      where: filter,
+      ...options,
+    });
+  }
+
+  async update(
+    filter: Prisma.UserWhereUniqueInput,
+    data: Prisma.UserUpdateInput,
+    options?: object,
+  ): Promise<User> {
+    return await prisma.user.update({
+      where: filter,
+      data: data,
+      ...options,
+    });
+  }
+
+  async delete(
+    filter: Prisma.UserWhereUniqueInput,
+    options?: object,
+  ): Promise<User> {
+    return await prisma.user.delete({
+      where: filter,
+      ...options,
+    });
+  }
+  /* --------------------------------- Profile -------------------------------- */
+
+  async getProfile(
+    filter: Prisma.UserProfifleWhereInput,
+    options?: object,
+  ): Promise<UserProfifle | null> {
+    return await prisma.userProfifle.findFirst({
+      where: filter,
+      ...options,
+    });
   }
 
   async createProfile(
     data: Prisma.UserProfifleCreateInput,
     options?: object,
   ): Promise<UserProfifle | null> {
-    const userProfile = await prisma.userProfifle.create({
+    return await prisma.userProfifle.create({
       data,
       ...options,
     });
-    return userProfile;
   }
 
-  async update(
-    filter: Prisma.UserWhereUniqueInput,
-    data: Prisma.UserUpdateInput,
-  ): Promise<User> {
-    const user = await prisma.user.update({
+  async updateProfile(
+    filter: Prisma.UserProfifleWhereUniqueInput,
+    data: Prisma.UserProfifleUpdateInput,
+    options?: object,
+  ): Promise<UserProfifle> {
+    return await prisma.userProfifle.update({
       where: filter,
       data: data,
+      ...options,
     });
-    return user;
   }
-
-  async delete(filter: Prisma.UserWhereUniqueInput): Promise<User> {
-    const deletedUser = await prisma.user.delete({
-      where: filter,
-    });
-    return deletedUser;
-  }
-
+  /* ------------------------------ Verification ------------------------------ */
   async createVerification(
     data: UserVerificationInterface,
     options?: object,
   ): Promise<UserVerification> {
-    const userVerification = await prisma.userVerification.create({
+    return await prisma.userVerification.create({
       data,
       ...options,
     });
-    return userVerification;
   }
 
   async getVerification(
@@ -98,30 +114,26 @@ class UserRepository {
     filter: Prisma.UserVerificationWhereUniqueInput,
     data: Prisma.UserVerificationUpdateInput,
   ): Promise<UserVerification> {
-    const userVerification = await prisma.userVerification.update({
+    return await prisma.userVerification.update({
       where: filter,
       data: data,
     });
-    return userVerification;
   }
 
   async deleteVerification(
     filter: Prisma.UserVerificationWhereUniqueInput,
   ): Promise<UserVerification> {
-    const userVerification = await prisma.userVerification.delete({
+    return await prisma.userVerification.delete({
       where: filter,
     });
-
-    return userVerification;
   }
 
   async deleteVerifications(
     filter: Prisma.UserVerificationWhereInput,
   ): Promise<{ count: number }> {
-    const result = await prisma.userVerification.deleteMany({
+    return await prisma.userVerification.deleteMany({
       where: filter,
     });
-    return result;
   }
 }
 
