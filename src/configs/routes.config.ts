@@ -2,6 +2,7 @@ import { authRoute } from "@/types/routes/auth";
 import { courseRoute } from "@/types/routes/course";
 import { serverRoutes } from "@/types/routes/server";
 import { serviceRoutes } from "@/types/routes/service";
+import { teacherRoute } from "@/types/routes/teacher";
 import { userRoute } from "@/types/routes/user";
 
 export const routesConfig = {
@@ -17,4 +18,5 @@ export const routesConfig = {
   authRoute: authRoute,
   userRoute: userRoute,
   courseRoute: courseRoute,
+  teacherRoute: teacherRoute,
 } as const;

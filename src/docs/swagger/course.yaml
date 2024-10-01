@@ -1,0 +1,62 @@
+paths:
+  /courses:
+    post:
+      tags:
+        - Course
+      summary: Create Course
+      requestBody:
+        description: Request body 
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqCreateCourse"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateCourse"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateCourseError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateCourseError"
+components:
+  schemas:
+    ReqCreateCourse:
+      type: object
+      properties:
+        teacherId:
+          type: string
+          example: "wuyegfihwegfkhwhef"
+        name:
+          type: string
+          example: "DSA"
+        description:
+          type: string
+          example: "fucking hard"
+    ResCreateCourse:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        course: 
+          type: object
+    ResCreateCourseError:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+          example: "failed"

@@ -4,13 +4,7 @@ import userRepo from "@/repositories/user.repo";
 import { CreateUserProps } from "@/types/user";
 import { generateCustomAvatarUrl } from "@/utils/avatar";
 import { hashData } from "@/utils/bcrypt";
-import {
-  Prisma,
-  Role,
-  User,
-  UserProfifle,
-  UserVerification,
-} from "@prisma/client";
+import { Prisma, Role, User, UserVerification } from "@prisma/client";
 import { addMinutes } from "date-fns";
 import { StatusCodes } from "http-status-codes";
 interface UserOptions {
@@ -98,7 +92,7 @@ class UserService {
 
   updateAUser = async (
     filter: Pick<User, "id">,
-    data: Partial<User>,
+    data: Prisma.UserUpdateInput,
     options?: UserOptions,
   ) => {
     return await userRepo.update(filter, data, options);
@@ -112,7 +106,7 @@ class UserService {
 
   updateAUserProfile = async (
     filter: Pick<User, "id">,
-    data: Partial<UserProfifle>,
+    data: Prisma.UserProfifleUpdateInput,
   ) => {
     return await userRepo.update(
       filter,

@@ -16,7 +16,7 @@ export const userRoute: UserRouteProps = {
   default: "/",
   status: "/api-status",
   getUser: "/:id",
-  getUsers: "/",
+  getUsers: "/many",
   createUser: "/",
   createUsers: "/many",
   updateUser: "/:id",

@@ -1,36 +1,30 @@
-import { Course, CourseCategory } from "@prisma/client";
+import { Category, Course } from "@prisma/client";
 
 /* --------------------------------- Course --------------------------------- */
 export interface CreateCourseProps
-  extends Pick<Course, "name" | "description" | "teacherId"> {}
+  extends Pick<Course, "name" | "description" | "teacherId"> {
+  categories?: Array<string>;
+}
 
 export interface CreateCoursesProps {
   data: Array<CreateCourseProps>;
 }
 
-export interface DeleteCoursesProps {
-  ids: Array<Course["id"]>;
-}
-export interface UpdateCoursesProps {
-  data: Array<Course>;
-}
-
 export interface UpdateCourseProps extends Partial<Course> {}
 
+export interface UpdateCoursesProps {
+  data: Array<UpdateCourseProps>;
+}
+
 /* -------------------------------- Category -------------------------------- */
-export interface CreateCourseCategoryProps
-  extends Pick<CourseCategory, "categoryType"> {}
+export interface CreateCategoryProps extends Pick<Category, "name"> {}
 
-export interface CreateCourseCategoriesProps {
-  data: Array<CreateCourseCategoryProps>;
+export interface CreateCategoriesProps {
+  data: Array<CreateCategoryProps>;
 }
 
-export interface DeleteCourseCategoriesProps {
-  ids: Array<CourseCategory["id"]>;
-}
-export interface UpdateCourseCategoriesProps {
-  data: Array<CourseCategory>;
-}
+export interface UpdateCategoryProps extends Partial<Category> {}
 
-export interface UpdateCourseCategoryProps
-  extends Pick<CourseCategory, "categoryType"> {}
+export interface DeleteCategoriesProps {
+  ids: Array<Category["id"]>;
+}

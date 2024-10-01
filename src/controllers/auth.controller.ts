@@ -16,8 +16,8 @@ import { convertToMilliseconds } from "@/utils/date";
 import { removeFieldsFromObject } from "@/utils/object";
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-class authController {
-  private readonly logger = createWinstonLogger(authController.name);
+class AuthController {
+  private readonly logger = createWinstonLogger(AuthController.name);
 
   constructor() {}
 
@@ -139,4 +139,4 @@ class authController {
   );
 }
 
-export default new authController();
+export default new AuthController();

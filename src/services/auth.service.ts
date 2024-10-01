@@ -1,4 +1,4 @@
-import { CustomError, createWinstonLogger, envConfig } from "@/configs";
+import { CustomError, envConfig } from "@/configs";
 import userRepo from "@/repositories/user.repo";
 import {
   SendCodeProps,
@@ -20,8 +20,13 @@ import tokenService from "./token.service";
 import userService from "./user.service";
 
 class AuthService {
-  private readonly logger = createWinstonLogger(AuthService.name);
-
+  private generateErrorBySection = (
+    message: string,
+    statusCode: number,
+    data?: string | object,
+  ): CustomError => {
+    return new CustomError(message, statusCode, data, AuthService.name);
+  };
   async signUp(userData: SignUpProps) {
     const { username, password, email, firstName, lastName, role } = userData;
     const existedUser = await userRepo.getOne({
@@ -35,7 +40,7 @@ class AuthService {
       ],
     });
     if (existedUser) {
-      throw new CustomError(
+      throw this.generateErrorBySection(
         "User is already existed. Please sign in",
         StatusCodes.CONFLICT,
       );
@@ -79,7 +84,6 @@ class AuthService {
       },
     });
     await sendMail(mailOptions);
-    this.logger.info("New user sign up success");
     return { user, userVerification };
   }
 
@@ -137,7 +141,6 @@ class AuthService {
       tokens.refreshToken,
       convertToSeconds(envConfig.REFRESH_TOKEN_EXPIRED),
     );
-    this.logger.info("User sign in success");
 
     return {
       user,
@@ -186,7 +189,6 @@ class AuthService {
       },
     });
     await sendMail(mailOptions);
-    this.logger.info("Send code to user success");
     return {
       message: "Please check your email to verify the account",
       status: "failed",
@@ -210,9 +212,7 @@ class AuthService {
         StatusCodes.BAD_REQUEST,
       );
     }
-    const userVerification = await userService.getAUserVerification({
-      id: id,
-    });
+    const userVerification = await userRepo.getVerification({ id });
     if (!userVerification) {
       throw new CustomError(
         "User verification not found",
@@ -240,9 +240,9 @@ class AuthService {
         isVerified: true,
       },
     );
-    await userService.deleteAUserVerification({
-      id: userVerification.id,
-    });
+
+    await userRepo.deleteVerification({ id: userVerification.id });
+
     const tokens = await tokenService.getJwtTokens({
       id: user.id,
       email: user.email,
@@ -254,7 +254,6 @@ class AuthService {
       tokens.refreshToken,
       convertToSeconds(envConfig.REFRESH_TOKEN_EXPIRED),
     );
-    this.logger.info("User verify success");
     return { tokens };
   }
 

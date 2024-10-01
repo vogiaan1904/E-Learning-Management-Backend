@@ -16,7 +16,7 @@ export const courseRoute: CourseRouteProps = {
   status: "/api-status",
   createCourse: "/",
   getCourse: "/:id",
-  getCourses: "/",
+  getCourses: "/many",
   updateCourse: "/:id",
   updateCourses: "/many",
   deleteCourse: "/:id",

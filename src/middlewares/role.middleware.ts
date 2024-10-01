@@ -1,30 +1,29 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
 import { CustomError } from "@/configs";
+import { AccessTokenProps } from "@/types/token";
 import { Role } from "@prisma/client";
-import { RequestHandler } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
 export const userRoleMiddleware = (...roles: Role[]) => {
-  return (req: any, res: any, next: any): RequestHandler => {
+  return (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = req.user;
+      const user = req.user as AccessTokenProps;
 
       if (!user) {
         throw new CustomError("User role is missing", StatusCodes.BAD_REQUEST);
       }
 
       if (user.role === Role.admin) {
-        return next();
+        next();
       }
+      console.log(user.role);
 
-      const userId = req.params.id;
-      if (!roles.includes(user.role) || user.id !== userId) {
+      if (!roles.includes(user.role)) {
         throw new CustomError("Permission denied", StatusCodes.FORBIDDEN);
       }
-      return next();
+      next();
     } catch (error) {
-      return next(error);
+      next(error);
     }
   };
 };

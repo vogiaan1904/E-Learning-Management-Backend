@@ -13,7 +13,7 @@ import {
   SignUpSchema,
   VerifyCodeSchema,
 } from "@/schemas/auth.schema";
-import { authValidation } from "@/validations/auth.validation";
+import { dataValidation } from "@/validations/data.validation";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import passport from "passport";
@@ -30,14 +30,14 @@ router.get(authRoute.status, (req: Request, res: Response) => {
 
 router.post(
   authRoute.signUp,
-  authValidation(SignUpSchema),
+  dataValidation(SignUpSchema),
   authController.signUp,
 );
 
 router.post(
   authRoute.signIn,
   preSignInMiddleware,
-  authValidation(SignInSchema),
+  dataValidation(SignInSchema),
   authController.signIn,
 );
 
@@ -45,20 +45,20 @@ router.post(authRoute.signOut, authController.signOut);
 
 router.post(
   authRoute.sendCode,
-  authValidation(SendCodeSchema),
+  dataValidation(SendCodeSchema),
   authController.sendCode,
 );
 
 router.post(
   authRoute.verifyCode,
-  authValidation(VerifyCodeSchema),
+  dataValidation(VerifyCodeSchema),
   authController.verifyCode,
 );
 
 router.post(
   authRoute.refreshToken,
   refreshTokenMiddleware,
-  authValidation(RefreshTokenSchema),
+  dataValidation(RefreshTokenSchema),
   authController.refreshToken,
 );
 

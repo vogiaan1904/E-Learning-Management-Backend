@@ -6,7 +6,7 @@ import { CustomRequest } from "@/types/request";
 import { AccessTokenProps, RefreshTokenProps } from "@/types/token";
 import { removeFieldsFromObject } from "@/utils/object";
 import { validateEmail } from "@/utils/validate";
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { v4 as uuidv4 } from "uuid";
 // Prioritize signing in by email
@@ -34,7 +34,7 @@ export const preSignInMiddleware = (
 };
 
 export const refreshTokenMiddleware = async (
-  req: CustomRequest<RefreshTokenProps>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -58,7 +58,7 @@ export const refreshTokenMiddleware = async (
 };
 
 export const accessTokenMiddleware = async (
-  req: CustomRequest<AccessTokenProps>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {

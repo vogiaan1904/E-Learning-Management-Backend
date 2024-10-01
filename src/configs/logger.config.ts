@@ -10,7 +10,7 @@ export const createWinstonLogger = (section?: string) => {
     level: envConfig.LOG_LEVEL,
     defaultMeta: {
       // service: section ?? "",
-      service: section ? `${envConfig.NAME} [${section}]` : envConfig.NAME,
+      service: section ? `${section}` : envConfig.NAME,
     },
     format: format.combine(
       format.metadata(),
@@ -23,7 +23,7 @@ export const createWinstonLogger = (section?: string) => {
         format: format.combine(
           format.colorize(),
           format.simple(),
-          format.align(),
+          // format.align(),
           format.printf(({ timestamp, level, message, metadata }) => {
             const { service, ...rest } = metadata;
             return `[${timestamp}] [${service}] ${level} :  ${message} ${Object.keys(rest).length > 0 ? `,${JSON.stringify(rest)}` : ""}`;

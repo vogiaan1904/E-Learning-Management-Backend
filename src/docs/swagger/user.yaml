@@ -15,7 +15,7 @@ paths:
     patch:
       tags:
         - User
-      summary: Update a user's details
+      summary: Update a user's profile
       parameters:
         - in: path
           name: id
@@ -24,19 +24,19 @@ paths:
           required: true
           description: The user's ID
       requestBody:
-        description: Fields to update for the user
+        description: Fields to update for the user's profile
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ReqUpdateUser"
+              $ref: "#/components/schemas/ReqUpdateUserProfile"
       responses:
         200:
           description: User updated successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResUpdateUser"
+                $ref: "#/components/schemas/ResUpdateUserProfile"
         404:
           description: User not found
           content:
@@ -108,34 +108,38 @@ paths:
                 $ref: "#/components/schemas/ResUserError"
 components:
   schemas:
-    ReqUpdateUser:
+    ReqUpdateUserProfile:
       type: object
       properties:
-        email:
+        firstName:
           type: string
-          format: email
-          description: User's email address
-          example: "acus@example.com"
+          description: firstname
+          example: "An"
+        lastName:
+          type: string
+          description: lastname
+          example: "Vo"
         username:
           type: string
-          description: User's username
-          example: "acus"
-        password:
+          description: username
+          example: "vogiaan1904"
+        birth:
           type: string
-          description: New password for the user (if updating)
-          example: "newpassword123"
-        role:
-          type: string
-          description: Role of the user
-          example: "ADMIN"
+          description: gender
+          example: "CUSTOM"
           enum:
-            - USER
-            - ADMIN
-        isVerified:
-          type: boolean
-          description: Whether the user's email is verified
-          example: true
-    ResUpdateUser:
+            - MALE
+            - FEMALE
+        address:
+          type: string
+          description: address
+          example: "121/6 ABC street, SaiGon"
+        phoneNumber:
+          type: string
+          description: phone number
+          example: "0746294759"
+ 
+    ResUpdateUserProfile:
       type: object
       properties:
         message:

@@ -1,0 +1,44 @@
+paths:
+  /teachers/api-status:
+    get:
+      tags:
+        - Teacher
+      summary: Check Teacher APIs status
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthStatus"
+  /teachers/create-course:
+    patch:
+      tags:
+        - Teacher
+      summary: Create Course
+      requestBody:
+        description: Request body 
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqCreateCourse"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateCourse"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateCourseError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateCourseError"
+

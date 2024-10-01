@@ -5,7 +5,7 @@ import {
   CreateUserSchema,
   UpdateUserProfileSchema,
 } from "@/schemas/user.schema";
-import { usersValidation } from "@/validations/users.validation";
+import { dataValidation } from "@/validations/data.validation";
 import { Role } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
@@ -23,23 +23,16 @@ router.use(accessTokenMiddleware);
 
 router.patch(
   userRoute.updateUser,
-  userRoleMiddleware(Role.teacher, Role.user),
-  usersValidation(UpdateUserProfileSchema),
+  dataValidation(UpdateUserProfileSchema),
   userController.updateAUserProfile,
 );
 
-router.get(
-  userRoute.getUser,
-  userRoleMiddleware(Role.teacher, Role.user),
-  userController.getAUser,
-);
-
-// router.use(userRoleMiddleware(Role.user, Role.teacher));
+router.get(userRoute.getUser, userController.getAUser);
 
 router.post(
   userRoute.createUser,
   userRoleMiddleware(Role.admin),
-  usersValidation(CreateUserSchema),
+  dataValidation(CreateUserSchema),
   userController.createAUser,
 );
 

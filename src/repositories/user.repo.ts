@@ -1,10 +1,5 @@
-import {
-  Prisma,
-  PrismaClient,
-  User,
-  UserProfifle,
-  UserVerification,
-} from "@prisma/client";
+import { prisma } from "@/database/connect.db";
+import { Prisma, User, UserProfifle, UserVerification } from "@prisma/client";
 
 export interface UserVerificationInterface {
   userId: string;
@@ -12,7 +7,7 @@ export interface UserVerificationInterface {
   expiredAt: Date;
   updatedAt: Date;
 }
-const prisma = new PrismaClient();
+
 class UserRepository {
   /* ---------------------------------- User ---------------------------------- */
   async create(data: Prisma.UserCreateInput): Promise<User> {
