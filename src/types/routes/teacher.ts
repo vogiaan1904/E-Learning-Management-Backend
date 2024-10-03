@@ -6,6 +6,7 @@ interface TeacherRouteProps extends DefaultRouteProps {
   updateTeacher: string;
   updateTeachers: string;
   createCourse: string;
+  getCourse: string;
   deleteTeacher: string;
   deleteTeachers: string;
 }
@@ -19,6 +20,7 @@ export const teacherRoute: TeacherRouteProps = {
   updateTeacher: "/:id",
   updateTeachers: "/many",
   createCourse: "/create-course",
+  getCourse: "/get-courses",
   deleteTeacher: "/:id",
   deleteTeachers: "/many",
 };
