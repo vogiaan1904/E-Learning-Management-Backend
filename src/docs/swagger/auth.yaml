@@ -218,6 +218,10 @@ components:
     ResAuthSignIn:
       type: object
       properties:
+        message: 
+          type: string
+        success:
+          type: boolean
         tokens:
           type: object
           properties:
@@ -225,10 +229,6 @@ components:
               type: string
             refreshToken:
               type: string
-        message: 
-          type: string
-        success:
-          type: boolean
     ResAuthSignOut:
       type: object
       properties:

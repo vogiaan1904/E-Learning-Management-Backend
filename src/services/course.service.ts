@@ -1,16 +1,16 @@
 import { CustomError } from "@/configs";
-import { prisma } from "@/database/connect.db";
 import courseRepo from "@/repositories/course.repo";
-import { CreateCourseProps, UpdateCourseProps } from "@/types/course";
+import {
+  CreateCourseProps,
+  GetCoursesProps,
+  UpdateCourseProps,
+} from "@/types/course";
+import { generateCourseFilter } from "@/utils/generateCourseFilter";
 import { Course, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 
 class CourseService {
-  private readonly prismaClient;
-
-  constructor() {
-    this.prismaClient = prisma;
-  }
+  private section = CourseService.name;
 
   createACourse = async (courseData: CreateCourseProps) => {
     const { name } = courseData;
@@ -20,6 +20,7 @@ class CourseService {
       throw new CustomError(
         "Course is already existed. Please use another information",
         StatusCodes.CONFLICT,
+        this.section,
       );
     }
 
@@ -29,7 +30,6 @@ class CourseService {
 
   getACourse = async (filter: Prisma.CourseWhereInput) => {
     const { name, id } = filter;
-
     const course = await courseRepo.getOne({
       OR: [
         {
@@ -41,14 +41,20 @@ class CourseService {
       ],
     });
     if (!course) {
-      throw new CustomError("Course not found.", StatusCodes.NOT_FOUND);
+      throw new CustomError(
+        "Course not found.",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
     }
     return course;
   };
 
-  getCoursesByTeacherId = async (filter: Pick<Course, "teacherId">) => {
-    const course = await courseRepo.getMany(filter);
-    return course;
+  getManyCourses = async (query: GetCoursesProps) => {
+    console.log("service called");
+    const { filter, options } = generateCourseFilter(query);
+    const courses = await courseRepo.getMany(filter, options);
+    return courses;
   };
 
   updateACourse = async (
@@ -57,9 +63,25 @@ class CourseService {
   ) => {
     const course = await courseRepo.getOne(filter);
     if (!course) {
-      throw new CustomError("Course not found.", StatusCodes.NOT_FOUND);
+      throw new CustomError(
+        "Course not found.",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
     }
     return await courseRepo.update(filter, courseData);
+  };
+
+  deleteACourse = async (filter: Pick<Course, "id">) => {
+    const course = await courseRepo.getOne(filter);
+    if (!course) {
+      throw new CustomError(
+        "Course not found.",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
+    }
+    return await courseRepo.delete(filter);
   };
 }
 export default new CourseService();

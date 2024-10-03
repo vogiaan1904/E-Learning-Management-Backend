@@ -1,6 +1,6 @@
 model Admin {
     userId String  @id
-    user   User    @relation(fields: [userId], references: [id])
+    user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     field  String?
 
     @@map("Admins")
