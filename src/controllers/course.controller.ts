@@ -44,6 +44,25 @@ class CourseController {
       course: course,
     });
   });
+
+  // getCoursesByCategory = catchAsync(async (req: Request, res: Response) => {
+  //   const { category } = req.body;
+  //   const courses = await CourseService.getCourseByCategory(category);
+  //   return res.status(StatusCodes.OK).json({
+  //     message: "Get courses successfully",
+  //     status: "success",
+  //     courses: courses,
+  //   });
+  // });
+
+  getManyCourses = catchAsync(async (req: Request, res: Response) => {
+    const courses = await CourseService.getManyCourses(req.query);
+    return res.status(StatusCodes.OK).json({
+      message: "Get course successfully",
+      status: "success",
+      courses: courses,
+    });
+  });
 }
 
 export default new CourseController();

@@ -16,6 +16,13 @@ export interface UpdateCoursesProps {
   data: Array<UpdateCourseProps>;
 }
 
+export interface GetCoursesProps {
+  skip?: string;
+  limit?: string;
+  teacherId?: string;
+  category?: string;
+}
+
 /* -------------------------------- Category -------------------------------- */
 export interface CreateCategoryProps extends Pick<Category, "name"> {}
 

@@ -1,7 +1,12 @@
 import { CustomError } from "@/configs";
 import { prisma } from "@/database/connect.db";
 import courseRepo from "@/repositories/course.repo";
-import { CreateCourseProps, UpdateCourseProps } from "@/types/course";
+import {
+  CreateCourseProps,
+  GetCoursesProps,
+  UpdateCourseProps,
+} from "@/types/course";
+import { generateCourseFilter } from "@/utils/generateCourseFilter";
 import { Course, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 
@@ -46,9 +51,10 @@ class CourseService {
     return course;
   };
 
-  getCoursesByTeacherId = async (filter: Pick<Course, "teacherId">) => {
-    const course = await courseRepo.getMany(filter);
-    return course;
+  getManyCourses = async (query: GetCoursesProps) => {
+    const { filter, options } = generateCourseFilter(query);
+    const courses = await courseRepo.getMany(filter, options);
+    return courses;
   };
 
   updateACourse = async (
