@@ -1,5 +1,4 @@
 import { CustomError } from "@/configs";
-import { prisma } from "@/database/connect.db";
 import courseRepo from "@/repositories/course.repo";
 import {
   CreateCourseProps,
@@ -11,11 +10,7 @@ import { Course, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 
 class CourseService {
-  private readonly prismaClient;
-
-  constructor() {
-    this.prismaClient = prisma;
-  }
+  private section = CourseService.name;
 
   createACourse = async (courseData: CreateCourseProps) => {
     const { name } = courseData;
@@ -25,6 +20,7 @@ class CourseService {
       throw new CustomError(
         "Course is already existed. Please use another information",
         StatusCodes.CONFLICT,
+        this.section,
       );
     }
 
@@ -45,7 +41,11 @@ class CourseService {
       ],
     });
     if (!course) {
-      throw new CustomError("Course not found.", StatusCodes.NOT_FOUND);
+      throw new CustomError(
+        "Course not found.",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
     }
     return course;
   };
@@ -63,9 +63,25 @@ class CourseService {
   ) => {
     const course = await courseRepo.getOne(filter);
     if (!course) {
-      throw new CustomError("Course not found.", StatusCodes.NOT_FOUND);
+      throw new CustomError(
+        "Course not found.",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
     }
     return await courseRepo.update(filter, courseData);
+  };
+
+  deleteACourse = async (filter: Pick<Course, "id">) => {
+    const course = await courseRepo.getOne(filter);
+    if (!course) {
+      throw new CustomError(
+        "Course not found.",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
+    }
+    return await courseRepo.delete(filter);
   };
 }
 export default new CourseService();

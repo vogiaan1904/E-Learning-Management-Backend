@@ -80,6 +80,42 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResCourseError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+    delete:
+      tags:
+        - Course
+      summary: Delete Course By Id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetCourse" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
   /courses/many:
     get:
       tags:
@@ -202,6 +238,13 @@ components:
           type: boolean
         course: 
           $ref: "#/components/schemas/Course"
+    ResDeleteCourse:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
 
     ResCourseError:
       type: object

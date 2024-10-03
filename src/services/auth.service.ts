@@ -20,13 +20,7 @@ import tokenService from "./token.service";
 import userService from "./user.service";
 
 class AuthService {
-  private generateErrorBySection = (
-    message: string,
-    statusCode: number,
-    data?: string | object,
-  ): CustomError => {
-    return new CustomError(message, statusCode, data, AuthService.name);
-  };
+  private section = AuthService.name;
   async signUp(userData: SignUpProps) {
     const { username, password, email, firstName, lastName, role } = userData;
     const existedUser = await userRepo.getOne({
@@ -40,9 +34,10 @@ class AuthService {
       ],
     });
     if (existedUser) {
-      throw this.generateErrorBySection(
+      throw new CustomError(
         "User is already existed. Please sign in",
         StatusCodes.CONFLICT,
+        this.section,
       );
     }
 
@@ -121,6 +116,7 @@ class AuthService {
       throw new CustomError(
         "User is not verified. Please check your email.",
         StatusCodes.UNAUTHORIZED,
+        this.section,
         {
           userVerification: {
             id: userVerification.id,
@@ -157,6 +153,7 @@ class AuthService {
       throw new CustomError(
         "User not found. Please sign up",
         StatusCodes.NOT_FOUND,
+        this.section,
       );
     }
     if (user.isVerified) {
@@ -172,6 +169,7 @@ class AuthService {
       throw new CustomError(
         "User verification not found",
         StatusCodes.NOT_FOUND,
+        this.section,
       );
     }
     const verificationCode = tokenService.generateVerificationCode();
@@ -204,12 +202,14 @@ class AuthService {
       throw new CustomError(
         "User not found. Please sign up",
         StatusCodes.NOT_FOUND,
+        this.section,
       );
     }
     if (user.isVerified) {
       throw new CustomError(
         "User is already verified",
         StatusCodes.BAD_REQUEST,
+        this.section,
       );
     }
     const userVerification = await userRepo.getVerification({ id });
@@ -217,6 +217,7 @@ class AuthService {
       throw new CustomError(
         "User verification not found",
         StatusCodes.NOT_FOUND,
+        this.section,
       );
     }
     const requestTime = new Date();
@@ -224,12 +225,14 @@ class AuthService {
       throw new CustomError(
         "Verification code is expired",
         StatusCodes.BAD_REQUEST,
+        this.section,
       );
     }
     if (!compareHashData(code, userVerification.code)) {
       throw new CustomError(
         "Verification code is wrong",
         StatusCodes.UNAUTHORIZED,
+        this.section,
       );
     }
     await userService.updateAUser(
@@ -263,13 +266,21 @@ class AuthService {
       id: sub,
     });
     if (!foundUser) {
-      throw new CustomError("User not found", StatusCodes.NOT_FOUND);
+      throw new CustomError(
+        "User not found",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
     }
     const foundToken = await redisService.getKey(
       tokenService.generateUserSessionKey(tokenId),
     );
     if (!foundToken) {
-      throw new CustomError("Refresh token not found", StatusCodes.NOT_FOUND);
+      throw new CustomError(
+        "Refresh token not found",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
     }
     const accessToken = await tokenService.generateJwtToken(
       {

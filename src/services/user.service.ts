@@ -1,5 +1,4 @@
 import { CustomError } from "@/configs";
-import { prisma } from "@/database/connect.db";
 import userRepo from "@/repositories/user.repo";
 import { CreateUserProps } from "@/types/user";
 import { generateCustomAvatarUrl } from "@/utils/avatar";
@@ -14,11 +13,7 @@ interface UserOptions {
 }
 
 class UserService {
-  private readonly prismaClient;
-
-  constructor() {
-    this.prismaClient = prisma;
-  }
+  private section = UserService.name;
 
   /* ------------------------------- Model User ------------------------------- */
 
@@ -31,6 +26,7 @@ class UserService {
       throw new CustomError(
         "User is already existed. Please use another information",
         StatusCodes.CONFLICT,
+        this.section,
       );
     }
 
@@ -85,7 +81,11 @@ class UserService {
       },
     );
     if (!user) {
-      throw new CustomError("User not found", StatusCodes.NOT_FOUND);
+      throw new CustomError(
+        "User not found",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
     }
     return user;
   };
