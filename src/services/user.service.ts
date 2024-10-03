@@ -1,10 +1,11 @@
-import { prisma } from "@/database/connect.db";
-import { Optional } from "@/types/object";
+import { CustomError } from "@/configs";
+import userRepo from "@/repositories/user.repo";
+import { CreateUserProps } from "@/types/user";
+import { generateCustomAvatarUrl } from "@/utils/avatar";
 import { hashData } from "@/utils/bcrypt";
-import { Prisma, User, UserProfifle, UserVerification } from "@prisma/client";
+import { Prisma, Role, User, UserVerification } from "@prisma/client";
 import { addMinutes } from "date-fns";
-
-interface UserFields extends Omit<User, "id"> {}
+import { StatusCodes } from "http-status-codes";
 interface UserOptions {
   type?: "email" | "username" | "id";
   includeProfile?: boolean;
@@ -12,21 +13,55 @@ interface UserOptions {
 }
 
 class UserService {
-  private readonly prismaClient;
+  private section = UserService.name;
 
-  constructor() {
-    this.prismaClient = prisma;
-  }
+  /* ------------------------------- Model User ------------------------------- */
 
-  /**
-   * Model User
-   */
+  createAUser = async (userData: CreateUserProps) => {
+    const { username, password, email, firstName, lastName, role } = userData;
+    const existedUser = await userRepo.getOne({
+      OR: [{ email }, { username }],
+    });
+    if (existedUser) {
+      throw new CustomError(
+        "User is already existed. Please use another information",
+        StatusCodes.CONFLICT,
+        this.section,
+      );
+    }
+
+    const userRoleData = {
+      [Role.teacher]: { teacher: { create: {} } },
+      [Role.admin]: { admin: { create: {} } },
+      [Role.user]: { student: { create: {} } },
+    };
+
+    const userRole = role in userRoleData ? role : Role.user;
+
+    const user = await userRepo.create({
+      // nested creattion all sub tables, (userProfile, Student or Teacher)
+      username: username,
+      email: email,
+      password: hashData(password),
+      isVerified: true,
+      userProfile: {
+        create: {
+          firstName,
+          lastName,
+          avatar: generateCustomAvatarUrl(firstName, lastName),
+        },
+      },
+      role: userRole,
+      ...userRoleData[userRole], // khi model student và teacher có thêm field thì phải làm giống userProfile
+    });
+    return user;
+  };
 
   getAUser = async (fields: Prisma.UserWhereInput, options?: UserOptions) => {
     const { id, email, username } = fields;
     const { includeProfile } = options || {};
-    return await this.prismaClient.user.findFirst({
-      where: {
+    const user = await userRepo.getOne(
+      {
         OR: [
           {
             id: id,
@@ -39,53 +74,59 @@ class UserService {
           },
         ],
       },
-      include: {
-        userProfile: includeProfile || false,
+      {
+        include: {
+          userProfile: includeProfile,
+        },
       },
-    });
+    );
+    if (!user) {
+      throw new CustomError(
+        "User not found",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
+    }
+    return user;
   };
 
-  createAUser = async (
-    data: Optional<
-      Pick<
-        User,
-        "email" | "username" | "password" | "profileId" | "isVerified" | "role"
-      >,
-      "isVerified" | "role"
-    >,
+  updateAUser = async (
+    filter: Pick<User, "id">,
+    data: Prisma.UserUpdateInput,
+    options?: UserOptions,
   ) => {
-    return await this.prismaClient.user.create({
-      data: data,
-    });
+    return await userRepo.update(filter, data, options);
   };
 
-  updateAUser = async (fields: Pick<User, "id">, user: Partial<UserFields>) => {
-    return await this.prismaClient.user.update({
-      where: fields,
-      data: user,
-    });
+  /* --------------------------- Model UserProfifle --------------------------- */
+
+  createAUserProfile = async (data: Prisma.UserProfifleCreateInput) => {
+    return await userRepo.createProfile(data);
   };
 
-  /**
-   * Model UserProfile
-   */
-
-  createAUserProfile = async (
-    data: Pick<UserProfifle, "firstName" | "lastName" | "avatar">,
+  updateAUserProfile = async (
+    filter: Pick<User, "id">,
+    data: Prisma.UserProfifleUpdateInput,
   ) => {
-    return await this.prismaClient.userProfifle.create({
-      data: data,
-    });
+    return await userRepo.update(
+      filter,
+      {
+        userProfile: {
+          update: data,
+        },
+      },
+      {
+        include: {
+          userProfile: true,
+        },
+      },
+    );
   };
 
-  /**
-   * Model UserVerification
-   */
+  /* ------------------------- Model UserVerification ------------------------- */
 
   getAUserVerification = async (fields: Pick<UserVerification, "id">) => {
-    return await this.prismaClient.userVerification.findUnique({
-      where: fields,
-    });
+    return await userRepo.getVerification(fields);
   };
 
   createAUserVerification = async (
@@ -97,13 +138,11 @@ class UserService {
     const now = new Date();
     const { userId, code } = data;
     const expiredAt = options?.customExpriredDate || addMinutes(now, 5);
-    return await this.prismaClient.userVerification.create({
-      data: {
-        userId: userId,
-        code: hashData(code),
-        expiredAt: expiredAt,
-        updatedAt: now,
-      },
+    return await userRepo.createVerification({
+      userId: userId,
+      code: hashData(code),
+      expiredAt: expiredAt,
+      updatedAt: now,
     });
   };
 
@@ -116,30 +155,24 @@ class UserService {
     const now = new Date();
     const { id, code } = data;
     const expiredAt = options?.customExpriredDate || addMinutes(now, 5);
-    return await this.prismaClient.userVerification.update({
-      where: {
-        id: id,
-      },
-      data: {
+    return await userRepo.updateVerification(
+      { id },
+      {
         code: hashData(code),
         expiredAt: expiredAt,
         updatedAt: now,
       },
-    });
+    );
   };
 
   deleteAUserVerification = async (fields: Pick<UserVerification, "id">) => {
-    return await this.prismaClient.userVerification.delete({
-      where: fields,
-    });
+    return await userRepo.deleteVerification(fields);
   };
 
   deleteUserVerifications = async (
     fields: Prisma.UserVerificationWhereInput,
   ) => {
-    return await this.prismaClient.userVerification.deleteMany({
-      where: fields,
-    });
+    return await userRepo.deleteVerifications(fields);
   };
 }
 

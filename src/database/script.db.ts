@@ -1,8 +1,8 @@
 import logger from "@/configs/logger.config";
-import userService from "@/services/user.service";
+import userRepo from "@/repositories/user.repo";
 import { generateCustomAvatarUrl } from "@/utils/avatar";
 import { hashData } from "@/utils/bcrypt";
-
+import { Role } from "@prisma/client";
 export const executePrescriptDB = async () => {
   try {
     logger.info("Running database prescript");
@@ -23,7 +23,7 @@ export const executePrescriptRedis = async () => {
 };
 
 export const createAdminAccount = async () => {
-  const existedAdmin = await userService.getAUser({
+  const existedAdmin = await userRepo.getOne({
     username: "admin",
   });
   if (existedAdmin) {
@@ -31,18 +31,24 @@ export const createAdminAccount = async () => {
     return;
   }
   logger.error("Admin account is not found. Creating admin account...");
-  const adminProfile = await userService.createAUserProfile({
-    firstName: "Admin",
-    lastName: "SE",
-    avatar: generateCustomAvatarUrl("Admin", "SE"),
-  });
-  await userService.createAUser({
+  // const adminProfile = await userService.createAUserProfile({
+  //   firstName: "Admin",
+  //   lastName: "SE",
+  //   avatar: generateCustomAvatarUrl("Admin", "SE"),
+  // });
+  await userRepo.create({
     email: "admin@mail.com",
     username: "admin",
     password: hashData("admin123"),
-    role: "admin",
-    profileId: adminProfile.id,
+    role: Role.admin,
     isVerified: true,
+    userProfile: {
+      create: {
+        firstName: "Admin",
+        lastName: "SE",
+        avatar: generateCustomAvatarUrl("Admin", "SE"),
+      },
+    },
   });
   logger.info("Create admin account successfully");
 };

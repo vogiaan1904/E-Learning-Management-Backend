@@ -6,7 +6,7 @@ export const prisma = new PrismaClient();
 const clients = [
   {
     client: prisma,
-    database_name: "Express TypeScript Template",
+    database_name: "E Learning Platform Backend",
   },
 ];
 

@@ -77,6 +77,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResAuthError"
+  /auth/me:
+    get:
+      tags:
+        - Auth
+      summary: Get user info
+      description: Retrieve information about the authenticated user.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          description: Unauthorized (User not authenticated)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthError"
   /auth/signout:
     post:
       tags:
@@ -168,6 +189,9 @@ components:
         password:
           type: string
           example: "acus123"
+        role:
+          type: string
+          exmaple: "student"
     ReqAuthSignIn:
       type: object
       properties:
@@ -194,6 +218,10 @@ components:
     ResAuthSignIn:
       type: object
       properties:
+        message: 
+          type: string
+        success:
+          type: boolean
         tokens:
           type: object
           properties:
@@ -201,10 +229,6 @@ components:
               type: string
             refreshToken:
               type: string
-        message: 
-          type: string
-        success:
-          type: boolean
     ResAuthSignOut:
       type: object
       properties:
@@ -257,3 +281,25 @@ components:
         status:
           type: string
           example: "failed"
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+        isVerified:
+          type: boolean
+        userProfileId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+

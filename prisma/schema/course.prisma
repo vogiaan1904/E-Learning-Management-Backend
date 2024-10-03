@@ -4,49 +4,48 @@ enum LessonType {
 }
 
 model Course {
-    id             String             @id @default(uuid())
+    id             String                @id @default(uuid())
     name           String
     teacherId      String
-    teacher        Teacher            @relation(fields: [teacherId], references: [userId])
     description    String
-    isPublic       Boolean
+    numEnrollments Int                   @default(0)
     modules        Module[]
-    categories     CourseToCategory[]
+    categories     CategoriesOnCourses[]
     enrollments    Enrollment[]
-    numEnrollments Int
-    createdAt      DateTime           @default(now())
-    updatedAt      DateTime           @updatedAt
+    teacher        Teacher               @relation(fields: [teacherId], references: [id])
+    createdAt      DateTime              @default(now())
+    updatedAt      DateTime              @updatedAt
 
     @@map("Courses")
 }
 
-model CourseCategory {
-    id           String             @id @default(uuid())
-    categoryType String
-    courses      CourseToCategory[]
+model Category {
+    id      String                @id @default(uuid())
+    name    String                @unique
+    courses CategoriesOnCourses[]
 
-    @@map("CourseCategories")
+    @@map("Categories")
 }
 
-model CourseToCategory {
+model CategoriesOnCourses {
     courseId   String
     categoryId String
-    course     Course         @relation(fields: [courseId], references: [id])
-    category   CourseCategory @relation(fields: [categoryId], references: [id])
+    course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+    category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
     @@id([courseId, categoryId])
-    @@map("CourseToCategories")
+    @@map("CategoriesOnCourses")
 }
 
 model Module {
     id          String   @id @default(uuid())
+    courseId    String
     name        String
     description String
+    numLessons  Int      @default(0)
     lessons     Lesson[]
-    numLessons  Int
     quizzes     Quizz[]
-    courseId    String
-    course      Course   @relation(fields: [courseId], references: [id])
+    course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
     createdAt   DateTime @default(now())
     updatedAt   DateTime @default(now())
 
@@ -55,23 +54,22 @@ model Module {
 
 model Lesson {
     id          String @id @default(uuid())
+    moduleId    String
     name        Int
     description String
-    moduleId    String
-    module      Module @relation(fields: [moduleId], references: [id])
     content     Json
+    module      Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
     @@map("Lessons")
 }
 
 model Quizz {
     id          String            @id @default(uuid())
+    moduleId    String
     name        String
     description String
-    score       Int
     timeLimit   Int //minutes
-    moduleId    String
-    module      Module            @relation(fields: [moduleId], references: [id])
+    module      Module            @relation(fields: [moduleId], references: [id], onDelete: Cascade)
     questions   Question[]
     submissions QuizzSubmission[]
     createdAt   DateTime          @default(now())
@@ -81,42 +79,17 @@ model Quizz {
 }
 
 model Question {
-    id                     String                 @id @default(uuid())
-    index                  Int
-    content                String
-    score                  Int
-    quizzId                String
-    quizz                  Quizz                  @relation(fields: [quizzId], references: [id])
-    shortAnswerQuestion    ShortAnswerQuesion?
-    multipleChoiceQuestion MultipleChoiceQuesion?
-    createdAt              DateTime               @default(now())
-    updatedAt              DateTime               @default(now())
+    id            String   @id @default(uuid())
+    quizzId       String
+    index         Int
+    content       String
+    wrongOptions  Json
+    correctOption Json
+    quizz         Quizz    @relation(fields: [quizzId], references: [id], onDelete: Cascade)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @default(now())
 
     @@map("Questions")
-}
-
-model ShortAnswerQuesion {
-    id         String   @id @default(uuid())
-    questionId String   @unique
-    question   Question @relation(fields: [questionId], references: [id])
-    wordLimit  Int
-
-    @@map("ShortAnswerQuestions")
-}
-
-model MultipleChoiceQuesion {
-    id         String   @id @default(uuid())
-    questionId String   @unique
-    question   Question @relation(fields: [questionId], references: [id])
-    options    Json // [
-    // {content: "D...", isCorrect: false},
-    // {content: "B...", isCorrect: false},
-    // {content: "A...", isCorrect: false}
-    // ]
-
-    correctOption Json // {content: "C...", isCorrect: true}
-
-    @@map("MultipleChoiceQuestions")
 }
 
 // model QuestionAnswer {
@@ -134,7 +107,89 @@ model MultipleChoiceQuesion {
 //     @@map("QuestionAnswers")
 // }
 
-enum QuestionType {
-    MUTIPLE_CHOICE
-    TEXT
-}
+// /* -------------------------------- FrontEnd -------------------------------- */
+// <form id="questionForm">
+//   <label for="content">Question Content:</label>
+//   <input type="text" id="content" name="content" required><br>
+
+//   <label for="correctOption">Correct Option:</label>
+//   <input type="text" id="correctOption" name="correctOption" required><br>
+
+//   <label for="wrongOptions">Wrong Options:</label>
+//   <input type="text" name="wrongOption" required placeholder="Wrong Option 1"><br>
+//   <input type="text" name="wrongOption" required placeholder="Wrong Option 2"><br>
+//   <input type="text" name="wrongOption" required placeholder="Wrong Option 3"><br>
+
+//   <input type="submit" value="Submit">
+// </form>
+
+// document.getElementById('questionForm').addEventListener('submit', function (event) {
+//   event.preventDefault();
+
+//   // Get the question content
+//   const content = document.getElementById('content').value;
+
+//   // Get the correct option
+//   const correctOption = document.getElementById('correctOption').value;
+
+//   // Get the wrong options from the form inputs
+//   const wrongOptions = Array.from(document.getElementsByName('wrongOption')).map(input => input.value);
+
+//   // Structure the options array
+//   const options = [
+//     { option: correctOption, isCorrect: true },  // Correct option
+//     ...wrongOptions.map(wrong => ({ option: wrong, isCorrect: false }))  // Wrong options
+//   ];
+
+//   // Construct the question data
+//   const questionData = {
+//     content: content,
+//     options: options,  // Array of options (1 correct, 3 wrong)
+//   };
+
+//   console.log(questionData);
+
+//   // Send the data to the server (API request)
+//   // fetch('/api/question', { method: 'POST', body: JSON.stringify(questionData), headers: { 'Content-Type': 'application/json' } })
+// });
+
+// /* --------------------------------- Backend -------------------------------- */
+// app.post('/api/question', (req, res) => {
+//   const { content, options } = req.body;
+
+//   const correctOption = options.find(option => option.isCorrect);
+//   const wrongOptions = options.filter(option => !option.isCorrect);
+
+//   const questionData = {
+//     content,
+//     correctOption: correctOption ? JSON.stringify(correctOption) : null,
+//     wrongOptions: JSON.stringify(wrongOptions),
+//     quizzId: "some_quiz_id"
+//   };
+
+//   // Save the question in the database
+//   // prisma.question.create({ data: questionData }).then(result => res.json(result));
+// });
+
+// /* --------------------------------- Example -------------------------------- */
+// {
+//   "content": "What is the capital of France?",
+//   "options": [
+//     {
+//       "option": "Paris",
+//       "isCorrect": true
+//     },
+//     {
+//       "option": "London",
+//       "isCorrect": false
+//     },
+//     {
+//       "option": "Berlin",
+//       "isCorrect": false
+//     },
+//     {
+//       "option": "Madrid",
+//       "isCorrect": false
+//     }
+//   ]
+// }

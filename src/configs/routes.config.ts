@@ -1,6 +1,8 @@
 import { authRoute } from "@/types/routes/auth";
+import { courseRoute } from "@/types/routes/course";
 import { serverRoutes } from "@/types/routes/server";
 import { serviceRoutes } from "@/types/routes/service";
+import { teacherRoute } from "@/types/routes/teacher";
 import { userRoute } from "@/types/routes/user";
 
 export const routesConfig = {
@@ -12,7 +14,9 @@ export const routesConfig = {
   },
   apis: "/api/v1",
   serverRoutes: serverRoutes,
-  userRoute: userRoute,
   serviceRoutes: serviceRoutes,
   authRoute: authRoute,
+  userRoute: userRoute,
+  courseRoute: courseRoute,
+  teacherRoute: teacherRoute,
 } as const;

@@ -1,6 +1,8 @@
 model Teacher {
-    userId  String   @id
-    user    User     @relation(fields: [userId], references: [id])
-    field   String
+    id      String   @id
+    user    User     @relation(fields: [id], references: [id], onDelete: Cascade)
+    field   String?
     courses Course[]
+
+    @@map("Teachers")
 }

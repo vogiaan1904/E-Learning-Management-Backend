@@ -1,25 +1,29 @@
 import { CustomError } from "@/configs";
-import { unallowedRoles } from "@/types/role";
 import { AccessTokenProps } from "@/types/token";
-import { getValueFromObject } from "@/utils/object";
+import { Role } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
-export const userRoleMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const data = getValueFromObject<AccessTokenProps>(req, "auth");
-    if (unallowedRoles.includes(data.role)) {
-      throw new CustomError(
-        "This operation is not permitted",
-        StatusCodes.BAD_REQUEST,
-      );
+export const userRoleMiddleware = (...roles: Role[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user as AccessTokenProps;
+
+      if (!user) {
+        throw new CustomError("User role is missing", StatusCodes.BAD_REQUEST);
+      }
+
+      if (user.role === Role.admin) {
+        next();
+      }
+      console.log(user.role);
+
+      if (!roles.includes(user.role)) {
+        throw new CustomError("Permission denied", StatusCodes.FORBIDDEN);
+      }
+      next();
+    } catch (error) {
+      next(error);
     }
-    next();
-  } catch (error) {
-    next(error);
-  }
+  };
 };

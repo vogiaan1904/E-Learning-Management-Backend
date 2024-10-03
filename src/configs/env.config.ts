@@ -2,7 +2,7 @@ import "dotenv/config";
 
 export const envConfig = {
   // Server
-  NAME: "Express Typescript Template",
+  NAME: "E Learning Platform Backend",
   PORT: process.env.PORT || 3000,
   LOG_FILE: "server_info.log",
   NODE_ENV: process.env.NODE_ENV || "development",

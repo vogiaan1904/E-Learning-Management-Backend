@@ -22,6 +22,9 @@ dotenv.config({
   path: [".env", ".env.development", ".env.production"],
 });
 
+// const prisma = new PrismaClient();
+// const a = "teacher";
+// console.log(prisma[a]);
 const server = express();
 
 // Views

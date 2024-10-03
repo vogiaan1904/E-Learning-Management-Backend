@@ -1,13 +1,15 @@
 model Student {
-    userId      String       @id
-    user        User         @relation(fields: [userId], references: [id])
+    id          String       @id
+    user        User         @relation(fields: [id], references: [id], onDelete: Cascade)
     enrollments Enrollment[]
+
+    @@map("Students")
 }
 
 model Enrollment {
     studentId        String
     courseId         String
-    student          Student           @relation(fields: [studentId], references: [userId])
+    student          Student           @relation(fields: [studentId], references: [id])
     course           Course            @relation(fields: [courseId], references: [id])
     quizzSubmissions QuizzSubmission[]
     grade            Int

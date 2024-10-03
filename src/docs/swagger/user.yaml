@@ -1,0 +1,227 @@
+paths:
+  /users/api-status:
+    get:
+      tags:
+        - User
+      summary: Check user APIs status
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserStatus"
+  /users/{id}:
+    patch:
+      tags:
+        - User
+      summary: Update a user's profile
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The user's ID
+      requestBody:
+        description: Fields to update for the user's profile
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqUpdateUserProfile"
+      responses:
+        200:
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUpdateUserProfile"
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
+    get:
+      tags:
+        - User
+      summary: Get a user by Id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The user's ID
+      responses:
+        200:
+          description: User got successfully
+          content:
+            application/json:
+              
+        404:
+          description: User not found
+          content:
+            application/json:
+
+        400:
+          description: Bad Request
+          content:
+            application/json:
+
+  /users:
+    post:
+      tags:
+        - User
+      summary: Create a user
+      requestBody:
+        description: Request body (Include role)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqCreateUser"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateUser"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
+components:
+  schemas:
+    ReqUpdateUserProfile:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: firstname
+          example: "An"
+        lastName:
+          type: string
+          description: lastname
+          example: "Vo"
+        username:
+          type: string
+          description: username
+          example: "vogiaan1904"
+        birth:
+          type: string
+          description: gender
+          example: "CUSTOM"
+          enum:
+            - MALE
+            - FEMALE
+        address:
+          type: string
+          description: address
+          example: "121/6 ABC street, SaiGon"
+        phoneNumber:
+          type: string
+          description: phone number
+          example: "0746294759"
+ 
+    ResUpdateUserProfile:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "User updated successfully"
+        status:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+    ResGetUser:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+        isVerified:
+          type: boolean
+        userProfileId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ReqCreateUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "Gia Phuc"
+        lastName:
+          type: string
+          example: "Pham"
+        username:
+          type: string
+          example: "acus"
+        email:
+          type: string
+          example: "acuscodinghcm@gmail.com"
+        password:
+          type: string
+          example: "acus123"
+        role:
+          type: string
+          example: "teacher"
+    ResCreateUser:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            firstName:
+              type: string
+              example: "Gia Phuc"
+            lastName:
+              type: string
+              example: "Pham"
+            username:
+              type: string
+              example: "acus"
+            email:
+              type: string
+              example: "acuscodinghcm@gmail.com"
+            role:
+              type: string
+              example: "acus123"
+    ResUserError:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
