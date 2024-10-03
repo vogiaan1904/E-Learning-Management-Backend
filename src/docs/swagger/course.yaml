@@ -5,11 +5,31 @@ paths:
         - Course
       summary: Create Course
       requestBody:
-        description: Request body 
+        description: Request body for creating a new course. The `categories` field is optional.
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ReqCreateCourse"
+              type: object
+              properties:
+                teacherId:
+                  type: string
+                  format: uuid
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+                name:
+                  type: string
+                  example: "DSA"
+                description:
+                  type: string
+                  example: "An advanced course on Data Structures and Algorithms"
+                categories:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional list of categories for the course (e.g., "WebDevelopment", "MachineLearning")
+              required:
+                - teacherId
+                - name
+                - description
       responses:
         201:
           description: Created
@@ -17,23 +37,54 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResCreateCourse"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResCreateCourseError"
         400:
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResCreateCourseError"
+                $ref: "#/components/schemas/ResCourseError"
+        409:
+          description: Conflict (e.g., course already exists with the same name)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+  /courses/{id}:
+    get:
+      tags:
+        - Course
+      summary: Get Course By Id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetCourse" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
   /courses/many:
     get:
       tags:
         - Course
-      summary: Retrieve courses with optional filtering and pagination
+      summary: Get courses with optional filtering and pagination
       parameters:
         - name: teacherId
           in: query
@@ -75,9 +126,42 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Course"
+                  $ref: "#/components/schemas/ResGetCourse"
+                $ref: "#/components/schemas/ResGetCourse"
+        204:
+          description: No courses found
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        500:
+          description:  Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
 components:
   schemas:
+
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "course123"
+        name:
+          type: string
+          example: "Data Structures"
+        description:
+          type: string
+          example: "An advanced course on data structures"
+        teacherId:
+          type: string
+          example: "teacher123"
+
+
     ReqCreateCourse:
       type: object
       properties:
@@ -90,6 +174,16 @@ components:
         description:
           type: string
           example: "fucking hard"
+    ReqGetCourse:
+      type: object
+      properties:
+        teacherId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+
     ResCreateCourse:
       type: object
       properties: 
@@ -98,8 +192,18 @@ components:
         success:
           type: boolean
         course: 
-          type: object
-    ResCreateCourseError:
+          $ref: "#/components/schemas/Course"
+    ResGetCourse:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        course: 
+          $ref: "#/components/schemas/Course"
+
+    ResCourseError:
       type: object
       properties:
         message: 
@@ -107,3 +211,4 @@ components:
         status:
           type: string
           example: "failed"
+  

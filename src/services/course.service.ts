@@ -34,7 +34,6 @@ class CourseService {
 
   getACourse = async (filter: Prisma.CourseWhereInput) => {
     const { name, id } = filter;
-
     const course = await courseRepo.getOne({
       OR: [
         {
@@ -52,6 +51,7 @@ class CourseService {
   };
 
   getManyCourses = async (query: GetCoursesProps) => {
+    console.log("service called");
     const { filter, options } = generateCourseFilter(query);
     const courses = await courseRepo.getMany(filter, options);
     return courses;

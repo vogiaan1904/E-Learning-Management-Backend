@@ -56,9 +56,10 @@ class CourseController {
   // });
 
   getManyCourses = catchAsync(async (req: Request, res: Response) => {
+    console.log("controller called");
     const courses = await CourseService.getManyCourses(req.query);
     return res.status(StatusCodes.OK).json({
-      message: "Get course successfully",
+      message: "Get courses successfully",
       status: "success",
       courses: courses,
     });
