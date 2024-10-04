@@ -10,7 +10,7 @@ class CourseController {
 
   constructor() {}
 
-  createCourse = catchAsync(
+  createACourse = catchAsync(
     async (req: CustomRequest<CreateCourseProps>, res: Response) => {
       const course = await CourseService.createACourse(req.body);
       res.status(StatusCodes.CREATED).json({
@@ -20,7 +20,7 @@ class CourseController {
     },
   );
 
-  updateCourse = catchAsync(
+  updateACourse = catchAsync(
     async (req: CustomRequest<UpdateCourseProps>, res: Response) => {
       const courseId = req.params.id;
       const course = await CourseService.updateACourse(

@@ -58,7 +58,7 @@ class CourseService {
   };
 
   updateACourse = async (
-    filter: Pick<Course, "id">,
+    filter: Prisma.CourseWhereUniqueInput,
     courseData: UpdateCourseProps,
   ) => {
     const course = await courseRepo.getOne(filter);

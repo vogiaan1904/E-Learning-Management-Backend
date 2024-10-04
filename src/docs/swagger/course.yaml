@@ -86,6 +86,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResCourseError"
+    patch:
+      tags:
+        - Course
+      summary: Update Course
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      requestBody:
+        description: Request body for updating a course
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                teacherId:
+                  type: string
+                  format: uuid
+                  example: "123e4567-e89b-12d3-a456-426614174000"
     delete:
       tags:
         - Course
