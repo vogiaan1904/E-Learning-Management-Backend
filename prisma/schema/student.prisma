@@ -9,15 +9,14 @@ model Student {
 model Enrollment {
     studentId        String
     courseId         String
-    student          Student           @relation(fields: [studentId], references: [id])
-    course           Course            @relation(fields: [courseId], references: [id])
+    student          Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    course           Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
     quizzSubmissions QuizzSubmission[]
-    grade            Int
-    feedback         String
-    status           String
-    completion       Int
+    grade            Int               @default(0)
+    feedback         String?
+    status           EnrollmentStatus  @default(inProgress)
+    completion       Int               @default(0)
     enrolledAt       DateTime          @default(now())
-    cancelledAt      DateTime
 
     @@id([studentId, courseId])
     @@map("Enrollments")
@@ -29,9 +28,9 @@ model QuizzSubmission {
     courseId          String
     studentId         String
     score             Int
-    quizz             Quizz              @relation(fields: [quizzId], references: [id])
-    status            SubmissionStatus   @default(UNFINISHED)
-    enrollment        Enrollment         @relation(fields: [studentId, courseId], references: [studentId, courseId])
+    quizz             Quizz              @relation(fields: [quizzId], references: [id], onDelete: Cascade)
+    status            SubmissionStatus   @default(unfinished)
+    enrollment        Enrollment         @relation(fields: [studentId, courseId], references: [studentId, courseId], onDelete: Cascade)
     submissionAnswers SubmissionAnswer[]
     submittedAt       DateTime           @default(now())
 }
@@ -41,13 +40,18 @@ model SubmissionAnswer {
     // questionAnswerId  String
     // questionAnswer    QuestionAnswer  @relation(fields: [questionAnswerId], references: [id])
     quizzSubmissionId String
-    quizzSubmission   QuizzSubmission @relation(fields: [quizzSubmissionId], references: [id])
+    quizzSubmission   QuizzSubmission @relation(fields: [quizzSubmissionId], references: [id], onDelete: Cascade)
     createdAt         DateTime        @default(now())
 
     @@map("submissionAnswers")
 }
 
 enum SubmissionStatus {
-    FINISHED
-    UNFINISHED
+    finished
+    unfinished
+}
+
+enum EnrollmentStatus {
+    completed
+    inProgress
 }

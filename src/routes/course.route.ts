@@ -40,7 +40,7 @@ router.get(
 router.get(
   courseRoute.getCourse,
   userRoleMiddleware(Role.teacher),
-  courseController.getCourseById,
+  courseController.getACourseById,
 );
 
 router.patch(
@@ -48,6 +48,12 @@ router.patch(
   userRoleMiddleware(Role.teacher),
   dataValidation(UpdateCourseSchema),
   courseController.updateACourse,
+);
+
+router.post(
+  courseRoute.enroll,
+  userRoleMiddleware(Role.user),
+  courseController.enrollACourse,
 );
 
 export const courseApis = router;

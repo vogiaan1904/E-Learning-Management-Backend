@@ -1,13 +1,12 @@
-import { createWinstonLogger } from "@/configs";
 import CourseService from "@/services/course.service";
+import enrollmentService from "@/services/enrollment.service";
 import { CreateCourseProps, UpdateCourseProps } from "@/types/course";
-import { CustomRequest } from "@/types/request";
+import { CustomRequest, CustomUserRequest } from "@/types/request";
+import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 class CourseController {
-  private readonly logger = createWinstonLogger(CourseController.name);
-
   constructor() {}
 
   createACourse = catchAsync(
@@ -35,7 +34,7 @@ class CourseController {
     },
   );
 
-  getCourseById = catchAsync(async (req: Request, res: Response) => {
+  getACourseById = catchAsync(async (req: Request, res: Response) => {
     const courseId = req.params.id;
     const course = await CourseService.getACourse({ id: courseId });
     return res.status(StatusCodes.OK).json({
@@ -63,6 +62,23 @@ class CourseController {
       courses: courses,
     });
   });
+
+  enrollACourse = catchAsync(
+    async (req: CustomUserRequest<UserPayload>, res: Response) => {
+      const user = req.user;
+      const studentId = user.id;
+      const courseId = req.params.id;
+      const enrollment = await enrollmentService.enrollACourse({
+        studentId,
+        courseId,
+      });
+      return res.status(StatusCodes.OK).json({
+        message: "Enrolled course successfully",
+        status: "success",
+        enrollment: enrollment,
+      });
+    },
+  );
 
   deleteACourse = catchAsync(async (req: Request, res: Response) => {
     const courseId = req.params.id;

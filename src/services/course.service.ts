@@ -1,5 +1,6 @@
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
+
 import {
   CreateCourseProps,
   GetCoursesProps,
@@ -51,7 +52,6 @@ class CourseService {
   };
 
   getManyCourses = async (query: GetCoursesProps) => {
-    console.log("service called");
     const { filter, options } = generateCourseFilter(query);
     const courses = await courseRepo.getMany(filter, options);
     return courses;

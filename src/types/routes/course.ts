@@ -5,9 +5,8 @@ interface CourseRouteProps extends DefaultRouteProps {
   getCourse: string;
   getCourses: string;
   updateCourse: string;
-  updateCourses: string;
+  enroll: string;
   deleteCourse: string;
-  deleteCourses: string;
 }
 
 export const courseRoute: CourseRouteProps = {
@@ -18,7 +17,6 @@ export const courseRoute: CourseRouteProps = {
   getCourse: "/:id",
   getCourses: "/many",
   updateCourse: "/:id",
-  updateCourses: "/many",
+  enroll: "/:id/enroll",
   deleteCourse: "/:id",
-  deleteCourses: "/many",
 };

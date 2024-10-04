@@ -68,7 +68,7 @@ class CourseRepository {
     });
   }
 
-  /* -------------------------------- Category -------------------------------- */
+  /* -------------------------------- Enrollment -------------------------------- */
 }
 
 export default new CourseRepository();

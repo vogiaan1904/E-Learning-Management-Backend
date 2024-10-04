@@ -104,10 +104,37 @@ paths:
             schema:
               type: object
               properties:
-                teacherId:
+                name:
                   type: string
-                  format: uuid
-                  example: "123e4567-e89b-12d3-a456-426614174000"
+                  example: "DSA"
+                description:
+                  type: string
+                  example: "An advanced course on Data Structures and Algorithms"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetCourse" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"   
     delete:
       tags:
         - Course
@@ -138,8 +165,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResCourseError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
   /courses/many:
     get:
+  
       tags:
         - Course
       summary: Get courses with optional filtering and pagination
@@ -200,6 +234,50 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResCourseError"
+  /courses/{id}/enroll:
+    post:
+      tags:
+        - Course
+      summary: Update Course
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateEnrollment" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"    
+
 components:
   schemas:
 
@@ -267,7 +345,15 @@ components:
           type: string
         success:
           type: boolean
-
+    ResCreateEnrollment:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        enrollment:
+          type: object
     ResCourseError:
       type: object
       properties:
