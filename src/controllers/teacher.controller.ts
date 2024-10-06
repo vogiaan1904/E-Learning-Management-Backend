@@ -5,6 +5,7 @@ import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
 import { Role } from "@prisma/client";
 import { Request, Response } from "express";
+
 import { StatusCodes } from "http-status-codes";
 
 class TeacherController {
