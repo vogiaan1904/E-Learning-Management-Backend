@@ -10,35 +10,83 @@ paths:
           content: 
             application/json:
               schema:
-                $ref: "#/components/schemas/ResAuthStatus"
-  /teachers/create-course:
-    patch:
+                $ref: "#/components/schemas/ResStatus"
+
+  /teachers/my-courses:
+    get:
       tags:
         - Teacher
-      summary: Create Course
-      requestBody:
-        description: Request body 
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ReqCreateCourse"
+      summary: Get teacher's courses
       responses:
-        201:
-          description: Created
+        200:
+          description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResCreateCourse"
-        409:
-          description: Conflict
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResGetCourses"
+        404:
+          description: Not Found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResCreateCourseError"
+                $ref: "#/components/schemas/ResError"
         400:
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResCreateCourseError"
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"  
 
+components:
+  schemas:
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "course123"
+        name:
+          type: string
+          example: "Data Structures"
+        description:
+          type: string
+          example: "An advanced course on data structures"
+        teacherId:
+          type: string
+          example: "teacher123"
+    ResGetCourses:
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        courses:
+          type: array
+          items: 
+            type: object
+            $ref: "#/components/schemas/Course"
+    ResStatus:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
+    ResError:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+          example: "failed"

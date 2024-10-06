@@ -31,7 +31,7 @@ class AuthController {
           data: { url },
         },
       } = req.user;
-      const existedUser = await userService.getAUser({
+      const existedUser = await userService.getUser({
         email: email,
       });
       console.log(last_name, first_name, url, existedUser);
@@ -74,14 +74,14 @@ class AuthController {
         })
         .status(StatusCodes.OK)
         .json({
-          user: {
-            ...removeFieldsFromObject(result.user, ["password"]),
-          },
+          // user: {
+          //   ...removeFieldsFromObject(result.user, ["password"]),
+          // },
+          message: "Sign in success",
+          status: "success",
           tokens: {
             ...removeFieldsFromObject(result.tokens, ["tokenId"]),
           },
-          message: "Sign in success",
-          status: "success",
         });
     },
   );

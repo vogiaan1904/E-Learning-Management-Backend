@@ -16,3 +16,4 @@ export interface UpdateUserProfileProps extends Partial<UserProfifle> {}
 export interface DeleteUsersProps {
   ids: Array<User["id"]>;
 }
+export interface UserPayload extends Pick<User, "id" | "email" | "role"> {}

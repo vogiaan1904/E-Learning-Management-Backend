@@ -1,9 +1,21 @@
 paths:
+  /courses/api-status:
+    get:
+      tags:
+        - Course
+      summary: Check course APIs status
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResStatus"
   /courses:
     post:
       tags:
         - Course
-      summary: Create Course
+      summary: Create Course - Teacher
       requestBody:
         description: Request body for creating a new course. The `categories` field is optional.
         content:
@@ -11,10 +23,6 @@ paths:
             schema:
               type: object
               properties:
-                teacherId:
-                  type: string
-                  format: uuid
-                  example: "123e4567-e89b-12d3-a456-426614174000"
                 name:
                   type: string
                   example: "DSA"
@@ -48,79 +56,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResCourseError"
-  /courses/{id}:
-    get:
-      tags:
-        - Course
-      summary: Get Course By Id
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: The course's Id
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResGetCourse" 
-        404:
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResCourseError"
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResCourseError"
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResCourseError"
-    delete:
-      tags:
-        - Course
-      summary: Delete Course By Id
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: The course's Id
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResGetCourse" 
-        404:
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResCourseError"
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResCourseError"
+                $ref: "#/components/schemas/ResCourseError"     
+
   /courses/many:
     get:
       tags:
         - Course
-      summary: Get courses with optional filtering and pagination
+      summary: Get courses with optional filtering and pagination - Authenticated
       parameters:
         - name: teacherId
           in: query
@@ -160,12 +102,13 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ResGetCourse"
-                $ref: "#/components/schemas/ResGetCourse"
+                $ref: "#/components/schemas/ResGetCourses"
         204:
           description: No courses found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
         400:
           description: Bad Request
           content:
@@ -178,9 +121,134 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResCourseError"
+  /courses/{id}:
+    get:
+      tags:
+        - Course
+      summary: Get Course By Id - Authenticated
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetCourse" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+    patch:
+      tags:
+        - Course
+      summary: Update Course - Teacher, Admin
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      requestBody:
+        description: Request body for updating a course
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "DSA"
+                description:
+                  type: string
+                  example: "An advanced course on Data Structures and Algorithms"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetCourse" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"   
+    delete:
+      tags:
+        - Course
+      summary: Delete Course - Teacher, Admin
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetCourse" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+
+
+
+
 components:
   schemas:
-
     Course:
       type: object
       properties:
@@ -196,8 +264,23 @@ components:
         teacherId:
           type: string
           example: "teacher123"
-
-
+    Enrollment:
+      type: object
+      properties:
+        id:
+          type: string
+        studentId:
+          type: string
+        courseId:
+          type: string
+        grade:
+          type: string
+        feedback:
+          type: string
+        status:
+          type: string
+        completion:
+          type: string
     ReqCreateCourse:
       type: object
       properties:
@@ -238,6 +321,17 @@ components:
           type: boolean
         course: 
           $ref: "#/components/schemas/Course"
+    ResGetCourses:
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        courses:
+          type: array
+          items: 
+            type: object
+            $ref: "#/components/schemas/Course"
     ResDeleteCourse:
       type: object
       properties: 
@@ -245,7 +339,35 @@ components:
           type: string
         success:
           type: boolean
-
+    ResCreateEnrollment:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        enrollment:
+          type: object
+          $ref: "#/components/schemas/Enrollment"
+    ResCancelEnrollment:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        enrollment:
+          type: object
+          $ref: "#/components/schemas/Enrollment"
+    ResStatus:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
     ResCourseError:
       type: object
       properties:
