@@ -3,9 +3,9 @@ import { CreateCourseProps } from "@/types/course";
 import { Course, Prisma } from "@prisma/client";
 
 class CourseRepository {
-  async create(data: CreateCourseProps): Promise<Course> {
+  async create(data: CreateCourseProps, teacherId: string): Promise<Course> {
     // with or without categories
-    const { name, description, teacherId, categories } = data;
+    const { name, description, categories } = data;
     return await prisma.course.create({
       data: {
         name,

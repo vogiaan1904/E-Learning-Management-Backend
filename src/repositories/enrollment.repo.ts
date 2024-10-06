@@ -5,17 +5,25 @@ import { Enrollment, Prisma } from "@prisma/client";
 class EnrollmentRepository {
   async getOne(
     filter: Prisma.EnrollmentWhereInput,
+    options?: object,
   ): Promise<Enrollment | null> {
-    const { courseId, studentId } = filter;
     return await prisma.enrollment.findFirst({
-      where: {
-        courseId: courseId,
-        studentId: studentId,
-      },
+      where: filter,
+      ...options,
     });
   }
 
-  async enroll(data: CreateEnrollmentProps): Promise<Enrollment> {
+  async getMany(
+    filter: Prisma.EnrollmentWhereInput,
+    options?: object,
+  ): Promise<Enrollment[]> {
+    return await prisma.enrollment.findMany({
+      where: filter,
+      ...options,
+    });
+  }
+
+  async create(data: CreateEnrollmentProps): Promise<Enrollment> {
     const { courseId, studentId } = data;
     return await prisma.enrollment.create({
       data: {
@@ -26,6 +34,22 @@ class EnrollmentRepository {
           connect: { id: courseId },
         },
       },
+    });
+  }
+
+  async update(
+    filter: Prisma.EnrollmentWhereUniqueInput,
+    data: Prisma.EnrollmentUpdateInput,
+  ): Promise<Enrollment> {
+    return await prisma.enrollment.update({
+      where: filter,
+      data: data,
+    });
+  }
+
+  async delete(filter: Prisma.EnrollmentWhereUniqueInput): Promise<Enrollment> {
+    return await prisma.enrollment.delete({
+      where: filter,
     });
   }
 }

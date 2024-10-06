@@ -27,33 +27,27 @@ router.post(
   courseRoute.createCourse,
   userRoleMiddleware(Role.teacher),
   dataValidation(CreateCourseSchema),
-  courseController.createACourse,
+  courseController.createCourse,
 );
 
 router.get(
   courseRoute.getCourses,
   userRoleMiddleware(Role.teacher),
   queryValidation(CourseQuerySchema),
-  courseController.getManyCourses,
+  courseController.getCourses,
 );
 
 router.get(
   courseRoute.getCourse,
   userRoleMiddleware(Role.teacher),
-  courseController.getACourseById,
+  courseController.getCourseById,
 );
 
 router.patch(
   courseRoute.updateCourse,
   userRoleMiddleware(Role.teacher),
   dataValidation(UpdateCourseSchema),
-  courseController.updateACourse,
-);
-
-router.post(
-  courseRoute.enroll,
-  userRoleMiddleware(Role.user),
-  courseController.enrollACourse,
+  courseController.updateCourse,
 );
 
 export const courseApis = router;

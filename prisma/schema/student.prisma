@@ -7,6 +7,7 @@ model Student {
 }
 
 model Enrollment {
+    id               String            @id @default(uuid())
     studentId        String
     courseId         String
     student          Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -14,23 +15,23 @@ model Enrollment {
     quizzSubmissions QuizzSubmission[]
     grade            Int               @default(0)
     feedback         String?
-    status           EnrollmentStatus  @default(inProgress)
+    status           EnrollmentStatus  @default(IN_PROGRESS)
     completion       Int               @default(0)
     enrolledAt       DateTime          @default(now())
+    cancelledAt      DateTime?
 
-    @@id([studentId, courseId])
+    @@unique([studentId, courseId])
     @@map("Enrollments")
 }
 
 model QuizzSubmission {
     id                String             @id @default(uuid())
     quizzId           String
-    courseId          String
-    studentId         String
+    enrollmentId      String
     score             Int
     quizz             Quizz              @relation(fields: [quizzId], references: [id], onDelete: Cascade)
     status            SubmissionStatus   @default(unfinished)
-    enrollment        Enrollment         @relation(fields: [studentId, courseId], references: [studentId, courseId], onDelete: Cascade)
+    enrollment        Enrollment         @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
     submissionAnswers SubmissionAnswer[]
     submittedAt       DateTime           @default(now())
 }
@@ -52,6 +53,7 @@ enum SubmissionStatus {
 }
 
 enum EnrollmentStatus {
-    completed
-    inProgress
+    COMPLETED
+    IN_PROGRESS
+    CANCELLED
 }

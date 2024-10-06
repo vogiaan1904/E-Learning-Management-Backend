@@ -1,6 +1,5 @@
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
-
 import {
   CreateCourseProps,
   GetCoursesProps,
@@ -13,7 +12,7 @@ import { StatusCodes } from "http-status-codes";
 class CourseService {
   private section = CourseService.name;
 
-  createACourse = async (courseData: CreateCourseProps) => {
+  createCourse = async (courseData: CreateCourseProps, teacherId: string) => {
     const { name } = courseData;
 
     const existedCourse = await courseRepo.getOne({ name });
@@ -25,11 +24,11 @@ class CourseService {
       );
     }
 
-    const course = await courseRepo.create(courseData);
+    const course = await courseRepo.create(courseData, teacherId);
     return course;
   };
 
-  getACourse = async (filter: Prisma.CourseWhereInput) => {
+  getCourse = async (filter: Prisma.CourseWhereInput) => {
     const { name, id } = filter;
     const course = await courseRepo.getOne({
       OR: [
@@ -51,14 +50,20 @@ class CourseService {
     return course;
   };
 
-  getManyCourses = async (query: GetCoursesProps) => {
+  getCourses = async (query: GetCoursesProps) => {
+    console.log("service called");
     const { filter, options } = generateCourseFilter(query);
     const courses = await courseRepo.getMany(filter, options);
     return courses;
   };
 
-  updateACourse = async (
-    filter: Prisma.CourseWhereUniqueInput,
+  getCoursesByTeacherId = async (filter: Pick<Course, "teacherId">) => {
+    const courses = await courseRepo.getMany(filter);
+    return courses;
+  };
+
+  updateCourse = async (
+    filter: Pick<Course, "id">,
     courseData: UpdateCourseProps,
   ) => {
     const course = await courseRepo.getOne(filter);
@@ -72,7 +77,7 @@ class CourseService {
     return await courseRepo.update(filter, courseData);
   };
 
-  deleteACourse = async (filter: Pick<Course, "id">) => {
+  deleteCourse = async (filter: Pick<Course, "id">) => {
     const course = await courseRepo.getOne(filter);
     if (!course) {
       throw new CustomError(

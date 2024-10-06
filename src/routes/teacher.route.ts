@@ -1,5 +1,7 @@
 import { routesConfig } from "@/configs";
-import { accessTokenMiddleware } from "@/middlewares";
+import teacherController from "@/controllers/teacher.controller";
+import { accessTokenMiddleware, userRoleMiddleware } from "@/middlewares";
+import { Role } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
 const router = Router();
@@ -13,5 +15,11 @@ router.get(teacherRoute.status, (req: Request, res: Response) => {
 });
 
 router.use(accessTokenMiddleware);
+
+router.get(
+  teacherRoute.getCourses,
+  userRoleMiddleware(Role.teacher),
+  teacherController.getCourses,
+);
 
 export const teacherApis = router;

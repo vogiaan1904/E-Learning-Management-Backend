@@ -2,7 +2,7 @@ import { Course, Student } from "@prisma/client";
 
 /* --------------------------------- Course --------------------------------- */
 export interface CreateCourseProps
-  extends Pick<Course, "name" | "description" | "teacherId"> {
+  extends Pick<Course, "name" | "description"> {
   categories?: Array<string>;
 }
 

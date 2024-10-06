@@ -1,4 +1,4 @@
-import courseService from "@/services/course.service";
+import studentService from "@/services/student.service";
 import userService from "@/services/user.service";
 import { CustomUserRequest } from "@/types/request";
 import { UserPayload } from "@/types/user";
@@ -7,31 +7,26 @@ import { Role } from "@prisma/client";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
-class TeacherController {
-  constructor() {}
-
-  getTeachers = catchAsync(async (req: Request, res: Response) => {
-    const teachers = await userService.getUsers({ role: Role.teacher });
+class StudentController {
+  getManyStudents = catchAsync(async (req: Request, res: Response) => {
+    const students = await userService.getUsers({ role: Role.user });
     return res.status(StatusCodes.OK).json({
-      message: "Get Teachers successfully",
+      message: "Get students successfully",
       status: "success",
-      teachers: teachers,
+      students: students,
     });
   });
 
-  getCourses = catchAsync(
+  getEnrollments = catchAsync(
     async (req: CustomUserRequest<UserPayload>, res: Response) => {
-      const teacherId = req.user.id;
-      const courses = await courseService.getCoursesByTeacherId({
-        teacherId: teacherId,
-      });
+      const studentId = req.user.id;
+      const courses = await studentService.getEnrolledCourses({ studentId });
       return res.status(StatusCodes.OK).json({
-        message: "Get teacher's courses successfully",
+        message: "Get enrollments successfully",
         status: "success",
         courses: courses,
       });
     },
   );
 }
-
-export default new TeacherController();
+export default new StudentController();

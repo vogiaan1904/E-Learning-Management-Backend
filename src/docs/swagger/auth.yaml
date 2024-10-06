@@ -11,6 +11,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResAuthStatus"
+  /auth/me:
+    get:
+      tags:
+        - Auth
+      summary: Get user info
+      description: Retrieve information about the authenticated user.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          description: Unauthorized (User not authenticated)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResAuthError"
   /auth/signup:
     post:
       tags:
@@ -77,27 +98,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResAuthError"
-  /auth/me:
-    get:
-      tags:
-        - Auth
-      summary: Get user info
-      description: Retrieve information about the authenticated user.
-      security:
-        - bearerAuth: []
-      responses:
-        200:
-          description: User information retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        401:
-          description: Unauthorized (User not authenticated)
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResAuthError"
+
   /auth/signout:
     post:
       tags:

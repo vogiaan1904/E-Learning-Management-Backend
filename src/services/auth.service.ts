@@ -65,7 +65,7 @@ class AuthService {
     });
 
     const verificationCode = tokenService.generateVerificationCode();
-    const userVerification = await userService.createAUserVerification({
+    const userVerification = await userService.createUserVerification({
       userId: user.id,
       code: verificationCode,
     });
@@ -84,7 +84,7 @@ class AuthService {
 
   async signIn(userData: SignInProps) {
     const { email, username, password, method } = userData;
-    const user = await userService.getAUser({
+    const user = await userService.getUser({
       email: method === "email" ? email : "",
       username: method === "username" ? username : "",
     });
@@ -99,7 +99,7 @@ class AuthService {
     }
     if (!user.isVerified) {
       const verificationCode = tokenService.generateVerificationCode();
-      const userVerification = await userService.createAUserVerification({
+      const userVerification = await userService.createUserVerification({
         userId: user.id,
         code: verificationCode,
       });
@@ -146,7 +146,7 @@ class AuthService {
 
   async sendCode(data: SendCodeProps) {
     const { id, userId } = data;
-    const user = await userService.getAUser({
+    const user = await userService.getUser({
       id: userId,
     });
     if (!user) {
@@ -162,7 +162,7 @@ class AuthService {
         StatusCodes.BAD_REQUEST,
       );
     }
-    const userVerification = await userService.getAUserVerification({
+    const userVerification = await userService.getUserVerification({
       id: id,
     });
     if (!userVerification) {
@@ -173,7 +173,7 @@ class AuthService {
       );
     }
     const verificationCode = tokenService.generateVerificationCode();
-    await userService.updateAUserVerification({
+    await userService.updateUserVerification({
       id: id,
       code: verificationCode,
     });
@@ -195,7 +195,7 @@ class AuthService {
 
   async verifyCode(data: VerifyCodeProps) {
     const { id, code, userId } = data;
-    const user = await userService.getAUser({
+    const user = await userService.getUser({
       id: userId,
     });
     if (!user) {
@@ -235,7 +235,7 @@ class AuthService {
         this.section,
       );
     }
-    await userService.updateAUser(
+    await userService.updateUser(
       {
         id: userVerification.userId,
       },
@@ -262,7 +262,7 @@ class AuthService {
 
   async refreshToken(data: RefreshTokenProps) {
     const { sub, tokenId, email, role } = data;
-    const foundUser = await userService.getAUser({
+    const foundUser = await userService.getUser({
       id: sub,
     });
     if (!foundUser) {
