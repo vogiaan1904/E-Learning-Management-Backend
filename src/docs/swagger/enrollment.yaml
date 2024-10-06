@@ -1,0 +1,278 @@
+paths:
+  /enrollments/api-status:
+    get:
+      tags:
+        - Enrollment
+      summary: Check Enrollment APIs status
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResStatus"
+  /enrollments:
+    post:
+      tags:
+        - Enrollment
+      summary: Enroll Course - Student
+      requestBody:
+        description: Courses's Id
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                courseId:
+                  type: string
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+              required:
+                - courseId
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetEnrollment" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+  
+  /enrollments/{id}:
+    get:
+      tags:
+        - Enrollment
+      summary: Get Enrollment - Authorized
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The enrollment's id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetEnrollment" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+    delete:
+      tags:
+        - Enrollment
+      summary: Delete Enrollment - Authorized
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The enrollment's id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetEnrollment" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+
+  /enrollments/{id}/cancel:
+    patch:
+      tags:
+        - Enrollment
+      summary: Cancel Enrollment - Student
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The enrollment's id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetEnrollment" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+
+  /enrollments/{id}/feedBack:
+    patch:
+      tags:
+        - Enrollment
+      summary: Feed back to the course - Student
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The enrollment's id
+      requestBody:
+        description: Content of the feedback
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                feedback:
+                  type: string
+                  example: "It's real hard, I gave up!"
+              required:
+                - feedback
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetEnrollment" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+
+
+components:
+  schemas:
+    ResStatus:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
+    Enrollment:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "123"
+        studentId:
+          type: string
+          example: "123"
+        courseId:
+          type: string
+          example: "123"
+        grade:
+          type: string
+          example: "8.5"
+        feedback:
+          type: string
+          example: "it's hard, I gave up."
+        status:
+          type: string
+          example: "In progress"
+        completion:
+          type: string
+          example: "50%"
+    ResGetEnrollment:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        enrollment:
+          type: object
+          $ref: "#/components/schemas/Enrollment"
+    ResError:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+          example: "failed"

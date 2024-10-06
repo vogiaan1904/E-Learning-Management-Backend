@@ -26,7 +26,7 @@ class UserRepository {
     });
   }
 
-  async getAll(
+  async getMany(
     filter: Prisma.UserWhereInput,
     options?: object,
   ): Promise<User[]> {

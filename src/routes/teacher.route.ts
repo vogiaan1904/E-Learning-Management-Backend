@@ -17,9 +17,9 @@ router.get(teacherRoute.status, (req: Request, res: Response) => {
 router.use(accessTokenMiddleware);
 
 router.get(
-  teacherRoute.getCourse,
+  teacherRoute.getCourses,
   userRoleMiddleware(Role.teacher),
-  teacherController.getTeacherCourses,
+  teacherController.getCourses,
 );
 
 export const teacherApis = router;

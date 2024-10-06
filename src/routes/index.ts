@@ -5,6 +5,8 @@ import { Router } from "express";
 import { userApis } from "./user.route";
 import { teacherApis } from "./teacher.route";
 import { courseApis } from "./course.route";
+import { studentApis } from "./student.route";
+import { enrollmentApis } from "./enrollment.route";
 
 interface ConfigsProps {
   index: string;
@@ -31,8 +33,16 @@ const apiConfigs: ConfigsProps[] = [
     api: teacherApis,
   },
   {
+    index: routesConfig.studentRoute.index,
+    api: studentApis,
+  },
+  {
     index: routesConfig.courseRoute.index,
     api: courseApis,
+  },
+  {
+    index: routesConfig.enrollmentRoute.index,
+    api: enrollmentApis,
   },
 ];
 

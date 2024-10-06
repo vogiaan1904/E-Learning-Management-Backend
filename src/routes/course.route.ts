@@ -1,7 +1,11 @@
 import { routesConfig } from "@/configs";
 import courseController from "@/controllers/course.controller";
 import { accessTokenMiddleware, userRoleMiddleware } from "@/middlewares";
-import { CreateCourseSchema, courseQuerySchema } from "@/schemas/course.schema";
+import {
+  CourseQuerySchema,
+  CreateCourseSchema,
+  UpdateCourseSchema,
+} from "@/schemas/course.schema";
 import { dataValidation } from "@/validations/data.validation";
 import { queryValidation } from "@/validations/query.validation";
 import { Role } from "@prisma/client";
@@ -29,14 +33,21 @@ router.post(
 router.get(
   courseRoute.getCourses,
   userRoleMiddleware(Role.teacher),
-  queryValidation(courseQuerySchema),
-  courseController.getManyCourses,
+  queryValidation(CourseQuerySchema),
+  courseController.getCourses,
 );
 
 router.get(
   courseRoute.getCourse,
   userRoleMiddleware(Role.teacher),
   courseController.getCourseById,
+);
+
+router.patch(
+  courseRoute.updateCourse,
+  userRoleMiddleware(Role.teacher),
+  dataValidation(UpdateCourseSchema),
+  courseController.updateCourse,
 );
 
 export const courseApis = router;

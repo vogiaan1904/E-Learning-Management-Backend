@@ -1,20 +1,12 @@
-import { Category, Course } from "@prisma/client";
+import { Course, Student } from "@prisma/client";
 
 /* --------------------------------- Course --------------------------------- */
 export interface CreateCourseProps
-  extends Pick<Course, "name" | "description" | "teacherId"> {
+  extends Pick<Course, "name" | "description"> {
   categories?: Array<string>;
 }
 
-export interface CreateCoursesProps {
-  data: Array<CreateCourseProps>;
-}
-
 export interface UpdateCourseProps extends Partial<Course> {}
-
-export interface UpdateCoursesProps {
-  data: Array<UpdateCourseProps>;
-}
 
 export interface GetCoursesProps {
   skip?: string;
@@ -23,15 +15,9 @@ export interface GetCoursesProps {
   category?: string;
 }
 
-/* -------------------------------- Category -------------------------------- */
-export interface CreateCategoryProps extends Pick<Category, "name"> {}
+/* ------------------------------- Enrollment ------------------------------- */
 
-export interface CreateCategoriesProps {
-  data: Array<CreateCategoryProps>;
-}
-
-export interface UpdateCategoryProps extends Partial<Category> {}
-
-export interface DeleteCategoriesProps {
-  ids: Array<Category["id"]>;
+export interface CreateEnrollmentProps {
+  courseId: Course["id"];
+  studentId: Student["id"];
 }

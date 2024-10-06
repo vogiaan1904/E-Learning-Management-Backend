@@ -10,12 +10,92 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResUserStatus"
+                $ref: "#/components/schemas/ResStatus"
+  /users/many:
+    get:
+      tags:
+        - User
+      summary: Get users - Admin
+      responses:
+        200:
+          description: Get users successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetUsers"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
   /users/{id}:
+    get:
+      tags:
+        - User
+      summary: Get a user by Id - Admin
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The user's ID
+      responses:
+        200:
+          description: User got successfully
+          content:
+            application/json:
+              schemas:  
+                $ref: "#/components/schemas/ResUserError"
+              
+        404:
+          description: User not found
+          content:
+            application/json:
+              schemas:  
+                $ref: "#/components/schemas/ResUserError"
+
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schemas:  
+                $ref: "#/components/schemas/ResUserError"
+    /users:
+    post:
+      tags:
+        - User
+      summary: Create a user - Admin
+      requestBody:
+        description: Request body (Include role)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqCreateUser"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateUser"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
     patch:
       tags:
         - User
-      summary: Update a user's profile
+      summary: Update a user's profile - User
       parameters:
         - in: path
           name: id
@@ -49,65 +129,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResUserError"
-    get:
-      tags:
-        - User
-      summary: Get a user by Id
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: The user's ID
-      responses:
-        200:
-          description: User got successfully
-          content:
-            application/json:
-              
-        404:
-          description: User not found
-          content:
-            application/json:
 
-        400:
-          description: Bad Request
-          content:
-            application/json:
-
-  /users:
-    post:
-      tags:
-        - User
-      summary: Create a user
-      requestBody:
-        description: Request body (Include role)
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ReqCreateUser"
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResCreateUser"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResUserError"
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResUserError"
+  
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+        isVerified:
+          type: boolean
+        userProfileId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UserProfile:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: firstname
+        lastName:
+          type: string
+          description: lastname
+        username:
+          type: string
+          description: username
+        birth:
+          type: string
+          description: gender
+          enum:
+            - MALE
+            - FEMALE
+        address:
+          type: string
+          description: address
+        phoneNumber:
+          type: string
+          description: phone number
+    
     ReqUpdateUserProfile:
       type: object
       properties:
@@ -138,38 +209,6 @@ components:
           type: string
           description: phone number
           example: "0746294759"
- 
-    ResUpdateUserProfile:
-      type: object
-      properties:
-        message:
-          type: string
-          example: "User updated successfully"
-        status:
-          type: string
-        user:
-          $ref: "#/components/schemas/User"
-    ResGetUser:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-        username:
-          type: string
-        role:
-          type: string
-        isVerified:
-          type: boolean
-        userProfileId:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
     ReqCreateUser:
       type: object
       properties:
@@ -191,6 +230,39 @@ components:
         role:
           type: string
           example: "teacher"
+
+    ResGetUser:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        user:
+          type: object
+          $ref: "#/components/schemas/User"
+    ResGetUsers:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        users:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/User"
+    ResUpdateUserProfile:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "User updated successfully"
+        status:
+          type: string
+        userProfile:
+          $ref: "#/components/schemas/UserProfile"      
     ResCreateUser:
       type: object
       properties:
@@ -200,24 +272,7 @@ components:
           type: string
         user:
           type: object
-          properties:
-            id:
-              type: string
-            firstName:
-              type: string
-              example: "Gia Phuc"
-            lastName:
-              type: string
-              example: "Pham"
-            username:
-              type: string
-              example: "acus"
-            email:
-              type: string
-              example: "acuscodinghcm@gmail.com"
-            role:
-              type: string
-              example: "acus123"
+          $ref: "#/components/schemas/User"
     ResUserError:
       type: object
       properties:
@@ -225,3 +280,12 @@ components:
           type: string
         status:
           type: string
+    ResStatus:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number

@@ -1,0 +1,168 @@
+paths:
+  /students/api-status:
+    get:
+      tags:
+        - Student
+      summary: Check student APIs status
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResStatus"
+  /students/my-learning:
+    get:
+      tags:
+        - Student
+      summary: Get Enrollments
+      parameters:
+        - name: myLeanringTab
+          in: query
+          description: The state of enrollments (IN_PROGRESS, CANCELLED or COMPLETED) (`OPTIONAL`)
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of courses to retrieve (pagination)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            example: 10
+        - name: skip
+          in: query
+          description: Number of courses to skip (pagination)
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            example: 0
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResGetEnrollments"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+components:
+  schemas:
+    Enrollment:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "123"
+        studentId:
+          type: string
+          example: "123"
+        courseId:
+          type: string
+          example: "123"
+        grade:
+          type: string
+          example: "8.5"
+        feedback:
+          type: string
+          example: "it's hard, I gave up."
+        status:
+          type: string
+          example: "In progress"
+        completion:
+          type: string
+          example: "50%"
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+        isVerified:
+          type: boolean
+        userProfileId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ResGetStudents:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        students:
+          type: array
+          items: 
+            type: object
+            $ref: "#/components/schemas/Student"
+    ResCreateCourse:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        course: 
+          $ref: "#/components/schemas/Course"
+
+    ResGetEnrollments:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        courses:
+          type: array
+          items: 
+            type: object
+            $ref: "#/components/schemas/Enrollment"
+    ResStatus:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
+    ResError:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+          example: "failed"

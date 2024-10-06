@@ -17,7 +17,7 @@ class UserService {
 
   /* ------------------------------- Model User ------------------------------- */
 
-  createAUser = async (userData: CreateUserProps) => {
+  createUser = async (userData: CreateUserProps) => {
     const { username, password, email, firstName, lastName, role } = userData;
     const existedUser = await userRepo.getOne({
       OR: [{ email }, { username }],
@@ -57,8 +57,8 @@ class UserService {
     return user;
   };
 
-  getAUser = async (fields: Prisma.UserWhereInput, options?: UserOptions) => {
-    const { id, email, username } = fields;
+  getUser = async (filter: Prisma.UserWhereInput, options?: UserOptions) => {
+    const { id, email, username } = filter;
     const { includeProfile } = options || {};
     const user = await userRepo.getOne(
       {
@@ -90,7 +90,24 @@ class UserService {
     return user;
   };
 
-  updateAUser = async (
+  getUsers = async (filter: Prisma.UserWhereInput, options?: UserOptions) => {
+    const { includeProfile } = options || {};
+    const user = await userRepo.getMany(filter, {
+      include: {
+        userProfile: includeProfile,
+      },
+    });
+    if (!user) {
+      throw new CustomError(
+        "User not found",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
+    }
+    return user;
+  };
+
+  updateUser = async (
     filter: Pick<User, "id">,
     data: Prisma.UserUpdateInput,
     options?: UserOptions,
@@ -100,11 +117,11 @@ class UserService {
 
   /* --------------------------- Model UserProfifle --------------------------- */
 
-  createAUserProfile = async (data: Prisma.UserProfifleCreateInput) => {
+  createUserProfile = async (data: Prisma.UserProfifleCreateInput) => {
     return await userRepo.createProfile(data);
   };
 
-  updateAUserProfile = async (
+  updateUserProfile = async (
     filter: Pick<User, "id">,
     data: Prisma.UserProfifleUpdateInput,
   ) => {
@@ -125,11 +142,11 @@ class UserService {
 
   /* ------------------------- Model UserVerification ------------------------- */
 
-  getAUserVerification = async (fields: Pick<UserVerification, "id">) => {
+  getUserVerification = async (fields: Pick<UserVerification, "id">) => {
     return await userRepo.getVerification(fields);
   };
 
-  createAUserVerification = async (
+  createUserVerification = async (
     data: Pick<UserVerification, "code" | "userId">,
     options?: {
       customExpriredDate: Date;
@@ -146,7 +163,7 @@ class UserService {
     });
   };
 
-  updateAUserVerification = async (
+  updateUserVerification = async (
     data: Pick<UserVerification, "code" | "id">,
     options?: {
       customExpriredDate: Date;
@@ -165,7 +182,7 @@ class UserService {
     );
   };
 
-  deleteAUserVerification = async (fields: Pick<UserVerification, "id">) => {
+  deleteUserVerification = async (fields: Pick<UserVerification, "id">) => {
     return await userRepo.deleteVerification(fields);
   };
 

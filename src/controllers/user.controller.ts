@@ -13,7 +13,7 @@ class UserController {
 
   createAUser = catchAsync(
     async (req: CustomRequest<CreateUserProps>, res: Response) => {
-      const user = await userService.createAUser(req.body);
+      const user = await userService.createUser(req.body);
       console.log(user);
       return res.status(StatusCodes.OK).json({
         message: "Create user successfully",
@@ -33,13 +33,14 @@ class UserController {
         throw new CustomError("User not found!", StatusCodes.BAD_REQUEST);
       }
 
-      const user = await userService.updateAUserProfile(
+      const user = await userService.updateUserProfile(
         { id: userId },
         req.body,
       );
 
       res.status(StatusCodes.OK).json({
         message: "User updated successfully",
+        status: "success",
         user: {
           ...removeFieldsFromObject(user, ["password"]),
         },
@@ -49,9 +50,10 @@ class UserController {
 
   getAUser = catchAsync(async (req: Request, res: Response) => {
     const userId = req.params.id;
-    const user = await userService.getAUser({ id: userId });
+    const user = await userService.getUser({ id: userId });
     return res.status(StatusCodes.OK).json({
       message: "Get user successfully",
+      status: "success",
       user: {
         ...removeFieldsFromObject(user, ["password"]),
       },
