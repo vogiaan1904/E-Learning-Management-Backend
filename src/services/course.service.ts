@@ -51,7 +51,6 @@ class CourseService {
   };
 
   getCourses = async (query: GetCoursesProps) => {
-    console.log("service called");
     const { filter, options } = generateCourseFilter(query);
     const courses = await courseRepo.getMany(filter, options);
     return courses;

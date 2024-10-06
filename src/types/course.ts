@@ -1,4 +1,4 @@
-import { Course, Student } from "@prisma/client";
+import { Course } from "@prisma/client";
 
 /* --------------------------------- Course --------------------------------- */
 export interface CreateCourseProps
@@ -16,8 +16,3 @@ export interface GetCoursesProps {
 }
 
 /* ------------------------------- Enrollment ------------------------------- */
-
-export interface CreateEnrollmentProps {
-  courseId: Course["id"];
-  studentId: Student["id"];
-}

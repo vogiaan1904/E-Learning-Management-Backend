@@ -16,6 +16,6 @@ export const enrollmentRoute: EnrollmentRouteProps = {
   createEnrollment: "/",
   getEnrollment: "/:id",
   cancelEnrollment: "/:id/cancel",
-  feedBack: "/:id/feedBack",
+  feedBack: "/:id/feed-back",
   deleteEnrollment: "/:id",
 };

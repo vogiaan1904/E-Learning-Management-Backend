@@ -172,7 +172,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ResError"
 
-  /enrollments/{id}/feedBack:
+  /enrollments/{id}/feed-back:
     patch:
       tags:
         - Enrollment

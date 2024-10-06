@@ -1,5 +1,5 @@
 import { prisma } from "@/database/connect.db";
-import { CreateEnrollmentProps } from "@/types/course";
+import { CreateEnrollmentProps } from "@/types/enrollment";
 import { Enrollment, Prisma } from "@prisma/client";
 
 class EnrollmentRepository {

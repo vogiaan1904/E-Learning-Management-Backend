@@ -5,12 +5,17 @@ import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
 export const userRoleMiddleware = (...roles: Role[]) => {
+  const section = userRoleMiddleware.name;
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = req.user as AccessTokenProps;
 
       if (!user) {
-        throw new CustomError("User role is missing", StatusCodes.BAD_REQUEST);
+        throw new CustomError(
+          "User role is missing",
+          StatusCodes.BAD_REQUEST,
+          section,
+        );
       }
 
       if (user.role === Role.admin) {
@@ -19,7 +24,11 @@ export const userRoleMiddleware = (...roles: Role[]) => {
       console.log(user.role);
 
       if (!roles.includes(user.role)) {
-        throw new CustomError("Permission denied", StatusCodes.FORBIDDEN);
+        throw new CustomError(
+          "Permission denied",
+          StatusCodes.FORBIDDEN,
+          section,
+        );
       }
       next();
     } catch (error) {

@@ -20,7 +20,10 @@ class StudentController {
   getEnrollments = catchAsync(
     async (req: CustomUserRequest<UserPayload>, res: Response) => {
       const studentId = req.user.id;
-      const courses = await studentService.getEnrolledCourses({ studentId });
+      const courses = await studentService.getEnrolledCourses({
+        studentId,
+        ...req.query,
+      });
       return res.status(StatusCodes.OK).json({
         message: "Get enrollments successfully",
         status: "success",

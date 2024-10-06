@@ -63,12 +63,17 @@ export const accessTokenMiddleware = async (
   next: NextFunction,
 ) => {
   try {
+    const section = accessTokenMiddleware.name;
     let accessToken;
     const authHeader = req.header("Authorization");
     if (authHeader && authHeader.startsWith("Bearer")) {
       accessToken = authHeader.replace("Bearer ", "");
     } else {
-      throw new CustomError("Access token is missing", StatusCodes.BAD_REQUEST);
+      throw new CustomError(
+        "Access token is missing",
+        StatusCodes.BAD_REQUEST,
+        section,
+      );
     }
     const data = tokenService.verifyToken<AccessTokenProps>(
       accessToken,
@@ -76,7 +81,7 @@ export const accessTokenMiddleware = async (
     );
     const user = await userRepo.getOne({ email: data.email });
     if (!user) {
-      throw new CustomError("User not found", StatusCodes.BAD_REQUEST);
+      throw new CustomError("User not found", StatusCodes.BAD_REQUEST, section);
     }
     req.user = removeFieldsFromObject(user, ["password"]);
     next();

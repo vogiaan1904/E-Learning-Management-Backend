@@ -6,8 +6,6 @@ import catchAsync from "@/utils/catchAsync";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 class CourseController {
-  constructor() {}
-
   createCourse = catchAsync(
     async (req: CustomRequest<CreateCourseProps>, res: Response) => {
       const teacher = req.user as UserPayload;

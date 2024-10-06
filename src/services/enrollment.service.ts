@@ -1,8 +1,7 @@
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
 import enrollmentRepo from "@/repositories/enrollment.repo";
-import { CreateEnrollmentProps } from "@/types/course";
-import { feedBackCourseProps } from "@/types/enrollment";
+import { CreateEnrollmentProps, feedBackCourseProps } from "@/types/enrollment";
 import { Enrollment, EnrollmentStatus, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 
