@@ -9,7 +9,7 @@ export interface GetEnrollmentsProps {
   studentId: string;
   skip?: string;
   limit?: string;
-  status?: EnrollmentStatus;
+  myLearningTab?: EnrollmentStatus;
 }
 
 export interface enrollCourseProps extends Pick<Enrollment, "courseId"> {}

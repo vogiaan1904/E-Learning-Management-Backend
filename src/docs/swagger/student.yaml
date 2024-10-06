@@ -17,7 +17,7 @@ paths:
         - Student
       summary: Get Enrollments
       parameters:
-        - name: myLeanringTab
+        - name: myLearningTab
           in: query
           description: The state of enrollments (IN_PROGRESS, CANCELLED or COMPLETED) (`OPTIONAL`)
           required: false
