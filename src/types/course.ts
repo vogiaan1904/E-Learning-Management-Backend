@@ -1,4 +1,5 @@
 import { Course } from "@prisma/client";
+import { OmitAndPartial } from "./object";
 
 /* --------------------------------- Course --------------------------------- */
 export interface CreateCourseProps
@@ -6,7 +7,8 @@ export interface CreateCourseProps
   categories?: Array<string>;
 }
 
-export interface UpdateCourseProps extends Partial<Course> {}
+export interface UpdateCourseProps
+  extends OmitAndPartial<Course, "createdAt" | "id" | "teacherId"> {}
 
 export interface GetCoursesProps {
   skip?: string;

@@ -1,15 +1,17 @@
 import { prisma } from "@/database/connect.db";
 import { CreateCourseProps } from "@/types/course";
 import { Course, Prisma } from "@prisma/client";
-
+import slugify from "slugify";
 class CourseRepository {
   async create(data: CreateCourseProps, teacherId: string): Promise<Course> {
     // with or without categories
     const { name, description, categories } = data;
+    const slug = slugify(name, { lower: true });
     return await prisma.course.create({
       data: {
         name,
         description,
+        slug,
         teacher: {
           connect: { id: teacherId },
         },

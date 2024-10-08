@@ -321,6 +321,10 @@ components:
           type: boolean
         course: 
           $ref: "#/components/schemas/Course"
+        moduleIds:
+          type: array
+          items:
+            type: object
     ResGetCourses:
       properties: 
         message: 

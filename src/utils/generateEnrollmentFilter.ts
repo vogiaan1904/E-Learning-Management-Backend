@@ -13,7 +13,14 @@ export const generateEnrollmentFilter = (query: GetEnrollmentsProps) => {
   if (limit) {
     options.take = parseInt(limit, 10);
   }
-  if (myLearningTab) {
+  if (
+    myLearningTab &&
+    [
+      EnrollmentStatus.CANCELLED,
+      EnrollmentStatus.COMPLETED,
+      EnrollmentStatus.IN_PROGRESS,
+    ].includes(myLearningTab)
+  ) {
     filter.status = myLearningTab;
   } else {
     filter.status = EnrollmentStatus.IN_PROGRESS;

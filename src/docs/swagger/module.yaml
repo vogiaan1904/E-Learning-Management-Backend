@@ -1,0 +1,135 @@
+paths:
+  /courses/{courseId}/modules/api-status:
+    get:
+      tags:
+        - Module
+      summary: Check Enrollment APIs status
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResStatus"
+  /courses/{courseId}/modules:
+    post:
+      tags:
+        - Module
+      summary: Create Module - Teacher, Admin
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "module 1"
+                description:
+                  type: string
+                  example: "first module"
+                position:
+                  type: number
+                  example: 1
+              required:
+                - courseId
+                - description
+                - position
+                - name
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetModule" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+
+components:
+  schemas:
+    ResStatus:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
+    Module:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "123"
+        courseId:
+          type: string
+          example: "123"
+        name: 
+          type: string
+          example: 'Module 1'
+        description:
+          type: string
+          example: "The first module"
+        position:
+          type: number
+          example: 1
+        numLessons:
+          type: integer
+          example: 10
+    ResGetModule:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        enrollment:
+          type: object
+          $ref: "#/components/schemas/Module"
+    ResError:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+          example: "failed"

@@ -5,6 +5,7 @@ enum LessonType {
 
 model Course {
     id             String                @id @default(uuid())
+    slug           String                @unique
     name           String
     teacherId      String
     description    String
@@ -42,6 +43,7 @@ model CategoriesOnCourses {
 model Module {
     id          String   @id @default(uuid())
     courseId    String
+    position    Int
     name        String
     description String
     numLessons  Int      @default(0)
@@ -51,17 +53,20 @@ model Module {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @default(now())
 
+    @@unique([courseId, position])
     @@map("Modules")
 }
 
 model Lesson {
     id          String @id @default(uuid())
     moduleId    String
+    position    Int
     name        Int
     description String
     content     Json
     module      Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
+    @@unique([moduleId, position])
     @@map("Lessons")
 }
 
@@ -69,6 +74,7 @@ model Quizz {
     id          String            @id @default(uuid())
     moduleId    String
     name        String
+    position    Int
     description String
     timeLimit   Int //minutes
     module      Module            @relation(fields: [moduleId], references: [id], onDelete: Cascade)
@@ -77,13 +83,14 @@ model Quizz {
     createdAt   DateTime          @default(now())
     updatedAt   DateTime          @default(now())
 
+    @@unique([position, moduleId])
     @@map("Quizzes")
 }
 
 model Question {
     id            String   @id @default(uuid())
     quizzId       String
-    index         Int
+    position      Int
     content       String
     wrongOptions  Json
     correctOption Json
@@ -91,6 +98,7 @@ model Question {
     createdAt     DateTime @default(now())
     updatedAt     DateTime @default(now())
 
+    @@unique([position, quizzId])
     @@map("Questions")
 }
 

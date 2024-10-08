@@ -7,18 +7,20 @@ model Student {
 }
 
 model Enrollment {
-    id               String            @id @default(uuid())
-    studentId        String
-    courseId         String
-    student          Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
-    course           Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
-    quizzSubmissions QuizzSubmission[]
-    grade            Int               @default(0)
-    feedback         String?
-    status           EnrollmentStatus  @default(IN_PROGRESS)
-    completion       Int               @default(0)
-    enrolledAt       DateTime          @default(now())
-    cancelledAt      DateTime?
+    id                  String            @id @default(uuid())
+    studentId           String
+    courseId            String
+    student             Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    course              Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+    quizzSubmissions    QuizzSubmission[]
+    grade               Int               @default(0)
+    feedback            String?
+    status              EnrollmentStatus  @default(IN_PROGRESS)
+    completion          Int               @default(0)
+    completedLessonsIds String[]
+    completedModulesIds String[]
+    enrolledAt          DateTime          @default(now())
+    cancelledAt         DateTime?
 
     @@unique([studentId, courseId])
     @@map("Enrollments")

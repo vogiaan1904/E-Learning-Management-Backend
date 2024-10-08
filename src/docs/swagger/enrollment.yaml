@@ -133,7 +133,55 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResError"
-
+    patch:  
+      tags:
+        - Enrollment
+      summary: Update Enrollment
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The enrollment's id
+      requestBody:
+        description: The properties `status` and `feedback` are optional
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "IN_PROGRESS"
+                feedback:
+                  type: string
+                  example: "This course is extremely hard, I gave up!"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetEnrollment" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
   /enrollments/{id}/cancel:
     patch:
       tags:
