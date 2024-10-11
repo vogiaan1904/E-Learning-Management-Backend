@@ -8,7 +8,7 @@ interface ModuleRouteProps extends DefaultRouteProps {
   deleteModule: string;
 }
 export const moduleRoute: ModuleRouteProps = {
-  index: "/courses/:courseId/modules",
+  index: "/modules",
   default: "/",
   status: "/api-status",
   createModule: "/",

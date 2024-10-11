@@ -61,7 +61,7 @@ model Lesson {
     id          String @id @default(uuid())
     moduleId    String
     position    Int
-    name        Int
+    name        String
     description String
     content     Json
     module      Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)

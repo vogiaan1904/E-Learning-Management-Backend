@@ -45,6 +45,11 @@ class ModuleRepository {
       data: data,
     });
   }
+  async delete(filter: Prisma.ModuleWhereUniqueInput): Promise<Module> {
+    return await prisma.module.delete({
+      where: filter,
+    });
+  }
 }
 
 export default new ModuleRepository();
