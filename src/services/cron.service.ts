@@ -19,5 +19,5 @@ export const checkExpiredUserVerification = async () => {
 };
 
 export const startCronJobs = () => {
-  cron.schedule("*/5 * * * *", () => checkExpiredUserVerification());
+  cron.schedule("0 0 * * *", () => checkExpiredUserVerification());
 };
