@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy the package.json, yarn.lock, and .env files to the container
 COPY package.json yarn.lock ./
-COPY .env ./
+# COPY .env ./
 
 # Install dependencies using yarn
 RUN yarn install --frozen-lockfile
@@ -36,7 +36,7 @@ COPY --from=build /app/yarn.lock ./
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/src ./src
 COPY --from=build /app/nodemon.json ./
-COPY --from=build /app/.env ./
+# COPY --from=build /app/.env ./
 COPY --from=build /app/tsconfig.json ./tsconfig.json
 
 RUN yarn install --production --frozen-lockfile
