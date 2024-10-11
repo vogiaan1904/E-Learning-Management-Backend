@@ -1,20 +1,19 @@
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
-import moduleRepo from "@/repositories/module.repo";
-import { CreateModuleProps, UpadteModuleProps } from "@/types/module";
-import { StatusCodes } from "http-status-codes";
-import { Prisma, Module } from "@prisma/client";
 import lessonRepo from "@/repositories/lesson.repo";
-import { GetModulesProps } from "@/types/module";
-import { Course } from "@prisma/client";
+import moduleRepo from "@/repositories/module.repo";
+import {
+  CreateModuleProps,
+  GetModulesProps,
+  UpadteModuleProps,
+} from "@/types/module";
+import { Module, Prisma } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
 
 class ModuleService {
   private section = ModuleService.name;
-  createModule = async (
-    data: CreateModuleProps,
-    courseId: string,
-    teacherId: string,
-  ) => {
+  createModule = async (data: CreateModuleProps, teacherId: string) => {
+    const { courseId } = data;
     const course = await courseRepo.getOne({ id: courseId });
     if (!course) {
       throw new CustomError(
@@ -30,7 +29,7 @@ class ModuleService {
         this.section,
       );
     }
-    return await moduleRepo.create(data, courseId);
+    return await moduleRepo.create(data);
   };
 
   getModule = async (filter: Prisma.ModuleWhereInput, options?: object) => {
@@ -81,11 +80,11 @@ class ModuleService {
         this.section,
       );
     }
-    const course = (await courseRepo.getOne({
+    const course = await courseRepo.getOne({
       id: module.courseId,
-    })) as Course;
+    });
 
-    if (teacherId !== course.teacherId) {
+    if (course && teacherId !== course.teacherId) {
       throw new CustomError(
         "Module not belong to teacher.",
         StatusCodes.CONFLICT,
@@ -104,11 +103,11 @@ class ModuleService {
         this.section,
       );
     }
-    const course = (await courseRepo.getOne({
+    const course = await courseRepo.getOne({
       id: module.courseId,
-    })) as Course;
+    });
 
-    if (teacherId !== course.teacherId) {
+    if (course && teacherId !== course.teacherId) {
       throw new CustomError(
         "Module not belong to teacher.",
         StatusCodes.CONFLICT,

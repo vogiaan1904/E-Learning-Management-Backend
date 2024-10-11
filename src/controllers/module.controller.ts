@@ -14,13 +14,8 @@ class ModuleController {
   createModule = catchAsync(
     async (req: CustomRequest<CreateModuleProps>, res: Response) => {
       const user = req.user as UserPayload;
-      const courseId = req.params.courseId;
       const teacherId = user.id;
-      const module = await moduleService.createModule(
-        req.body,
-        courseId,
-        teacherId,
-      );
+      const module = await moduleService.createModule(req.body, teacherId);
       res.status(StatusCodes.CREATED).json({
         message: "Module created successfully",
         status: "success",

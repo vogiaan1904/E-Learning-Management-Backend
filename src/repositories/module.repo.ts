@@ -3,8 +3,8 @@ import { CreateModuleProps } from "@/types/module";
 import { Module, Prisma } from "@prisma/client";
 
 class ModuleRepository {
-  async create(data: CreateModuleProps, courseId: string): Promise<Module> {
-    const { name, description, position } = data;
+  async create(data: CreateModuleProps): Promise<Module> {
+    const { name, description, position, courseId } = data;
     return await prisma.module.create({
       data: {
         name,

@@ -1,16 +1,9 @@
 paths:
-  /courses/{courseId}/modules/api-status:
+  /modules/api-status:
     get:
       tags:
         - Module
       summary: Check Enrollment APIs status
-      parameters:
-        - in: path
-          name: courseId
-          schema:
-            type: string
-          required: true
-          description: The course's Id
       responses:
         200: 
           description: OK
@@ -18,18 +11,120 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResStatus"
-  /courses/{courseId}/modules:
+  /modules:
     post:
       tags:
         - Module
       summary: Create Module - Teacher, Admin
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                courseId:
+                  type: string
+                  example: "1923846r2u3tr2973o8ryf082d3ur"
+                name:
+                  type: string
+                  example: "module 1"
+                description:
+                  type: string
+                  example: "first module"
+                position:
+                  type: number
+                  example: 1
+              required:
+                - courseId
+                - description
+                - position
+                - name
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetModule" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+  /modules/{id}:
+    get:
+      tags:
+        - Module
+      summary: Get Module - Authenticated
       parameters:
         - in: path
-          name: courseId
+          name: id
           schema:
             type: string
           required: true
-          description: The course's Id
+          description: The module's Id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetModule" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+    patch:
+      tags:
+        - Module
+      summary: Update Module - Authorized
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The module's Id
       requestBody:
         description: Request body
         content:
@@ -46,11 +141,48 @@ paths:
                 position:
                   type: number
                   example: 1
-              required:
-                - courseId
-                - description
-                - position
-                - name
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetModule" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+    delete:
+      tags:
+        - Module
+      summary: Delete Module - Authorized
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The module's Id
       responses:
         200:
           description: OK
