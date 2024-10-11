@@ -177,19 +177,19 @@ components:
       properties:
         firstName:
           type: string
-          example: "Gia Phuc"
+          example: "Student"
         lastName:
           type: string
-          example: "Pham"
+          example: "Student"
         username:
           type: string
-          example: "acus"
+          example: "student"
         email: 
           type: string
-          example: "acuscodinghcm@gmail.com"
+          example: "student@gmail.com"
         password:
           type: string
-          example: "acus123"
+          example: "student123"
         role:
           type: string
           exmaple: "student"

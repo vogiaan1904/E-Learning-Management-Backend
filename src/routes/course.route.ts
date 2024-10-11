@@ -39,7 +39,7 @@ router.get(
 
 router.get(
   courseRoute.getCourse,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.user),
   courseController.getCourseById,
 );
 

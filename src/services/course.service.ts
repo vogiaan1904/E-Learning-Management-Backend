@@ -1,13 +1,12 @@
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
-import moduleRepo from "@/repositories/module.repo";
 import {
   CreateCourseProps,
   GetCoursesProps,
   UpdateCourseProps,
 } from "@/types/course";
 import { generateCourseFilter } from "@/utils/generateCourseFilter";
-import { Course, Prisma } from "@prisma/client";
+import { Course, Prisma, Role } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 
 class CourseService {
@@ -28,8 +27,23 @@ class CourseService {
     return course;
   };
 
-  getCourse = async (filter: Prisma.CourseWhereInput, options?: object) => {
+  getCourse = async (
+    userId: string,
+    userRole: Role,
+    filter: Prisma.CourseWhereInput,
+  ) => {
     const { name, id, slug } = filter;
+
+    let enrollmentOption; //get the enrollment based on the userRole
+    enrollmentOption = true;
+    if (userRole === Role.user) {
+      enrollmentOption = {
+        where: {
+          studentId: userId,
+        },
+      };
+    }
+
     const course = await courseRepo.getOne(
       {
         OR: [
@@ -44,7 +58,17 @@ class CourseService {
           },
         ],
       },
-      options,
+      {
+        include: {
+          enrollments: enrollmentOption,
+          modules: {
+            select: {
+              id: true,
+            },
+            orderBy: { position: "asc" },
+          },
+        },
+      },
     );
     if (!course) {
       throw new CustomError(
@@ -53,13 +77,8 @@ class CourseService {
         this.section,
       );
     }
-    const modules = await moduleRepo.getMany(
-      { courseId: course.id },
-      { orderBy: { position: "asc" } },
-    );
-    const moduleIds = modules.map((module) => module.id);
 
-    return { course, moduleIds };
+    return { course };
   };
 
   getCourses = async (query: GetCoursesProps) => {
