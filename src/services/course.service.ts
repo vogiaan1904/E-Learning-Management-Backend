@@ -1,5 +1,6 @@
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
+import moduleRepo from "@/repositories/module.repo";
 import {
   CreateCourseProps,
   GetCoursesProps,
@@ -23,23 +24,28 @@ class CourseService {
         this.section,
       );
     }
-
     const course = await courseRepo.create(courseData, teacherId);
     return course;
   };
 
-  getCourse = async (filter: Prisma.CourseWhereInput) => {
-    const { name, id } = filter;
-    const course = await courseRepo.getOne({
-      OR: [
-        {
-          id: id,
-        },
-        {
-          name: name,
-        },
-      ],
-    });
+  getCourse = async (filter: Prisma.CourseWhereInput, options?: object) => {
+    const { name, id, slug } = filter;
+    const course = await courseRepo.getOne(
+      {
+        OR: [
+          {
+            id,
+          },
+          {
+            name,
+          },
+          {
+            slug,
+          },
+        ],
+      },
+      options,
+    );
     if (!course) {
       throw new CustomError(
         "Course not found.",
@@ -47,7 +53,13 @@ class CourseService {
         this.section,
       );
     }
-    return course;
+    const modules = await moduleRepo.getMany(
+      { courseId: course.id },
+      { orderBy: { position: "asc" } },
+    );
+    const moduleIds = modules.map((module) => module.id);
+
+    return { course, moduleIds };
   };
 
   getCourses = async (query: GetCoursesProps) => {

@@ -1,6 +1,8 @@
 import { routesConfig } from "@/configs";
 import enrollmentController from "@/controllers/enrollment.controller";
 import { accessTokenMiddleware, userRoleMiddleware } from "@/middlewares";
+import { UpdateEnrollmentSchema } from "@/schemas/enrollment.schema";
+import { dataValidation } from "@/validations/data.validation";
 import { Role } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
@@ -39,6 +41,13 @@ router.patch(
   enrollmentRoute.cancelEnrollment,
   userRoleMiddleware(Role.user),
   enrollmentController.cancelEnrollment,
+);
+
+router.patch(
+  enrollmentRoute.updateEnrollment,
+  userRoleMiddleware(Role.user),
+  dataValidation(UpdateEnrollmentSchema),
+  enrollmentController.updateEnrollment,
 );
 
 router.delete(

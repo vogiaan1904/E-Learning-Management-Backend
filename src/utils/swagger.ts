@@ -22,7 +22,7 @@ const options = {
     },
     servers: [
       {
-        url: `http://${serverUrl}`,
+        url: `${envConfig.HOST}${envConfig.APIS}`,
         description: "Development server",
       },
     ],

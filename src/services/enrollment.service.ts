@@ -1,7 +1,11 @@
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
 import enrollmentRepo from "@/repositories/enrollment.repo";
-import { CreateEnrollmentProps, feedBackCourseProps } from "@/types/enrollment";
+import {
+  CreateEnrollmentProps,
+  feedBackCourseProps,
+  updateEnrollmentProps,
+} from "@/types/enrollment";
 import { Enrollment, EnrollmentStatus, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 
@@ -63,6 +67,21 @@ class EnrollmentService {
     );
 
     return cancelledEnrollment;
+  };
+
+  updateEnrollment = async (
+    filter: Prisma.EnrollmentWhereInput,
+    data: updateEnrollmentProps,
+  ) => {
+    const enrollment = await enrollmentRepo.getOne(filter);
+    if (!enrollment) {
+      throw new CustomError(
+        "Enrollment not found.",
+        StatusCodes.BAD_REQUEST,
+        this.section,
+      );
+    }
+    return await enrollmentRepo.update({ id: enrollment.id }, data);
   };
 
   feedBack = async (

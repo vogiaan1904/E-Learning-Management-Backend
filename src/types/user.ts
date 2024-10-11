@@ -1,4 +1,5 @@
 import { Role, User, UserProfifle } from "@prisma/client";
+import { OmitAndPartial } from "./object";
 
 export interface CreateUserProps {
   firstName: string;
@@ -11,7 +12,8 @@ export interface CreateUserProps {
 export interface CreateUsersProps {
   data: Array<CreateUserProps>;
 }
-export interface UpdateUserProfileProps extends Partial<UserProfifle> {}
+export interface UpdateUserProfileProps
+  extends OmitAndPartial<UserProfifle, "createdAt" | "id"> {}
 
 export interface DeleteUsersProps {
   ids: Array<User["id"]>;

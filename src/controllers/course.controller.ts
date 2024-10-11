@@ -21,11 +21,15 @@ class CourseController {
 
   getCourseById = catchAsync(async (req: Request, res: Response) => {
     const courseId = req.params.id;
-    const course = await CourseService.getCourse({ id: courseId });
+    console.log(courseId);
+    const { course, moduleIds } = await CourseService.getCourse({
+      id: courseId,
+    });
     return res.status(StatusCodes.OK).json({
       message: "Get course successfully",
       status: "success",
       course: course,
+      moduleIds: moduleIds,
     });
   });
 

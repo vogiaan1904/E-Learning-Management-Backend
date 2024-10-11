@@ -1,5 +1,9 @@
 import enrollmentService from "@/services/enrollment.service";
-import { enrollCourseProps, feedBackCourseProps } from "@/types/enrollment";
+import {
+  enrollCourseProps,
+  feedBackCourseProps,
+  updateEnrollmentProps,
+} from "@/types/enrollment";
 import { CustomRequest, CustomUserRequest } from "@/types/request";
 import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
@@ -33,6 +37,21 @@ class EnrollmentController {
       });
       return res.status(StatusCodes.OK).json({
         message: "Get enrollment successfully",
+        status: "success",
+        enrollment: enrollment,
+      });
+    },
+  );
+
+  updateEnrollment = catchAsync(
+    async (req: CustomRequest<updateEnrollmentProps>, res: Response) => {
+      const enrollmentId = req.params.id;
+      const enrollment = await enrollmentService.updateEnrollment(
+        { id: enrollmentId },
+        req.body,
+      );
+      return res.status(StatusCodes.OK).json({
+        message: "Updated Enrollment successfully",
         status: "success",
         enrollment: enrollment,
       });
