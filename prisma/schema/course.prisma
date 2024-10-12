@@ -43,6 +43,7 @@ model CategoriesOnCourses {
 model Module {
     id          String   @id @default(uuid())
     courseId    String
+    slug        String   @unique
     position    Int
     name        String
     description String
@@ -60,6 +61,7 @@ model Module {
 model Lesson {
     id          String @id @default(uuid())
     moduleId    String
+    slug        String @unique
     position    Int
     name        String
     description String

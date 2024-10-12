@@ -8,6 +8,7 @@ import { courseApis } from "./course.route";
 import { studentApis } from "./student.route";
 import { enrollmentApis } from "./enrollment.route";
 import { moduleApis } from "./module.route";
+import { lessonApis } from "./lesson.route";
 
 interface ConfigsProps {
   index: string;
@@ -48,6 +49,10 @@ const apiConfigs: ConfigsProps[] = [
   {
     index: routesConfig.moduleRoute.index,
     api: moduleApis,
+  },
+  {
+    index: routesConfig.lessonRoute.index,
+    api: lessonApis,
   },
 ];
 

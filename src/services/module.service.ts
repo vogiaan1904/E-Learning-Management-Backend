@@ -33,15 +33,15 @@ class ModuleService {
   };
 
   getModule = async (filter: Prisma.ModuleWhereInput, options?: object) => {
-    const { name, id } = filter;
+    const { slug, id } = filter;
     const module = await moduleRepo.getOne(
       {
         OR: [
           {
-            name: name,
+            slug,
           },
           {
-            id: id,
+            id,
           },
         ],
       },

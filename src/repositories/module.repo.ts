@@ -1,13 +1,16 @@
 import { prisma } from "@/database/connect.db";
 import { CreateModuleProps } from "@/types/module";
 import { Module, Prisma } from "@prisma/client";
+import slugify from "slugify";
 
 class ModuleRepository {
   async create(data: CreateModuleProps): Promise<Module> {
     const { name, description, position, courseId } = data;
+    const slug = slugify(name, { lower: true });
     return await prisma.module.create({
       data: {
         name,
+        slug,
         description,
         position,
         course: {

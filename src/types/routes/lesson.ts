@@ -4,16 +4,18 @@ interface LessonRouteProps extends DefaultRouteProps {
   getLesson: string;
   getLessons: string;
   createLesson: string;
-  updateLesson: string;
+  updateLessonInfor: string;
+  updateLessonContent: string;
   deleteLesson: string;
 }
 export const lessonRoute: LessonRouteProps = {
-  index: "/modules/:moduleId/lessons",
+  index: "/lessons",
   default: "/",
   status: "/api-status",
   createLesson: "/",
   getLesson: "/:id",
   getLessons: "/many",
-  updateLesson: "/:id",
+  updateLessonInfor: "/:id/infor",
+  updateLessonContent: "/:id/content",
   deleteLesson: "/:id",
 };

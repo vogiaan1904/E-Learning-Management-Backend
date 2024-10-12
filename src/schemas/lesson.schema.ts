@@ -1,4 +1,4 @@
-import { CreateLessonProps } from "@/types/lesson";
+import { CreateLessonProps, UpadteLessonProps } from "@/types/lesson";
 import Joi from "joi";
 
 export const CreateLessonSchema = Joi.object<CreateLessonProps>().keys({
@@ -6,4 +6,10 @@ export const CreateLessonSchema = Joi.object<CreateLessonProps>().keys({
   description: Joi.string().required(),
   position: Joi.number().greater(0).required(),
   content: Joi.object(),
+});
+
+export const UpdateLessonSchema = Joi.object<UpadteLessonProps>().keys({
+  name: Joi.string(),
+  description: Joi.string(),
+  position: Joi.number().greater(0),
 });
