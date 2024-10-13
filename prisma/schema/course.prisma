@@ -65,7 +65,7 @@ model Lesson {
     position    Int
     name        String
     description String
-    content     Json
+    content     Json?
     module      Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
     @@unique([moduleId, position])

@@ -37,12 +37,12 @@ paths:
                   example: 1
                 content:
                   type: object
+
               required:
                 - moduleId
                 - description
                 - position
                 - name
-                - content
       responses:
         200:
           description: OK
@@ -74,6 +74,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResError"
+  /lessons/many:
+    get:
+      tags:
+        - Lesson
+      summary: Get Lessons - Authenticated
+      parameters:
+        - name: moduleId
+          in: query
+          description: ID of module
+          required: false
+          schema:
+            type: string
+            format: uuid
+            example: "123e4567-e89b-12d3-a456-426614174000"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetLesson" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+                
   /lessons/{id}:
     get:
       tags:
@@ -120,7 +166,8 @@ paths:
     patch:
       tags:
         - Lesson
-      summary: Update Lesson - Authorized
+      summary: Update Lesson - Teacher, Admin
+      description: The content is optional when creating the lesson
       parameters:
         - in: path
           name: id
@@ -129,7 +176,6 @@ paths:
           required: true
           description: The Lesson's Id
       requestBody:
-        description: Request body
         content:
           application/json:
             schema:
@@ -144,6 +190,8 @@ paths:
                 position:
                   type: number
                   example: 1
+                content: 
+                  type: object
       responses:
         200:
           description: OK
@@ -217,7 +265,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResError"
-
 components:
   schemas:
     ResStatus:
@@ -256,7 +303,19 @@ components:
           type: string
         success:
           type: boolean
-        enrollment:
+        lesson:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Lesson"
+    ResGetLessons:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        lessons:
           type: object
           $ref: "#/components/schemas/Lesson"
     ResError:

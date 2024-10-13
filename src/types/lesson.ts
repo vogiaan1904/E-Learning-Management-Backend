@@ -4,14 +4,14 @@ import { OmitAndPartial } from "./object";
 export interface CreateLessonProps
   extends Pick<
     Lesson,
-    "name" | "description" | "position" | "content" | "moduleId"
+    "name" | "description" | "position" | "moduleId" | "content"
   > {}
 
 export interface UpadteLessonProps
-  extends OmitAndPartial<Lesson, "id" | "moduleId" | "content"> {}
-
-export interface GetLessonsProp extends Pick<Lesson, "moduleId"> {}
-
-export interface UpdateLessonContent {
+  extends OmitAndPartial<Lesson, "id" | "moduleId" | "content"> {
   content: Prisma.InputJsonValue;
+}
+
+export interface GetLessonsProp {
+  moduleId?: string;
 }

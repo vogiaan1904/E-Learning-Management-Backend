@@ -24,20 +24,14 @@ router.post(
   lessonController.createLesson,
 );
 
-router.get(lessonRoute.getLesson, lessonController.getLesson);
-
 router.get(lessonRoute.getLessons, lessonController.getLessons);
 
-router.patch(
-  lessonRoute.updateLessonInfor,
-  userRoleMiddleware(Role.teacher),
-  lessonController.updateLessonInfor,
-);
+router.get(lessonRoute.getLesson, lessonController.getLesson);
 
 router.patch(
-  lessonRoute.updateLessonContent,
+  lessonRoute.updateLesson,
   userRoleMiddleware(Role.teacher),
-  lessonController.updateLessonContent,
+  lessonController.updateLesson,
 );
 
 router.delete(

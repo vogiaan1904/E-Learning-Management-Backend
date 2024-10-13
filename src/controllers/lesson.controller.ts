@@ -1,10 +1,5 @@
 import lessonService from "@/services/lesson.service";
-import {
-  CreateLessonProps,
-  GetLessonsProp,
-  UpadteLessonProps,
-  UpdateLessonContent,
-} from "@/types/lesson";
+import { CreateLessonProps, UpadteLessonProps } from "@/types/lesson";
 import { CustomRequest } from "@/types/request";
 import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
@@ -34,46 +29,27 @@ class LessonController {
     });
   });
 
-  getLessons = catchAsync(
-    async (req: CustomRequest<GetLessonsProp>, res: Response) => {
-      const lessons = await lessonService.getLessons(req.body);
-      res.status(StatusCodes.CREATED).json({
-        message: "Get lessons successfully",
-        status: "success",
-        lessons: lessons,
-      });
-    },
-  );
+  getLessons = catchAsync(async (req: Request, res: Response) => {
+    const lessons = await lessonService.getLessons(req.query);
+    res.status(StatusCodes.CREATED).json({
+      message: "Get lessons successfully",
+      status: "success",
+      lessons: lessons,
+    });
+  });
 
-  updateLessonInfor = catchAsync(
+  updateLesson = catchAsync(
     async (req: CustomRequest<UpadteLessonProps>, res: Response) => {
       const lessonId = req.params.id;
       const user = req.user as UserPayload;
       const teacherId = user.id;
-      const lesson = await lessonService.updateLessonInfor(
+      const lesson = await lessonService.updateLesson(
         { id: lessonId },
         req.body,
         teacherId,
       );
       res.status(StatusCodes.CREATED).json({
         message: "Updated lesson infor successfully",
-        status: "success",
-        lesson: lesson,
-      });
-    },
-  );
-  updateLessonContent = catchAsync(
-    async (req: CustomRequest<UpdateLessonContent>, res: Response) => {
-      const lessonId = req.params.id;
-      const user = req.user as UserPayload;
-      const teacherId = user.id;
-      const lesson = await lessonService.updateLessonContent(
-        { id: lessonId },
-        req.body,
-        teacherId,
-      );
-      res.status(StatusCodes.CREATED).json({
-        message: "Updated lesson content successfully",
         status: "success",
         lesson: lesson,
       });

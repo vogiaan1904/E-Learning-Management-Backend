@@ -7,4 +7,6 @@ export interface CreateModuleProps
 export interface UpadteModuleProps
   extends OmitAndPartial<Module, "courseId" | "id" | "createdAt"> {}
 
-export interface GetModulesProps extends Pick<Module, "courseId"> {}
+export interface GetModulesProps {
+  courseId?: string;
+}

@@ -6,7 +6,6 @@ import {
   CreateLessonProps,
   GetLessonsProp,
   UpadteLessonProps,
-  UpdateLessonContent,
 } from "@/types/lesson";
 import { Lesson, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
@@ -14,7 +13,8 @@ import { StatusCodes } from "http-status-codes";
 class LessonService {
   private section = LessonService.name;
   createLesson = async (data: CreateLessonProps, teacherId: string) => {
-    const module = await moduleRepo.getOne({ id: teacherId });
+    const { moduleId } = data;
+    const module = await moduleRepo.getOne({ id: moduleId });
     if (!module) {
       throw new CustomError(
         "Module not found.",
@@ -64,29 +64,16 @@ class LessonService {
   };
 
   getLessons = async (filter: GetLessonsProp) => {
-    const { moduleId } = filter;
-    const lessons = await lessonRepo.getMany({
-      moduleId,
-    });
+    const lessons = await lessonRepo.getMany(filter);
     return lessons;
   };
 
-  updateLessonInfor = async (
+  updateLesson = async (
     filter: Prisma.LessonWhereUniqueInput,
     data: UpadteLessonProps,
     teacherId: string,
   ) => {
-    const { id, slug } = filter;
-    const lesson = await lessonRepo.getOne({
-      OR: [
-        {
-          slug,
-        },
-        {
-          id,
-        },
-      ],
-    });
+    const lesson = await lessonRepo.getOne(filter);
     if (!lesson) {
       throw new CustomError(
         "Lesson not found",
@@ -117,57 +104,7 @@ class LessonService {
         this.section,
       );
     }
-    lesson.content;
     return await lessonRepo.update(filter, data);
-  };
-  updateLessonContent = async (
-    filter: Prisma.LessonWhereUniqueInput,
-    data: UpdateLessonContent,
-    teacherId: string,
-  ) => {
-    const { id, slug } = filter;
-    const { content } = data;
-    const lesson = await lessonRepo.getOne({
-      OR: [
-        {
-          slug,
-        },
-        {
-          id,
-        },
-      ],
-    });
-    if (!lesson) {
-      throw new CustomError(
-        "Lesson not found",
-        StatusCodes.NOT_FOUND,
-        this.section,
-      );
-    }
-    const module = await moduleRepo.getOne({ id: lesson.moduleId });
-    if (!module) {
-      throw new CustomError(
-        "Module not found",
-        StatusCodes.NOT_FOUND,
-        this.section,
-      );
-    }
-    const course = await courseRepo.getOne({ id: module.courseId });
-    if (!course) {
-      throw new CustomError(
-        "Course not found",
-        StatusCodes.NOT_FOUND,
-        this.section,
-      );
-    }
-    if (course && teacherId !== course.teacherId) {
-      throw new CustomError(
-        "Course not belong to teacher",
-        StatusCodes.CONFLICT,
-        this.section,
-      );
-    }
-    return await lessonRepo.update(filter, { content });
   };
 
   deleteLesson = async (filter: Pick<Lesson, "id">, teacherId: string) => {

@@ -26,9 +26,9 @@ router.post(
   moduleController.createModule,
 );
 
-router.get(moduleRoute.getModule, moduleController.getModuleById);
-
 router.get(moduleRoute.getModules, moduleController.getModules);
+
+router.get(moduleRoute.getModule, moduleController.getModuleById);
 
 router.patch(
   moduleRoute.updateModule,

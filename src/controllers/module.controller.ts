@@ -1,9 +1,5 @@
 import moduleService from "@/services/module.service";
-import {
-  CreateModuleProps,
-  GetModulesProps,
-  UpadteModuleProps,
-} from "@/types/module";
+import { CreateModuleProps, UpadteModuleProps } from "@/types/module";
 import { CustomRequest } from "@/types/request";
 import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
@@ -37,16 +33,14 @@ class ModuleController {
     });
   });
 
-  getModules = catchAsync(
-    async (req: CustomRequest<GetModulesProps>, res: Response) => {
-      const courses = await moduleService.getModules(req.body);
-      return res.status(StatusCodes.OK).json({
-        message: "Get courses successfully",
-        status: "success",
-        courses: courses,
-      });
-    },
-  );
+  getModules = catchAsync(async (req: Request, res: Response) => {
+    const modules = await moduleService.getModules(req.query);
+    return res.status(StatusCodes.OK).json({
+      message: "Get courses successfully",
+      status: "success",
+      modules: modules,
+    });
+  });
 
   updateModule = catchAsync(
     async (req: CustomRequest<UpadteModuleProps>, res: Response) => {

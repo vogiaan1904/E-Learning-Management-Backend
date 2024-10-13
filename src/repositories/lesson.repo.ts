@@ -5,15 +5,16 @@ import slugify from "slugify";
 
 class LessonRepository {
   async create(data: CreateLessonProps): Promise<Lesson> {
-    const { name, description, position, content, moduleId } = data;
+    const { name, description, position, moduleId, content } = data;
     const slug = slugify(name, { lower: true });
+
     return await prisma.lesson.create({
       data: {
         name,
         slug,
+        content: content as Prisma.InputJsonValue,
         description,
         position,
-        content: content as Prisma.JsonObject,
         module: {
           connect: { id: moduleId },
         },

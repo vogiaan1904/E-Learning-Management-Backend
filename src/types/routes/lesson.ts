@@ -4,8 +4,7 @@ interface LessonRouteProps extends DefaultRouteProps {
   getLesson: string;
   getLessons: string;
   createLesson: string;
-  updateLessonInfor: string;
-  updateLessonContent: string;
+  updateLesson: string;
   deleteLesson: string;
 }
 export const lessonRoute: LessonRouteProps = {
@@ -15,7 +14,6 @@ export const lessonRoute: LessonRouteProps = {
   createLesson: "/",
   getLesson: "/:id",
   getLessons: "/many",
-  updateLessonInfor: "/:id/infor",
-  updateLessonContent: "/:id/content",
+  updateLesson: "/:id",
   deleteLesson: "/:id",
 };
