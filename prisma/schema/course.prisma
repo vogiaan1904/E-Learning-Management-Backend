@@ -48,7 +48,6 @@ model Module {
     position    Int
     name        String
     description String
-    numLessons  Int      @default(0)
     lessons     Lesson[]
     quizzes     Quizz[]
     course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -167,6 +166,7 @@ model Question {
 // });
 
 // /* --------------------------------- Backend -------------------------------- */
+
 // app.post('/api/question', (req, res) => {
 //   const { content, options } = req.body;
 

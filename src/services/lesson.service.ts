@@ -40,7 +40,6 @@ class LessonService {
     }
 
     const numLessons = await lessonRepo.getMany({ moduleId });
-
     const position = numLessons.length;
 
     const lesson = await lessonRepo.create(data, position);

@@ -50,6 +50,12 @@ router.patch(
   enrollmentController.updateEnrollment,
 );
 
+router.patch(
+  enrollmentRoute.updateLessonProgress,
+  userRoleMiddleware(Role.user),
+  enrollmentController.updateLessonProgress,
+);
+
 router.delete(
   enrollmentRoute.deleteEnrollment,
   userRoleMiddleware(Role.user),

@@ -124,10 +124,19 @@ class EnrollmentService {
         this.section,
       );
     }
+
+    if (enrollment.completedLessonsIds.includes(lessonId)) {
+      throw new CustomError(
+        "Lesson already completed.",
+        StatusCodes.CONFLICT,
+        this.section,
+      );
+    }
+
     enrollment.completedLessonsIds.push(lessonId);
 
     const newCompletion =
-      enrollment.completedLessonsIds.length / course.numLessons;
+      (enrollment.completedLessonsIds.length * 100) / course.numLessons;
 
     const updatedEnrollment = await prisma.enrollment.update({
       where: {
