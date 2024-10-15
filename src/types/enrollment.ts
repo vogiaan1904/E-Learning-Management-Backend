@@ -12,10 +12,20 @@ export interface GetEnrollmentsProps {
   limit?: string;
   myLearningTab?: EnrollmentStatus;
 }
-export interface updateEnrollmentProps
+export interface UpdateEnrollmentProps
   extends OmitAndPartial<
     Enrollment,
     "id" | "courseId" | "studentId" | "enrolledAt"
   > {}
-export interface enrollCourseProps extends Pick<Enrollment, "courseId"> {}
-export interface feedBackCourseProps extends Pick<Enrollment, "feedback"> {}
+
+export interface UpdateLessonProgessProp {
+  lessonId: string;
+}
+
+export interface UpdateModuleProgessProp {
+  moduleId: string;
+}
+
+export interface EnrollCourseProps extends Pick<Enrollment, "courseId"> {}
+
+export interface FeedBackCourseProps extends Pick<Enrollment, "feedback"> {}

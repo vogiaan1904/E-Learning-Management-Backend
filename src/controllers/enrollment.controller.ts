@@ -1,8 +1,10 @@
 import enrollmentService from "@/services/enrollment.service";
 import {
-  enrollCourseProps,
-  feedBackCourseProps,
-  updateEnrollmentProps,
+  EnrollCourseProps,
+  FeedBackCourseProps,
+  UpdateEnrollmentProps,
+  UpdateLessonProgessProp,
+  UpdateModuleProgessProp,
 } from "@/types/enrollment";
 import { CustomRequest, CustomUserRequest } from "@/types/request";
 import { UserPayload } from "@/types/user";
@@ -13,7 +15,7 @@ import { StatusCodes } from "http-status-codes";
 
 class EnrollmentController {
   createEnrollment = catchAsync(
-    async (req: CustomRequest<enrollCourseProps>, res: Response) => {
+    async (req: CustomRequest<EnrollCourseProps>, res: Response) => {
       const user = req.user as UserPayload;
       const studentId = user.id;
       const courseId = req.body.courseId;
@@ -44,7 +46,7 @@ class EnrollmentController {
   );
 
   updateEnrollment = catchAsync(
-    async (req: CustomRequest<updateEnrollmentProps>, res: Response) => {
+    async (req: CustomRequest<UpdateEnrollmentProps>, res: Response) => {
       const enrollmentId = req.params.id;
       const enrollment = await enrollmentService.updateEnrollment(
         { id: enrollmentId },
@@ -58,8 +60,46 @@ class EnrollmentController {
     },
   );
 
+  updateLessonProgress = catchAsync(
+    async (req: CustomRequest<UpdateLessonProgessProp>, res: Response) => {
+      const user = req.user as UserPayload;
+      const enrollmentId = req.params.id;
+      const studentId = user.id;
+      const { lessonId } = req.body;
+      const enrollment = await enrollmentService.updateLessonProgress(
+        { id: enrollmentId },
+        studentId,
+        lessonId,
+      );
+      return res.status(StatusCodes.OK).json({
+        message: "Updated Enrollment successfully",
+        status: "success",
+        enrollment: enrollment,
+      });
+    },
+  );
+
+  updateModuleProgress = catchAsync(
+    async (req: CustomRequest<UpdateModuleProgessProp>, res: Response) => {
+      const user = req.user as UserPayload;
+      const enrollmentId = req.params.id;
+      const studentId = user.id;
+      const { moduleId } = req.body;
+      const enrollment = await enrollmentService.updateModuleProgress(
+        { id: enrollmentId },
+        studentId,
+        moduleId,
+      );
+      return res.status(StatusCodes.OK).json({
+        message: "Updated Enrollment successfully",
+        status: "success",
+        enrollment: enrollment,
+      });
+    },
+  );
+
   feedBack = catchAsync(
-    async (req: CustomRequest<feedBackCourseProps>, res: Response) => {
+    async (req: CustomRequest<FeedBackCourseProps>, res: Response) => {
       const enrollmentId = req.params.id;
       const enrollment = await enrollmentService.feedBack(
         { id: enrollmentId },

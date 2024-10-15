@@ -74,13 +74,13 @@ class AuthController {
         })
         .status(StatusCodes.OK)
         .json({
-          // user: {
-          //   ...removeFieldsFromObject(result.user, ["password"]),
-          // },
           message: "Sign in success",
           status: "success",
           tokens: {
             ...removeFieldsFromObject(result.tokens, ["tokenId"]),
+          },
+          user: {
+            ...removeFieldsFromObject(result.user, ["password"]),
           },
         });
     },

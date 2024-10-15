@@ -1,6 +1,8 @@
 import { routesConfig } from "@/configs";
 import lessonController from "@/controllers/lesson.controller";
 import { accessTokenMiddleware, userRoleMiddleware } from "@/middlewares";
+import { GetLessonsQuerySchema } from "@/schemas/lesson.schema";
+import { dataValidation } from "@/validations/data.validation";
 import { Role } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
@@ -24,7 +26,11 @@ router.post(
   lessonController.createLesson,
 );
 
-router.get(lessonRoute.getLessons, lessonController.getLessons);
+router.get(
+  lessonRoute.getLessons,
+  dataValidation(GetLessonsQuerySchema),
+  lessonController.getLessons,
+);
 
 router.get(lessonRoute.getLesson, lessonController.getLesson);
 

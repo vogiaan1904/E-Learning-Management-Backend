@@ -7,7 +7,7 @@ export interface CreateLessonProps
     "name" | "description" | "position" | "moduleId" | "content"
   > {}
 
-export interface UpadteLessonProps
+export interface UpdateLessonProps
   extends OmitAndPartial<Lesson, "id" | "moduleId" | "content"> {
   content: Prisma.InputJsonValue;
 }

@@ -1,5 +1,5 @@
 import lessonService from "@/services/lesson.service";
-import { CreateLessonProps, UpadteLessonProps } from "@/types/lesson";
+import { CreateLessonProps, UpdateLessonProps } from "@/types/lesson";
 import { CustomRequest } from "@/types/request";
 import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
@@ -39,7 +39,7 @@ class LessonController {
   });
 
   updateLesson = catchAsync(
-    async (req: CustomRequest<UpadteLessonProps>, res: Response) => {
+    async (req: CustomRequest<UpdateLessonProps>, res: Response) => {
       const lessonId = req.params.id;
       const user = req.user as UserPayload;
       const teacherId = user.id;

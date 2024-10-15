@@ -37,17 +37,19 @@ router.get(
   courseController.getCourses,
 );
 
-router.get(
-  courseRoute.getCourse,
-  userRoleMiddleware(Role.teacher),
-  courseController.getCourseById,
-);
+router.get(courseRoute.getCourse, courseController.getCourseById);
 
 router.patch(
   courseRoute.updateCourse,
   userRoleMiddleware(Role.teacher),
   dataValidation(UpdateCourseSchema),
   courseController.updateCourse,
+);
+
+router.delete(
+  courseRoute.deleteCourse,
+  userRoleMiddleware(Role.teacher),
+  courseController.deleteCourse,
 );
 
 export const courseApis = router;

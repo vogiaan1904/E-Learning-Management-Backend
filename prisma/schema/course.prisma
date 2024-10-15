@@ -11,6 +11,7 @@ model Course {
     description    String
     isDeleted      Boolean               @default(false)
     numEnrollments Int                   @default(0)
+    numLessons     Int                   @default(0)
     modules        Module[]
     categories     CategoriesOnCourses[]
     enrollments    Enrollment[]

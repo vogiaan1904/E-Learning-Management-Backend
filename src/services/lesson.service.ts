@@ -5,7 +5,7 @@ import moduleRepo from "@/repositories/module.repo";
 import {
   CreateLessonProps,
   GetLessonsProp,
-  UpadteLessonProps,
+  UpdateLessonProps,
 } from "@/types/lesson";
 import { Lesson, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
@@ -38,7 +38,12 @@ class LessonService {
         this.section,
       );
     }
-    return await lessonRepo.create(data);
+    const lesson = await lessonRepo.create(data);
+    await courseRepo.update(
+      { id: course.id },
+      { numLessons: course.numLessons + 1 },
+    );
+    return lesson;
   };
 
   getLesson = async (filter: Prisma.LessonWhereInput) => {
@@ -70,7 +75,7 @@ class LessonService {
 
   updateLesson = async (
     filter: Prisma.LessonWhereUniqueInput,
-    data: UpadteLessonProps,
+    data: UpdateLessonProps,
     teacherId: string,
   ) => {
     const lesson = await lessonRepo.getOne(filter);
@@ -100,7 +105,7 @@ class LessonService {
     if (course && teacherId !== course.teacherId) {
       throw new CustomError(
         "Course not belong to teacher",
-        StatusCodes.CONFLICT,
+        StatusCodes.BAD_REQUEST,
         this.section,
       );
     }
