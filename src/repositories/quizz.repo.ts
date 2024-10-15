@@ -3,8 +3,8 @@ import { CreateQuizzProps } from "@/types/quizz";
 import { Prisma, Quizz } from "@prisma/client";
 
 class QuizzRepository {
-  async create(data: CreateQuizzProps): Promise<Quizz> {
-    const { name, moduleId, description, position, timeLimit } = data;
+  async create(data: CreateQuizzProps, position: number): Promise<Quizz> {
+    const { name, moduleId, description, timeLimit } = data;
     return await prisma.quizz.create({
       data: {
         name,

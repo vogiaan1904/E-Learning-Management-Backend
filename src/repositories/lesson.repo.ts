@@ -4,8 +4,8 @@ import { Lesson, Prisma } from "@prisma/client";
 import slugify from "slugify";
 
 class LessonRepository {
-  async create(data: CreateLessonProps): Promise<Lesson> {
-    const { name, description, position, moduleId, content } = data;
+  async create(data: CreateLessonProps, position: number): Promise<Lesson> {
+    const { name, description, moduleId, content } = data;
     const slug = slugify(name, { lower: true });
 
     return await prisma.lesson.create({

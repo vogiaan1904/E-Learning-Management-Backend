@@ -1,19 +1,19 @@
 import { DefaultRouteProps } from "@/types/routes/default";
 
-interface LessonRouteProps extends DefaultRouteProps {
-  getLesson: string;
-  getLessons: string;
-  createLesson: string;
-  updateLesson: string;
-  deleteLesson: string;
+interface QuizzRouteProps extends DefaultRouteProps {
+  getQuizz: string;
+  getQuizzes: string;
+  createQuizz: string;
+  updateQuizz: string;
+  deleteQuizz: string;
 }
-export const lessonRoute: LessonRouteProps = {
+export const quizzRoute: QuizzRouteProps = {
   index: "/quizzes",
   default: "/",
   status: "/api-status",
-  createLesson: "/",
-  getLesson: "/:id",
-  getLessons: "/many",
-  updateLesson: "/:id",
-  deleteLesson: "/:id",
+  createQuizz: "/",
+  getQuizz: "/:id",
+  getQuizzes: "/many",
+  updateQuizz: "/:id",
+  deleteQuizz: "/:id",
 };

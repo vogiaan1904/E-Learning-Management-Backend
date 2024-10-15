@@ -38,7 +38,12 @@ class LessonService {
         this.section,
       );
     }
-    const lesson = await lessonRepo.create(data);
+
+    const numLessons = await lessonRepo.getMany({ moduleId });
+
+    const position = numLessons.length;
+
+    const lesson = await lessonRepo.create(data, position);
     await courseRepo.update(
       { id: course.id },
       { numLessons: course.numLessons + 1 },

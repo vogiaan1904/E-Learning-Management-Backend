@@ -78,7 +78,7 @@ model Quizz {
     moduleId    String
     name        String
     position    Int
-    description String
+    description String?
     timeLimit   Int //minutes
     module      Module            @relation(fields: [moduleId], references: [id], onDelete: Cascade)
     questions   Question[]

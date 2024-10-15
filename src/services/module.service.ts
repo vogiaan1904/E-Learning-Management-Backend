@@ -29,7 +29,9 @@ class ModuleService {
         this.section,
       );
     }
-    return await moduleRepo.create(data);
+    const numModules = await moduleRepo.getMany({ courseId });
+    const position = numModules.length;
+    return await moduleRepo.create(data, position);
   };
 
   getModule = async (filter: Prisma.ModuleWhereInput, options?: object) => {

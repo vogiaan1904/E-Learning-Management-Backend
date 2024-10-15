@@ -32,13 +32,10 @@ paths:
                 description:
                   type: string
                   example: "first module"
-                position:
-                  type: number
-                  example: 1
+
               required:
                 - courseId
                 - description
-                - position
                 - name
       responses:
         200:
