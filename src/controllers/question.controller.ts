@@ -11,8 +11,18 @@ class QuestionController {
     async (req: CustomRequest<CreateQuestionProps>, res: Response) => {
       const user = req.user as UserPayload;
       const teacherId = user.id;
+      const { content, quizzId } = req.body;
+      const options = req.body.options!;
+      const correctOption = options.find((option) => option.isCorrect);
+      const wrongOptions = options.filter((option) => !option.isCorrect);
+      const questionData = {
+        content,
+        correctOption: JSON.stringify(correctOption),
+        wrongOptions: wrongOptions,
+        quizzId: quizzId,
+      };
       const question = await questionService.createQuestion(
-        req.body,
+        questionData,
         teacherId,
       );
       res.status(StatusCodes.CREATED).json({
@@ -44,9 +54,18 @@ class QuestionController {
       const questionId = req.params.id;
       const user = req.user as UserPayload;
       const teacherId = user.id;
+      const updateData = { ...req.body };
+      const options = req.body.options;
+      if (options !== undefined) {
+        const correctOption = options.find((option) => option.isCorrect);
+        const wrongOptions = options.filter((option) => !option.isCorrect);
+        delete updateData.options;
+        updateData.correctOption = correctOption;
+        updateData.wrongOptions = wrongOptions;
+      }
       const question = await questionService.updateQuestion(
         { id: questionId },
-        req.body,
+        updateData,
         teacherId,
       );
       res.status(StatusCodes.OK).json({
