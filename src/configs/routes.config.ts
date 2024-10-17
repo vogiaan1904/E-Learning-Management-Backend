@@ -9,6 +9,7 @@ import { serviceRoutes } from "@/types/routes/service";
 import { studentRoute } from "@/types/routes/student";
 import { teacherRoute } from "@/types/routes/teacher";
 import { userRoute } from "@/types/routes/user";
+import { questionRoute } from "@/types/routes/question";
 
 export const routesConfig = {
   default: "/",
@@ -29,4 +30,5 @@ export const routesConfig = {
   lessonRoute: lessonRoute,
   enrollmentRoute: enrollmentRoute,
   quizzRoute: quizzRoute,
+  questionRoute: questionRoute,
 } as const;

@@ -146,7 +146,29 @@ class QuestionService {
         this.section,
       );
     }
-    return await questionRepo.delete(filter);
+    const deletedQuestion = await questionRepo.delete(filter);
+    const questionsBehind = await questionRepo.getMany(
+      {
+        quizzId: deletedQuestion.quizzId,
+        position: {
+          gt: deletedQuestion.position,
+        },
+      },
+      {
+        orderBy: {
+          position: "asc",
+        },
+      },
+    );
+    questionsBehind.forEach(async (question) => {
+      await questionRepo.update(
+        { id: question.id },
+        {
+          position: question.position - 1,
+        },
+      );
+    });
+    return deletedQuestion;
   };
 }
 export default new QuestionService();

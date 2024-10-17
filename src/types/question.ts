@@ -18,6 +18,6 @@ export interface UpdateQuestionProps
     | "correctOption"
     | "wrongOptions"
   > {
-  correctOption: Prisma.InputJsonValue;
-  wrongOptions: Prisma.InputJsonValue;
+  correctOption?: Prisma.InputJsonValue;
+  wrongOptions?: Prisma.InputJsonValue;
 }
