@@ -21,3 +21,6 @@ export interface UpdateQuestionProps
   correctOption?: Prisma.InputJsonValue;
   wrongOptions?: Prisma.InputJsonValue;
 }
+export interface GetQuestionsProp {
+  quizzId?: string;
+}

@@ -1,5 +1,9 @@
 import quizzRepo from "@/repositories/quizz.repo";
-import { CreateQuestionProps, UpdateQuestionProps } from "@/types/question";
+import {
+  CreateQuestionProps,
+  GetQuestionsProp,
+  UpdateQuestionProps,
+} from "@/types/question";
 import { StatusCodes } from "http-status-codes";
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
@@ -56,6 +60,9 @@ class QuestionService {
       );
     }
     return question;
+  };
+  getQuestions = async (filter: GetQuestionsProp) => {
+    return await questionRepo.getMany(filter);
   };
   updateQuestion = async (
     filter: Prisma.QuestionWhereUniqueInput,

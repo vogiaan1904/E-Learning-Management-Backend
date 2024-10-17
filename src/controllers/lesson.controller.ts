@@ -22,7 +22,7 @@ class LessonController {
   getLesson = catchAsync(async (req: Request, res: Response) => {
     const lessonId = req.params.id;
     const lesson = await lessonService.getLesson({ id: lessonId });
-    res.status(StatusCodes.CREATED).json({
+    res.status(StatusCodes.OK).json({
       message: "Get lesson successfully",
       status: "success",
       lesson: lesson,
@@ -31,7 +31,7 @@ class LessonController {
 
   getLessons = catchAsync(async (req: Request, res: Response) => {
     const lessons = await lessonService.getLessons(req.query);
-    res.status(StatusCodes.CREATED).json({
+    res.status(StatusCodes.OK).json({
       message: "Get lessons successfully",
       status: "success",
       lessons: lessons,
@@ -48,7 +48,7 @@ class LessonController {
         req.body,
         teacherId,
       );
-      res.status(StatusCodes.CREATED).json({
+      res.status(StatusCodes.OK).json({
         message: "Updated lesson infor successfully",
         status: "success",
         lesson: lesson,
