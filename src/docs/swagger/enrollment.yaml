@@ -219,6 +219,98 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResError"
+  /enrollments/{id}/lesson-progress:
+    patch:
+      tags:
+        - Enrollment
+      summary: Update the lessons progress - Student
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The enrollment's id
+      requestBody:
+        description: The lessonId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lessonId:
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetEnrollment" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+  /enrollments/{id}/module-progress:
+    patch:
+      tags:
+        - Enrollment
+      summary: Update the modules progress - Student
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The enrollment's id
+      requestBody:
+        description: The moduleId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                moduleId:
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetEnrollment" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
 
   /enrollments/{id}/feed-back:
     patch:

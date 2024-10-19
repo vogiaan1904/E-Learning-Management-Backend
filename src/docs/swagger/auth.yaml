@@ -198,10 +198,10 @@ components:
       properties:
         account: 
           type: string
-          example: "acus"
+          example: "teacher"
         password:
           type: string
-          example: "acus123"
+          example: "teacher123"
     ResAuthSignUp:
       type: object
       properties: 

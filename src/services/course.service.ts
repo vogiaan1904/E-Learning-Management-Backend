@@ -1,5 +1,6 @@
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
+import enrollmentRepo from "@/repositories/enrollment.repo";
 import moduleRepo from "@/repositories/module.repo";
 import {
   CreateCourseProps,
@@ -28,7 +29,11 @@ class CourseService {
     return course;
   };
 
-  getCourse = async (filter: Prisma.CourseWhereInput, options?: object) => {
+  getCourse = async (
+    filter: Prisma.CourseWhereInput,
+    userId: string,
+    options?: object,
+  ) => {
     const { name, id, slug } = filter;
     const course = await courseRepo.getOne(
       {
@@ -57,9 +62,13 @@ class CourseService {
       { courseId: course.id },
       { orderBy: { position: "asc" } },
     );
+    const enrollment = await enrollmentRepo.getOne({
+      studentId: userId,
+      courseId: course.id,
+    });
     const moduleIds = modules.map((module) => module.id);
 
-    return { course, moduleIds };
+    return { course, moduleIds, enrollment };
   };
 
   getCourses = async (query: GetCoursesProps) => {
@@ -75,6 +84,7 @@ class CourseService {
 
   updateCourse = async (
     filter: Pick<Course, "id">,
+    teacherId: string,
     courseData: UpdateCourseProps,
   ) => {
     const course = await courseRepo.getOne(filter);
@@ -85,15 +95,29 @@ class CourseService {
         this.section,
       );
     }
+    if (teacherId !== course.teacherId) {
+      throw new CustomError(
+        "Course not belong to teacher.",
+        StatusCodes.BAD_REQUEST,
+        this.section,
+      );
+    }
     return await courseRepo.update(filter, courseData);
   };
 
-  deleteCourse = async (filter: Pick<Course, "id">) => {
+  deleteCourse = async (filter: Pick<Course, "id">, teacherId: string) => {
     const course = await courseRepo.getOne(filter);
     if (!course) {
       throw new CustomError(
         "Course not found.",
         StatusCodes.NOT_FOUND,
+        this.section,
+      );
+    }
+    if (teacherId !== course.teacherId) {
+      throw new CustomError(
+        "Course not belong to teacher.",
+        StatusCodes.BAD_REQUEST,
         this.section,
       );
     }

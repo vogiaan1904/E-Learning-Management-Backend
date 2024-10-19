@@ -1,6 +1,6 @@
 import CourseService from "@/services/course.service";
 import { CreateCourseProps, UpdateCourseProps } from "@/types/course";
-import { CustomRequest } from "@/types/request";
+import { CustomRequest, CustomUserRequest } from "@/types/request";
 import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
 import { Request, Response } from "express";
@@ -19,19 +19,26 @@ class CourseController {
     },
   );
 
-  getCourseById = catchAsync(async (req: Request, res: Response) => {
-    const courseId = req.params.id;
-    console.log(courseId);
-    const { course, moduleIds } = await CourseService.getCourse({
-      id: courseId,
-    });
-    return res.status(StatusCodes.OK).json({
-      message: "Get course successfully",
-      status: "success",
-      course: course,
-      moduleIds: moduleIds,
-    });
-  });
+  getCourseById = catchAsync(
+    async (req: CustomUserRequest<UserPayload>, res: Response) => {
+      const userId = req.user.id;
+      const courseId = req.params.id;
+      const { course, moduleIds, enrollment } = await CourseService.getCourse(
+        {
+          id: courseId,
+        },
+        userId,
+      );
+
+      return res.status(StatusCodes.OK).json({
+        message: "Get course successfully",
+        status: "success",
+        course: course,
+        moduleIds: moduleIds,
+        enrollment: enrollment,
+      });
+    },
+  );
 
   getCourses = catchAsync(async (req: Request, res: Response) => {
     const courses = await CourseService.getCourses(req.query);
@@ -44,9 +51,12 @@ class CourseController {
 
   updateCourse = catchAsync(
     async (req: CustomRequest<UpdateCourseProps>, res: Response) => {
+      const user = req.user as UserPayload;
+      const userId = user.id;
       const courseId = req.params.id;
       const course = await CourseService.updateCourse(
         { id: courseId },
+        userId,
         req.body,
       );
       return res.status(StatusCodes.OK).json({
@@ -57,14 +67,17 @@ class CourseController {
     },
   );
 
-  deleteCourse = catchAsync(async (req: Request, res: Response) => {
-    const courseId = req.params.id;
-    await CourseService.deleteCourse({ id: courseId });
-    return res.status(StatusCodes.OK).json({
-      message: "Get courses successfully",
-      status: "success",
-    });
-  });
+  deleteCourse = catchAsync(
+    async (req: CustomUserRequest<UserPayload>, res: Response) => {
+      const courseId = req.params.id;
+      const userId = req.user.id;
+      await CourseService.deleteCourse({ id: courseId }, userId);
+      return res.status(StatusCodes.OK).json({
+        message: "Get courses successfully",
+        status: "success",
+      });
+    },
+  );
 }
 
 export default new CourseController();

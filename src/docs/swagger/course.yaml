@@ -325,6 +325,8 @@ components:
           type: array
           items:
             type: object
+        enrollment:
+          type: object
     ResGetCourses:
       properties: 
         message: 

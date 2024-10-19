@@ -32,14 +32,56 @@ paths:
                 description:
                   type: string
                   example: "first module"
-                position:
-                  type: number
-                  example: 1
+
               required:
                 - courseId
                 - description
-                - position
                 - name
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetModule" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+  /modules/many:
+    get:
+      tags:
+        - Module
+      summary: Get Modules - Authenticated
+      parameters:
+        - name: courseId
+          in: query
+          description: ID of course
+          required: false
+          schema:
+            type: string
+            format: uuid
+            example: "123e4567-e89b-12d3-a456-426614174000"
       responses:
         200:
           description: OK

@@ -3,11 +3,13 @@ import { courseRoute } from "@/types/routes/course";
 import { enrollmentRoute } from "@/types/routes/enrollment";
 import { lessonRoute } from "@/types/routes/lesson";
 import { moduleRoute } from "@/types/routes/module";
+import { quizzRoute } from "@/types/routes/quizz";
 import { serverRoutes } from "@/types/routes/server";
 import { serviceRoutes } from "@/types/routes/service";
 import { studentRoute } from "@/types/routes/student";
 import { teacherRoute } from "@/types/routes/teacher";
 import { userRoute } from "@/types/routes/user";
+import { questionRoute } from "@/types/routes/question";
 
 export const routesConfig = {
   default: "/",
@@ -23,8 +25,10 @@ export const routesConfig = {
   userRoute: userRoute,
   teacherRoute: teacherRoute,
   studentRoute: studentRoute,
+  enrollmentRoute: enrollmentRoute,
   courseRoute: courseRoute,
   moduleRoute: moduleRoute,
   lessonRoute: lessonRoute,
-  enrollmentRoute: enrollmentRoute,
+  quizzRoute: quizzRoute,
+  questionRoute: questionRoute,
 } as const;

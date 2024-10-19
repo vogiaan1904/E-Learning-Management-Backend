@@ -1,9 +1,5 @@
 import moduleService from "@/services/module.service";
-import {
-  CreateModuleProps,
-  GetModulesProps,
-  UpadteModuleProps,
-} from "@/types/module";
+import { CreateModuleProps, UpadteModuleProps } from "@/types/module";
 import { CustomRequest } from "@/types/request";
 import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
@@ -26,7 +22,7 @@ class ModuleController {
 
   getModuleById = catchAsync(async (req: Request, res: Response) => {
     const moduleId = req.params.id;
-    const { module, lessonIds } = await moduleService.getModule({
+    const { module, lessonIds, quizzIds } = await moduleService.getModule({
       id: moduleId,
     });
     return res.status(StatusCodes.OK).json({
@@ -34,19 +30,18 @@ class ModuleController {
       status: "success",
       module: module,
       lessonIds: lessonIds,
+      quizzIds: quizzIds,
     });
   });
 
-  getModules = catchAsync(
-    async (req: CustomRequest<GetModulesProps>, res: Response) => {
-      const courses = await moduleService.getModules(req.body);
-      return res.status(StatusCodes.OK).json({
-        message: "Get courses successfully",
-        status: "success",
-        courses: courses,
-      });
-    },
-  );
+  getModules = catchAsync(async (req: Request, res: Response) => {
+    const modules = await moduleService.getModules(req.query);
+    return res.status(StatusCodes.OK).json({
+      message: "Get courses successfully",
+      status: "success",
+      modules: modules,
+    });
+  });
 
   updateModule = catchAsync(
     async (req: CustomRequest<UpadteModuleProps>, res: Response) => {

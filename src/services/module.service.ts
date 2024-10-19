@@ -2,6 +2,7 @@ import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
 import lessonRepo from "@/repositories/lesson.repo";
 import moduleRepo from "@/repositories/module.repo";
+import quizzRepo from "@/repositories/quizz.repo";
 import {
   CreateModuleProps,
   GetModulesProps,
@@ -29,19 +30,21 @@ class ModuleService {
         this.section,
       );
     }
-    return await moduleRepo.create(data);
+    const numModules = await moduleRepo.getMany({ courseId });
+    const position = numModules.length;
+    return await moduleRepo.create(data, position);
   };
 
   getModule = async (filter: Prisma.ModuleWhereInput, options?: object) => {
-    const { name, id } = filter;
+    const { slug, id } = filter;
     const module = await moduleRepo.getOne(
       {
         OR: [
           {
-            name: name,
+            slug,
           },
           {
-            id: id,
+            id,
           },
         ],
       },
@@ -58,8 +61,14 @@ class ModuleService {
       { moduleId: module.id },
       { orderBy: { position: "asc" } },
     );
+    const quizzes = await quizzRepo.getMany(
+      { moduleId: module.id },
+      { orderBy: { position: "asc" } },
+    );
     const lessonIds = lessons.map((lesson) => lesson.id);
-    return { module, lessonIds };
+    const quizzIds = quizzes.map((quizz) => quizz.id);
+
+    return { module, lessonIds, quizzIds };
   };
 
   getModules = async (filter: GetModulesProps) => {

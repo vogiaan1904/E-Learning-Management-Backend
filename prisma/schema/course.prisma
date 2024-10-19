@@ -11,6 +11,7 @@ model Course {
     description    String
     isDeleted      Boolean               @default(false)
     numEnrollments Int                   @default(0)
+    numLessons     Int                   @default(0)
     modules        Module[]
     categories     CategoriesOnCourses[]
     enrollments    Enrollment[]
@@ -43,10 +44,10 @@ model CategoriesOnCourses {
 model Module {
     id          String   @id @default(uuid())
     courseId    String
+    slug        String   @unique
     position    Int
     name        String
     description String
-    numLessons  Int      @default(0)
     lessons     Lesson[]
     quizzes     Quizz[]
     course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -60,10 +61,11 @@ model Module {
 model Lesson {
     id          String @id @default(uuid())
     moduleId    String
+    slug        String @unique
     position    Int
     name        String
     description String
-    content     Json
+    content     Json?
     module      Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
     @@unique([moduleId, position])
@@ -75,7 +77,7 @@ model Quizz {
     moduleId    String
     name        String
     position    Int
-    description String
+    description String?
     timeLimit   Int //minutes
     module      Module            @relation(fields: [moduleId], references: [id], onDelete: Cascade)
     questions   Question[]
@@ -88,15 +90,14 @@ model Quizz {
 }
 
 model Question {
-    id            String   @id @default(uuid())
-    quizzId       String
-    position      Int
-    content       String
-    wrongOptions  Json
-    correctOption Json
-    quizz         Quizz    @relation(fields: [quizzId], references: [id], onDelete: Cascade)
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @default(now())
+    id        String   @id @default(uuid())
+    quizzId   String
+    position  Int
+    content   String
+    options   Json[]
+    quizz     Quizz    @relation(fields: [quizzId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
 
     @@unique([position, quizzId])
     @@map("Questions")
@@ -164,6 +165,7 @@ model Question {
 // });
 
 // /* --------------------------------- Backend -------------------------------- */
+
 // app.post('/api/question', (req, res) => {
 //   const { content, options } = req.body;
 

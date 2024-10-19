@@ -2,7 +2,10 @@ import { routesConfig } from "@/configs";
 import moduleController from "@/controllers/module.controller";
 import { accessTokenMiddleware, userRoleMiddleware } from "@/middlewares";
 import { dataValidation } from "@/validations/data.validation";
-import { UpdateModuleSchema } from "@/schemas/module.schema";
+import {
+  GetModulesQuerySchema,
+  UpdateModuleSchema,
+} from "@/schemas/module.schema";
 import { Role } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
@@ -26,9 +29,13 @@ router.post(
   moduleController.createModule,
 );
 
-router.get(moduleRoute.getModule, moduleController.getModuleById);
+router.get(
+  moduleRoute.getModules,
+  dataValidation(GetModulesQuerySchema),
+  moduleController.getModules,
+);
 
-router.get(moduleRoute.getModules, moduleController.getModules);
+router.get(moduleRoute.getModule, moduleController.getModuleById);
 
 router.patch(
   moduleRoute.updateModule,

@@ -1,9 +1,9 @@
 paths:
-  /lessons/api-status:
+  /quizzes/api-status:
     get:
       tags:
-        - Lesson
-      summary: Check lesson APIs status
+        - Quizz
+      summary: Check quizz APIs status
       responses:
         200: 
           description: OK
@@ -11,11 +11,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResStatus"
-  /lessons:
+  /quizzes:
     post:
       tags:
-        - Lesson
-      summary: Create Lesson - Teacher, Admin
+        - Quizz
+      summary: Create quizz - Teacher, Admin
       requestBody:
         description: Request body
         content:
@@ -32,20 +32,21 @@ paths:
                 description:
                   type: string
                   example: "You will learn ..."
-                content:
-                  type: object
 
+                timeLimit:
+                  type: number
+                  example: 15
               required:
                 - moduleId
-                - description
                 - name
+                - timeLimit
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResGetLesson" 
+                $ref: "#/components/schemas/ResGetQuizz" 
         400:
           description: Bad Request
           content:
@@ -70,11 +71,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResError"
-  /lessons/many:
+  /quizzes/many:
     get:
       tags:
-        - Lesson
-      summary: Get Lessons - Authenticated
+        - Quizz
+      summary: Get quizzes - Authenticated
       parameters:
         - name: moduleId
           in: query
@@ -90,7 +91,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResGetLesson" 
+                $ref: "#/components/schemas/ResGetQuizz" 
         400:
           description: Bad Request
           content:
@@ -116,25 +117,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/ResError"
                 
-  /lessons/{id}:
+  /quizzes/{id}:
     get:
       tags:
-        - Lesson
-      summary: Get Lesson - Authenticated
+        - Quizz
+      summary: Get quizz - Authenticated
       parameters:
         - in: path
           name: id
           schema:
             type: string
           required: true
-          description: The Lesson's Id
+          description: The quizz's Id
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResGetLesson" 
+                $ref: "#/components/schemas/ResGetQuizz" 
         400:
           description: Bad Request
           content:
@@ -161,16 +162,16 @@ paths:
                 $ref: "#/components/schemas/ResError"
     patch:
       tags:
-        - Lesson
-      summary: Update Lesson - Teacher, Admin
-      description: The content is optional when creating the lesson
+        - Quizz
+      summary: Update quizz - Teacher, Admin
+      description:
       parameters:
         - in: path
           name: id
           schema:
             type: string
           required: true
-          description: The Lesson's Id
+          description: The quizz's Id
       requestBody:
         content:
           application/json:
@@ -179,22 +180,22 @@ paths:
               properties:
                 name:
                   type: string
-                  example: "Lesson 1"
+                  example: "quizz 1"
                 description:
                   type: string
-                  example: "first Lesson"
+                  example: "first quizz"
                 position:
                   type: number
                   example: 1
-                content: 
-                  type: object
+                timeLimit: 
+                  type: number
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResGetLesson" 
+                $ref: "#/components/schemas/ResGetQuizz" 
         400:
           description: Bad Request
           content:
@@ -221,22 +222,22 @@ paths:
                 $ref: "#/components/schemas/ResError"
     delete:
       tags:
-        - Lesson
-      summary: Delete Lesson - Authorized
+        - Quizz
+      summary: Delete quizz - Authorized
       parameters:
         - in: path
           name: id
           schema:
             type: string
           required: true
-          description: The Lesson's Id
+          description: The quizz's Id
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResGetLesson" 
+                $ref: "#/components/schemas/ResGetQuizz" 
         400:
           description: Bad Request
           content:
@@ -272,7 +273,7 @@ components:
           type: boolean
         code:
           type: number
-    Lesson:
+    quizz:
       type: object
       properties:
         id:
@@ -283,37 +284,37 @@ components:
           example: "123"
         name: 
           type: string
-          example: 'Lesson 1'
+          example: 'quizz 1'
         description:
           type: string
-          example: "The first Lesson"
-        content: 
-          type: object
+          example: "The first quizz"
+        timeLimit: 
+          type: number
         position:
           type: number
           example: 1
-    ResGetLesson:
+    ResGetQuizz:
       type: object
       properties: 
         message: 
           type: string
         success:
           type: boolean
-        lesson:
+        quizz:
           type: array
           items:
             type: object
-            $ref: "#/components/schemas/Lesson"
-    ResGetLessons:
+            $ref: "#/components/schemas/quizz"
+    ResGetQuizzes:
       type: object
       properties: 
         message: 
           type: string
         success:
           type: boolean
-        lessons:
+        quizzes:
           type: object
-          $ref: "#/components/schemas/Lesson"
+          $ref: "#/components/schemas/quizz"
     ResError:
       type: object
       properties:

@@ -8,7 +8,7 @@ interface LessonRouteProps extends DefaultRouteProps {
   deleteLesson: string;
 }
 export const lessonRoute: LessonRouteProps = {
-  index: "/modules/:moduleId/lessons",
+  index: "/lessons",
   default: "/",
   status: "/api-status",
   createLesson: "/",
