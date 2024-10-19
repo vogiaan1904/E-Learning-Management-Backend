@@ -1,20 +1,20 @@
-import quizzRepo from "@/repositories/quizz.repo";
-import {
-  CreateQuestionProps,
-  GetQuestionsProp,
-  UpdateQuestionProps,
-} from "@/types/question";
-import { StatusCodes } from "http-status-codes";
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
 import moduleRepo from "@/repositories/module.repo";
 import questionRepo from "@/repositories/question.repo";
+import quizzRepo from "@/repositories/quizz.repo";
+import {
+  BaseCreateQuestionProps,
+  BaseUpdateQuestionProps,
+  GetQuestionsProp,
+} from "@/types/question";
 import { Prisma } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
 
 class QuestionService {
   private section = QuestionService.name;
-  createQuestion = async (data: CreateQuestionProps, teacherId: string) => {
-    const { quizzId } = data;
+
+  private getCourseByQuizzId = async (quizzId: string) => {
     const quiz = await quizzRepo.getOne({ id: quizzId });
     if (!quiz) {
       throw new CustomError(
@@ -39,6 +39,29 @@ class QuestionService {
         this.section,
       );
     }
+    return course;
+  };
+  createQuestion = async (data: BaseCreateQuestionProps, teacherId: string) => {
+    const { quizzId, options } = data;
+
+    const parsedOptions = options as Array<{
+      option: string;
+      isCorrect: boolean;
+    }>;
+    const correctOptionsCount = parsedOptions.filter(
+      (option) => option.isCorrect,
+    ).length;
+
+    if (correctOptionsCount !== 1) {
+      throw new CustomError(
+        "There must be exactly one correct option",
+        StatusCodes.BAD_REQUEST,
+        this.section,
+      );
+    }
+
+    const course = await this.getCourseByQuizzId(quizzId);
+
     if (teacherId !== course.teacherId) {
       throw new CustomError(
         "Course not belong to teacher",
@@ -50,6 +73,7 @@ class QuestionService {
     const position = questions.length;
     return await questionRepo.create(data, position);
   };
+
   getQuestion = async (filter: Prisma.QuestionWhereInput) => {
     const question = questionRepo.getOne(filter);
     if (!question) {
@@ -61,12 +85,14 @@ class QuestionService {
     }
     return question;
   };
+
   getQuestions = async (filter: GetQuestionsProp) => {
     return await questionRepo.getMany(filter);
   };
+
   updateQuestion = async (
     filter: Prisma.QuestionWhereUniqueInput,
-    data: UpdateQuestionProps,
+    data: BaseUpdateQuestionProps,
     teacherId: string,
   ) => {
     const question = await questionRepo.getOne(filter);
@@ -77,30 +103,25 @@ class QuestionService {
         this.section,
       );
     }
-    const quiz = await quizzRepo.getOne({ id: question.quizzId });
-    if (!quiz) {
+    const { options } = data;
+    const parsedOptions = options as Array<{
+      option: string;
+      isCorrect: boolean;
+    }>;
+    const correctOptionsCount = parsedOptions.filter(
+      (option) => option.isCorrect,
+    ).length;
+
+    if (correctOptionsCount !== 1) {
       throw new CustomError(
-        "Quiz not found.",
+        "There must be exactly one correct option",
         StatusCodes.BAD_REQUEST,
         this.section,
       );
     }
-    const module = await moduleRepo.getOne({ id: quiz.moduleId });
-    if (!module) {
-      throw new CustomError(
-        "Module not found.",
-        StatusCodes.BAD_REQUEST,
-        this.section,
-      );
-    }
-    const course = await courseRepo.getOne({ id: module.courseId });
-    if (!course) {
-      throw new CustomError(
-        "Coursse not found.",
-        StatusCodes.BAD_REQUEST,
-        this.section,
-      );
-    }
+
+    const course = await this.getCourseByQuizzId(question.quizzId);
+
     if (teacherId !== course.teacherId) {
       throw new CustomError(
         "Course not belong to teacher",
@@ -110,6 +131,7 @@ class QuestionService {
     }
     return await questionRepo.update(filter, data);
   };
+
   deleteQuestion = async (
     filter: Prisma.QuestionWhereUniqueInput,
     teacherId: string,
@@ -122,30 +144,8 @@ class QuestionService {
         this.section,
       );
     }
-    const quiz = await quizzRepo.getOne({ id: question.quizzId });
-    if (!quiz) {
-      throw new CustomError(
-        "Quiz not found.",
-        StatusCodes.BAD_REQUEST,
-        this.section,
-      );
-    }
-    const module = await moduleRepo.getOne({ id: quiz.moduleId });
-    if (!module) {
-      throw new CustomError(
-        "Module not found.",
-        StatusCodes.BAD_REQUEST,
-        this.section,
-      );
-    }
-    const course = await courseRepo.getOne({ id: module.courseId });
-    if (!course) {
-      throw new CustomError(
-        "Coursse not found.",
-        StatusCodes.BAD_REQUEST,
-        this.section,
-      );
-    }
+    const course = await this.getCourseByQuizzId(question.quizzId);
+
     if (teacherId !== course.teacherId) {
       throw new CustomError(
         "Course not belong to teacher",

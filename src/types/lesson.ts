@@ -6,7 +6,7 @@ export interface CreateLessonProps
 
 export interface UpdateLessonProps
   extends OmitAndPartial<Lesson, "id" | "moduleId" | "content"> {
-  content: Prisma.InputJsonValue;
+  content?: Prisma.InputJsonValue;
 }
 
 export interface GetLessonsProp {

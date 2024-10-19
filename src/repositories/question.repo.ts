@@ -1,15 +1,20 @@
 import { prisma } from "@/database/connect.db";
-import { CreateQuestionProps, UpdateQuestionProps } from "@/types/question";
+import {
+  BaseCreateQuestionProps,
+  BaseUpdateQuestionProps,
+} from "@/types/question";
 import { Prisma, Question } from "@prisma/client";
 
 class QuestionRepository {
-  async create(data: CreateQuestionProps, position: number): Promise<Question> {
-    const { content, correctOption, wrongOptions, quizzId } = data;
+  async create(
+    data: BaseCreateQuestionProps,
+    position: number,
+  ): Promise<Question> {
+    const { content, options, quizzId } = data;
     return await prisma.question.create({
       data: {
         content,
-        correctOption: correctOption as Prisma.InputJsonValue,
-        wrongOptions: wrongOptions as Prisma.InputJsonValue,
+        options: options as Prisma.InputJsonValue[],
         position,
         quizz: {
           connect: { id: quizzId },
@@ -37,7 +42,7 @@ class QuestionRepository {
   }
   async update(
     filter: Prisma.QuestionWhereUniqueInput,
-    data: UpdateQuestionProps,
+    data: BaseUpdateQuestionProps,
   ): Promise<Question> {
     return await prisma.question.update({
       where: filter,

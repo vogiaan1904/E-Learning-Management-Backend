@@ -1,0 +1,333 @@
+paths:
+  /questions/api-status:
+    get:
+      tags:
+        - Question
+      summary: Check Question APIs status
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResStatus"
+  /questions:
+    post:
+      tags:
+        - Question
+      summary: Create Question - Teacher, Admin
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quizzId:
+                  type: string
+                  example: "123"
+                content: 
+                  type: string
+                options:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      option:
+                        type: string
+                      isCorrect: 
+                        type: boolean
+  
+              required:
+                - quizzId
+                - content
+                - options
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetQuestion" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+  /questions/many:
+    get:
+      tags:
+        - Question
+      summary: Get questions - Authenticated
+      parameters:
+        - name: moduleId
+          in: query
+          description: ID of module
+          required: false
+          schema:
+            type: string
+            format: uuid
+            example: "123e4567-e89b-12d3-a456-426614174000"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetQuestions" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+                
+  /questions/{id}:
+    get:
+      tags:
+        - Question
+      summary: Get Question - Authenticated
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The Question's Id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetQuestion" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+    patch:
+      tags:
+        - Question
+      summary: Update Question - Teacher, Admin
+      description: The content is optional when creating the Question
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The Question's Id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                options:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      option: 
+                        type: string
+                      isCorrect: 
+                        type: boolean
+                position:
+                  type: number
+                  example: 1
+                content: 
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetQuestion" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+    delete:
+      tags:
+        - Question
+      summary: Delete Question - Authorized
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The Question's Id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetQuestion" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+components:
+  schemas:
+    ResStatus:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        code:
+          type: number
+    Question:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "123"
+        quizzId:
+          type: string
+          example: "123"
+        content: 
+          type: object
+        position:
+          type: number
+          example: 1
+        options:
+          type: array
+          items:
+            type: object
+            properties:
+              option:
+                type: string
+              isCorrect: 
+                type: boolean
+    ResGetQuestion:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        Question:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Question"
+    ResGetQuestions:
+      type: object
+      properties: 
+        message: 
+          type: string
+        success:
+          type: boolean
+        questions:
+          type: object
+          $ref: "#/components/schemas/Question"
+    ResError:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+          example: "failed"

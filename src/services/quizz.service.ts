@@ -12,9 +12,7 @@ import { StatusCodes } from "http-status-codes";
 
 class QuizzService {
   private section = QuizzService.name;
-
-  createQuizz = async (data: CreateQuizzProps, teacherId: string) => {
-    const { moduleId } = data;
+  private getCourseByModuleId = async (moduleId: string) => {
     const module = await moduleRepo.getOne({ id: moduleId });
     if (!module) {
       throw new CustomError(
@@ -24,14 +22,20 @@ class QuizzService {
       );
     }
     const course = await courseRepo.getOne({ id: module.courseId });
-
     if (!course) {
       throw new CustomError(
-        "Course not found.",
+        "Coursse not found.",
         StatusCodes.BAD_REQUEST,
         this.section,
       );
     }
+    return course;
+  };
+  createQuizz = async (data: CreateQuizzProps, teacherId: string) => {
+    const { moduleId } = data;
+
+    const course = await this.getCourseByModuleId(moduleId);
+
     if (course && teacherId !== course.teacherId) {
       throw new CustomError(
         "Course not belong to teacher",
@@ -80,22 +84,8 @@ class QuizzService {
         this.section,
       );
     }
-    const module = await moduleRepo.getOne({ id: quizz.moduleId });
-    if (!module) {
-      throw new CustomError(
-        "Module not found",
-        StatusCodes.NOT_FOUND,
-        this.section,
-      );
-    }
-    const course = await courseRepo.getOne({ id: module.courseId });
-    if (!course) {
-      throw new CustomError(
-        "Course not found",
-        StatusCodes.NOT_FOUND,
-        this.section,
-      );
-    }
+    const course = await this.getCourseByModuleId(quizz.moduleId);
+
     if (course && teacherId !== course.teacherId) {
       throw new CustomError(
         "Course not belong to teacher",

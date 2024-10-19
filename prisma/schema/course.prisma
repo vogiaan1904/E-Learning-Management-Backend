@@ -90,15 +90,14 @@ model Quizz {
 }
 
 model Question {
-    id            String   @id @default(uuid())
-    quizzId       String
-    position      Int
-    content       String
-    wrongOptions  Json
-    correctOption Json
-    quizz         Quizz    @relation(fields: [quizzId], references: [id], onDelete: Cascade)
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @default(now())
+    id        String   @id @default(uuid())
+    quizzId   String
+    position  Int
+    content   String
+    options   Json[]
+    quizz     Quizz    @relation(fields: [quizzId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
 
     @@unique([position, quizzId])
     @@map("Questions")

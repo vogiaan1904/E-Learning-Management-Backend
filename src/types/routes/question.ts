@@ -10,10 +10,10 @@ interface QuestionRouteProps extends DefaultRouteProps {
 export const questionRoute: QuestionRouteProps = {
   index: "/questions",
   default: "/",
-  status: "/api/status",
+  status: "/api-status",
   createQuestion: "/",
   getQuestion: "/:id",
   getQuestions: "/many",
-  updateQuestion: ":id",
-  deleteQuestion: ":id",
+  updateQuestion: "/:id",
+  deleteQuestion: "/:id",
 };

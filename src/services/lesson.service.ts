@@ -12,25 +12,30 @@ import { StatusCodes } from "http-status-codes";
 
 class LessonService {
   private section = LessonService.name;
-  createLesson = async (data: CreateLessonProps, teacherId: string) => {
-    const { moduleId } = data;
+  private getCourseByModuleId = async (moduleId: string) => {
     const module = await moduleRepo.getOne({ id: moduleId });
     if (!module) {
       throw new CustomError(
         "Module not found.",
-        StatusCodes.NOT_FOUND,
+        StatusCodes.BAD_REQUEST,
         this.section,
       );
     }
     const course = await courseRepo.getOne({ id: module.courseId });
-
     if (!course) {
       throw new CustomError(
-        "Course not found.",
-        StatusCodes.NOT_FOUND,
+        "Coursse not found.",
+        StatusCodes.BAD_REQUEST,
         this.section,
       );
     }
+    return course;
+  };
+
+  createLesson = async (data: CreateLessonProps, teacherId: string) => {
+    const { moduleId } = data;
+    const course = await this.getCourseByModuleId(moduleId);
+
     if (course && teacherId !== course.teacherId) {
       throw new CustomError(
         "Course not belong to teacher",
@@ -90,22 +95,8 @@ class LessonService {
         this.section,
       );
     }
-    const module = await moduleRepo.getOne({ id: lesson.moduleId });
-    if (!module) {
-      throw new CustomError(
-        "Module not found",
-        StatusCodes.NOT_FOUND,
-        this.section,
-      );
-    }
-    const course = await courseRepo.getOne({ id: module.courseId });
-    if (!course) {
-      throw new CustomError(
-        "Course not found",
-        StatusCodes.NOT_FOUND,
-        this.section,
-      );
-    }
+    const course = await this.getCourseByModuleId(lesson.moduleId);
+
     if (course && teacherId !== course.teacherId) {
       throw new CustomError(
         "Course not belong to teacher",
@@ -125,22 +116,9 @@ class LessonService {
         this.section,
       );
     }
-    const module = await moduleRepo.getOne({ id: lesson.moduleId });
-    if (!module) {
-      throw new CustomError(
-        "Module not found",
-        StatusCodes.NOT_FOUND,
-        this.section,
-      );
-    }
-    const course = await courseRepo.getOne({ id: module.courseId });
-    if (!course) {
-      throw new CustomError(
-        "Course not found",
-        StatusCodes.NOT_FOUND,
-        this.section,
-      );
-    }
+
+    const course = await this.getCourseByModuleId(lesson.moduleId);
+
     if (course && teacherId !== course.teacherId) {
       throw new CustomError(
         "Course not belong to teacher",
@@ -162,6 +140,7 @@ class LessonService {
         },
       },
     );
+
     lessonsBehind.forEach(async (lesson) => {
       await lessonRepo.update(
         { id: lesson.id },
@@ -170,6 +149,12 @@ class LessonService {
         },
       );
     });
+
+    await courseRepo.update(
+      { id: course.id },
+      { numLessons: course.numLessons - 1 },
+    );
+
     return deletedlesson;
   };
 }

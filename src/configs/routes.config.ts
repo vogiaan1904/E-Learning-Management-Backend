@@ -25,10 +25,10 @@ export const routesConfig = {
   userRoute: userRoute,
   teacherRoute: teacherRoute,
   studentRoute: studentRoute,
+  enrollmentRoute: enrollmentRoute,
   courseRoute: courseRoute,
   moduleRoute: moduleRoute,
   lessonRoute: lessonRoute,
-  enrollmentRoute: enrollmentRoute,
   quizzRoute: quizzRoute,
   questionRoute: questionRoute,
 } as const;
