@@ -35,7 +35,7 @@ jobs:
         run: yarn install
 
       - name: Install railway
-        run: yarn add @railway/cli
+        run: yarn global add @railway/cli
 
       - name: Deploy
         run: railway up --service E-Learning-Management-Backend
