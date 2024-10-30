@@ -23,17 +23,18 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+      # - name: Cache Yarn dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ~/.cache/yarn
+      #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-yarn-
 
       - name: Install dependencies
         run: yarn install
 
-      - name: Build project
-        run: yarn build --if-present
+      - name: Deploy
+        run: railway up --service E-Learning-Management-Backend
+        env: ${{secrets.RAILWAY_TOKEN}}
 # fuck
