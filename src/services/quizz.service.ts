@@ -48,6 +48,7 @@ class QuizzService {
     const position = numQuizzes.length;
 
     const quizz = await quizzRepo.create(data, position);
+    console.log("test workflow");
     return quizz;
   };
 
