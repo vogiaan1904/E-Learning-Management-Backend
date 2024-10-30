@@ -48,7 +48,6 @@ class QuizzService {
     const position = numQuizzes.length;
 
     const quizz = await quizzRepo.create(data, position);
-    console.log("quizz created successfully");
     return quizz;
   };
 
