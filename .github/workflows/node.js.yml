@@ -36,5 +36,6 @@ jobs:
 
       - name: Deploy
         run: railway up --service E-Learning-Management-Backend
-        env: ${{secrets.RAILWAY_TOKEN}}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 # fuck
