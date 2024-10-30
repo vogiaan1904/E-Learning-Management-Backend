@@ -41,4 +41,3 @@ jobs:
         run: railway up --service E-Learning-Management-Backend
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-# fuck
