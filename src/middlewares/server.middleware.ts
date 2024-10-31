@@ -7,7 +7,8 @@ import session from "express-session";
 import helmet from "helmet";
 import { StatusCodes } from "http-status-codes";
 import passport from "passport";
-
+import RedisStore from "connect-redis";
+import { redis } from "@/database/redis.db";
 export const enableServerMiddleware = (server: Express) => {
   // Middlewares
   server.use(cors());
@@ -16,8 +17,11 @@ export const enableServerMiddleware = (server: Express) => {
   server.use(cookieParser());
   server.use(
     session({
-      resave: true,
-      saveUninitialized: true,
+      store: new RedisStore({
+        client: redis,
+      }),
+      resave: false,
+      saveUninitialized: false,
       secret: envConfig.SESSION_SECRET,
     }),
   );
