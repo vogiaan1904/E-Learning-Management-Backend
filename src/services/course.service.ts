@@ -26,7 +26,6 @@ class CourseService {
       );
     }
     const course = await courseRepo.create(courseData, teacherId);
-    console.log("test");
     return course;
   };
 
