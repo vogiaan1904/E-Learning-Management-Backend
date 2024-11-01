@@ -18,7 +18,6 @@ import { v4 as uuidv4 } from "uuid";
 import redisService from "./redis.service";
 import tokenService from "./token.service";
 import userService from "./user.service";
-
 class AuthService {
   private section = AuthService.name;
   async signUp(userData: SignUpProps) {
