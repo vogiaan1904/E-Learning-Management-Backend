@@ -12,23 +12,23 @@ export const connectToRedis = async () => {
     )
     .on("connect", async () => {
       logger.info(`${envConfig.NAME} redis is connected`);
-      try {
-        // Configure keyspace events
-        await redis.sendCommand([
-          "CONFIG",
-          "SET",
-          "notify-keyspace-events",
-          "Ex",
-        ]);
-        logger.info("Keyspace events configured");
+      // try {
+      //   // Configure keyspace events
+      //   await redis.sendCommand([
+      //     "CONFIG",
+      //     "SET",
+      //     "notify-keyspace-events",
+      //     "Ex",
+      //   ]);
+      //   logger.info("Keyspace events configured");
 
-        // Subscribe to expiration events
-        redis.subscribe("__keyevent@0__:expired", (key) => {
-          logger.info(`Session expired for key: ${key}`);
-        });
-      } catch (err) {
-        logger.error("Failed to configure keyspace events", err);
-      }
+      //   // Subscribe to expiration events
+      //   redis.subscribe("__keyevent@0__:expired", (key) => {
+      //     logger.info(`Session expired for key: ${key}`);
+      //   });
+      // } catch (err) {
+      //   logger.error("Failed to configure keyspace events", err);
+      // }
     })
     .connect();
 };
