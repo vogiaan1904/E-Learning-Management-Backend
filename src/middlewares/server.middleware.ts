@@ -19,10 +19,15 @@ export const enableServerMiddleware = (server: Express) => {
     session({
       store: new RedisStore({
         client: redis,
+        ttl: 86400, // Set TTL to 1 day (in seconds)
       }),
       resave: false,
       saveUninitialized: false,
       secret: envConfig.SESSION_SECRET,
+      cookie: {
+        maxAge: 86400 * 1000, // Cookie expiration in ms (1 day)
+        secure: true, // Use secure cookies in production with HTTPS
+      },
     }),
   );
   server.use(helmet());
