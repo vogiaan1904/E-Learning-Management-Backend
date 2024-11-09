@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 export const envConfig = {
   // Server
   NAME: "E Learning Platform Backend",
@@ -28,6 +26,7 @@ export const envConfig = {
 
   // Database
   DB_URL: process.env.DATABASE_URL || "db_url",
+  DIRECT_URL: process.env.DIRECT_URL || "direct_url",
   DB_NAME: process.env.POSTGRES_DB || "db_name",
   DB_USER: process.env.POSTGRES_USER || "db_user",
   DB_PASSWORD: process.env.POSTGRES_PASSWORD || "db_password",
@@ -36,9 +35,8 @@ export const envConfig = {
 
   // Redis
   REDIS_HOST: process.env.REDIS_HOST || "localhost",
-  REDIS_PORT: process.env.REDIS_PORT || "6379",
-  REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
-
+  REDIS_PORT: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6380,
+  REDIS_URL: process.env.REDIS_URL || "redis://localhost:6380/0",
   // Email Service
   NODEMAILER_USER:
     process.env.NODEMAILER_USER || "acusvncodingprojects@gmail.com",

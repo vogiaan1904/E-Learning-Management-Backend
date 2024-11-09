@@ -1,3 +1,4 @@
+import "@/configs/loadEnv";
 import { CustomError, envConfig, routesConfig } from "@/configs";
 import logger from "@/configs/logger.config";
 import "@/configs/passport.config";
@@ -13,17 +14,11 @@ import { apis } from "@/routes";
 import { startCronJobs } from "@/services/cron.service";
 import { handleServerShutDown } from "@/utils/server";
 import { swaggerSpec } from "@/utils/swagger";
-import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
 
-dotenv.config({
-  path: [".env", ".env.development", ".env.production"],
-});
-
-// const prisma = new PrismaClient();
 // const a = "teacher";
 // console.log(prisma[a]);
 const server = express();
