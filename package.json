@@ -6,7 +6,6 @@
   "scripts": {
     "migrate:test": "dotenv -e .env.test -- prisma migrate deploy",
     "test": "node -v",
-    // "test": "dotenv -e .env.test -- jest",
     "test:docker": "docker-compose -f docker-compose.test.yml up -d redis_test && yarn migrate:test && yarn test && docker-compose -f docker-compose.test.yml down",
     "clean": "echo \"Cleaning build and dependencies\" && rm -rf ./dist && rm -rf ./node_modules && echo \"Done\"",
     "prebuild": "echo \"Cleaning build\" && rm -rf ./dist && echo \"Done\"",
