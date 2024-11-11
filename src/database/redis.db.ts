@@ -9,7 +9,7 @@ class Redis {
   public static getInstance(): RedisClientType {
     if (!Redis.instance) {
       Redis.instance = createClient({
-        url: envConfig.REDIS_URL, // Ensure this is set in .env.test
+        url: envConfig.REDIS_URL,
       });
 
       Redis.instance.on("error", (err) =>
