@@ -96,7 +96,7 @@
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "dotenv-cli": "^7.4.2",
-    "eslint": "9.x",
+    "eslint": "^9.14.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "globals": "^15.8.0",
@@ -109,6 +109,6 @@
     "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
     "typescript": "*",
-    "typescript-eslint": "^7.17.0"
+    "typescript-eslint": "^8.13.0"
   }
 }
