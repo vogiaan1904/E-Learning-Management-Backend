@@ -90,21 +90,24 @@ class UserService {
     return user;
   };
 
-  getUsers = async (filter: Prisma.UserWhereInput, options?: UserOptions) => {
+  getUsers = async (
+    filter: Prisma.UserWhereInput = {},
+    options?: UserOptions,
+  ) => {
     const { includeProfile } = options || {};
-    const user = await userRepo.getMany(filter, {
+    const users = await userRepo.getMany(filter, {
       include: {
         userProfile: includeProfile,
       },
     });
-    if (!user) {
+    if (!users || users.length === 0) {
       throw new CustomError(
         "User not found",
         StatusCodes.NOT_FOUND,
         this.section,
       );
     }
-    return user;
+    return users;
   };
 
   updateUser = async (

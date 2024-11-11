@@ -4,6 +4,10 @@ import { generateCustomAvatarUrl } from "@/utils/avatar";
 import { hashData } from "@/utils/bcrypt";
 import { Role } from "@prisma/client";
 export const executePrescriptDB = async () => {
+  if (process.env.NODE_ENV === "test") {
+    logger.info("Skipping prescriptDB in test environment.");
+    return;
+  }
   try {
     logger.info("Running database prescript");
     await createAdminAccount();

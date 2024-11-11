@@ -1,36 +1,51 @@
 import { envConfig } from "@/configs";
 import logger from "@/configs/logger.config";
-import { createClient } from "redis";
+import { createClient, RedisClientType } from "redis";
 
-export const redis = createClient({
-  url: envConfig.REDIS_URL,
-});
+class Redis {
+  private static instance: RedisClientType | null = null;
+  private constructor() {}
 
+  public static getInstance(): RedisClientType {
+    if (!Redis.instance) {
+      Redis.instance = createClient({
+        url: envConfig.REDIS_URL, // Ensure this is set in .env.test
+      });
+
+      Redis.instance.on("error", (err) =>
+        logger.error(`Can not connect to ${envConfig.NAME} redis: ${err}`),
+      );
+      Redis.instance.on("connect", () => {
+        logger.info(`${envConfig.NAME} Redis is connected`);
+      });
+      Redis.instance.connect().catch((err) => {
+        logger.error(`Failed to connect to Redis: ${err}`);
+      });
+    }
+    return Redis.instance;
+  }
+
+  public static async disconnect(): Promise<void> {
+    if (Redis.instance) {
+      try {
+        await Redis.instance.quit();
+        logger.info(`Disconnected from ${envConfig.NAME} Redis.`);
+      } catch (err) {
+        logger.error(`Error disconnecting Redis: ${err}`);
+      }
+      Redis.instance = null;
+    }
+  }
+}
 console.log(envConfig.REDIS_URL);
-export const connectToRedis = async () => {
-  await redis
-    .on("error", (err) =>
-      logger.error(`Can not connect to ${envConfig.NAME} redis: ${err}`),
-    )
-    .on("connect", async () => {
-      logger.info(`${envConfig.NAME} redis is connected`);
-      // try {
-      //   // Configure keyspace events
-      //   await redis.sendCommand([
-      //     "CONFIG",
-      //     "SET",
-      //     "notify-keyspace-events",
-      //     "Ex",
-      //   ]);
-      //   logger.info("Keyspace events configured");
 
-      //   // Subscribe to expiration events
-      //   redis.subscribe("__keyevent@0__:expired", (key) => {
-      //     logger.info(`Session expired for key: ${key}`);
-      //   });
-      // } catch (err) {
-      //   logger.error("Failed to configure keyspace events", err);
-      // }
-    })
-    .connect();
+export const connectToRedis = async (): Promise<void> => {
+  try {
+    Redis.getInstance();
+  } catch (err) {
+    logger.error(`Error in connectToRedis: ${err}`);
+    throw err;
+  }
 };
+
+export const redis = Redis.getInstance();

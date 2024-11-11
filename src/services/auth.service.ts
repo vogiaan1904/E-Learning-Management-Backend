@@ -32,6 +32,7 @@ class AuthService {
         },
       ],
     });
+
     if (existedUser) {
       throw new CustomError(
         "User is already existed. Please sign in",

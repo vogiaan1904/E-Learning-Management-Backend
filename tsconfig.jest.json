@@ -4,7 +4,11 @@
     "module": "commonjs",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@services/*": ["src/services/*"],
+      "@repositories/*": ["src/repositories/*"],
+      "@configs/*": ["src/configs/*"]
     }
   },
   "include": ["src", "src/tests/**/*.ts"],

@@ -18,34 +18,35 @@ import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
+import { Server } from "http";
 
 // const a = "teacher";
 // console.log(prisma[a]);
-const server = express();
+const app = express();
 
 // Views
-server.set("views", path.join(__dirname, "templates"));
-server.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "templates"));
+app.set("view engine", "hbs");
 
 // Middlewares
-enableServerMiddleware(server);
+enableServerMiddleware(app);
 
 // Routers
-server.get(routesConfig.landingPage, (req: Request, res: Response) => {
+app.get(routesConfig.landingPage, (req: Request, res: Response) => {
   res.render("home", {
     name: envConfig.NAME,
   });
 });
-server.use(
+app.use(
   routesConfig.swagger.docs,
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec, { explorer: true }),
 );
-server.get(routesConfig.swagger.json, (req: Request, res: Response) => {
+app.get(routesConfig.swagger.json, (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json(swaggerSpec);
 });
-server.use(routesConfig.apis, apis);
-server.all("*", () => {
+app.use(routesConfig.apis, apis);
+app.all("*", () => {
   throw new CustomError(
     "Not found operation on this route",
     StatusCodes.NOT_FOUND,
@@ -53,33 +54,52 @@ server.all("*", () => {
 });
 
 // Error middleware must always be the last middleware
-server.use(errorMiddleware);
+app.use(errorMiddleware);
+
+let serverInstance: Server;
 
 const startServer = () => {
-  return server.listen(envConfig.PORT, () => {
-    logger.info(`Server is running on http://localhost:${envConfig.PORT}`);
-    logger.info(
-      `Swagger Docs is avaliable at http://localhost:${envConfig.PORT}/docs`,
-    );
-    startCronJobs();
-  });
+  if (!serverInstance) {
+    serverInstance = app.listen(envConfig.PORT, () => {
+      logger.info(`Server is running on http://localhost:${envConfig.PORT}`);
+      logger.info(
+        `Swagger Docs is avaliable at http://localhost:${envConfig.PORT}/docs`,
+      );
+      startCronJobs();
+    });
+  }
+  return serverInstance;
 };
 
 // Connect to db and start the server
 const main = async () => {
-  const promises = [
-    connectMultipleDB(),
-    connectToRedis(),
-    executePrescriptDB(),
-    executePrescriptRedis(),
-  ];
-  await Promise.all(promises);
-  const server = startServer();
-  // Handle server shutdown
-  if (envConfig.NODE_ENV === "production") {
-    process.on("SIGINT", async () => await handleServerShutDown(server));
-    process.on("SIGTERM", async () => await handleServerShutDown(server));
+  try {
+    const promises = [
+      connectMultipleDB(),
+      connectToRedis(),
+      executePrescriptDB(),
+      executePrescriptRedis(),
+    ];
+    await Promise.all(promises);
+    startServer();
+    // Handle server shutdown
+    if (envConfig.NODE_ENV === "production") {
+      process.on(
+        "SIGINT",
+        async () => await handleServerShutDown(serverInstance),
+      );
+      process.on(
+        "SIGTERM",
+        async () => await handleServerShutDown(serverInstance),
+      );
+    }
+  } catch (error) {
+    console.error("Failed to start the server:", error);
+    process.exit(1);
   }
 };
+if (process.env.NODE_ENV !== "test") {
+  main();
+}
 
-main();
+export { app, startServer };

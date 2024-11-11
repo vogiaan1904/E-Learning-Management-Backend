@@ -6,13 +6,12 @@ import {
   executePrescriptRedis,
 } from "@/database/script.db";
 
-// Load environment variables for testing
 import dotenv from "dotenv";
 import path from "path";
+import logger from "./configs/logger.config";
 
-// Resolve the absolute path to the .env file located at the project root
 const envPath = path.resolve(__dirname, `../.env.test`);
-// Load environment variables from the resolved .env file
+
 dotenv.config({
   path: envPath,
 });
@@ -25,21 +24,64 @@ beforeAll(async () => {
   await connectToRedis();
   await executePrescriptDB();
   await executePrescriptRedis();
+  try {
+    await redis.flushDb();
+    logger.info("Flushed Redis database.");
+
+    const tableNames = await prisma.$queryRaw<{ tablename: string }[]>`
+      SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+    `;
+
+    for (const { tablename } of tableNames) {
+      if (tablename !== "_prisma_migrations") {
+        await prisma.$executeRawUnsafe(
+          `TRUNCATE TABLE "${tablename}" RESTART IDENTITY CASCADE;`,
+        );
+      }
+    }
+  } catch (error) {
+    logger.error("Error during test setup:", error);
+    throw error;
+  }
 });
 
 // Disconnect from databases after all tests have run
 afterAll(async () => {
-  await prisma.$disconnect();
-  await redis.disconnect();
+  try {
+    await redis.disconnect();
+    logger.info("Disconnected from Redis.");
+
+    await prisma.$disconnect();
+    logger.info("Disconnected from PostgreSQL.");
+  } catch (error) {
+    logger.error("Error during teardown:", error);
+    throw error;
+  }
 });
 
 // Optional: Reset database state before each test
-beforeEach(async () => {
-  await prisma.user.deleteMany();
-  await prisma.lesson.deleteMany();
-  await prisma.quizz.deleteMany();
-  // Add more deletions as needed for other models
-});
+// beforeEach(async () => {
+//   try {
+//     await redis.flushDb();
+//     logger.info("Flushed Redis database.");
+
+//     const tableNames = await prisma.$queryRaw<{ tablename: string }[]>`
+//       SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+//     `;
+
+//     for (const { tablename } of tableNames) {
+//       if (tablename !== "_prisma_migrations") {
+//         await prisma.$executeRawUnsafe(
+//           `TRUNCATE TABLE "${tablename}" RESTART IDENTITY CASCADE;`,
+//         );
+//         // logger.info(`Truncated table: ${tablename}`);
+//       }
+//     }
+//   } catch (error) {
+//     logger.error("Error during test setup:", error);
+//     throw error;
+//   }
+// });
 
 // Optional: Additional cleanup after each test
 afterEach(async () => {
