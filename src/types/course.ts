@@ -3,7 +3,7 @@ import { OmitAndPartial } from "./object";
 
 /* --------------------------------- Course --------------------------------- */
 export interface CreateCourseProps
-  extends Pick<Course, "name" | "description"> {
+  extends Pick<Course, "name" | "description" | "teacherId"> {
   categories?: Array<string>;
 }
 

@@ -5,7 +5,7 @@ const envFile = (() => {
     case "development":
       return ".env.development";
     case "production":
-      return ".env.production";
+      return ".env";
     case "test":
       return ".env.test";
     default:

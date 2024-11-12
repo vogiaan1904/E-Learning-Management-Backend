@@ -29,11 +29,15 @@ paths:
                 description:
                   type: string
                   example: "An advanced course on Data Structures and Algorithms"
+                teacherId:
+                  type: string
+                  example: "123e4567-e"
                 categories:
                   type: array
                   items:
                     type: string
                   description: Optional list of categories for the course (e.g., "WebDevelopment", "MachineLearning")
+
               required:
                 - teacherId
                 - name

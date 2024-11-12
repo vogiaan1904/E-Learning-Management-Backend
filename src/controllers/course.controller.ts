@@ -8,9 +8,9 @@ import { StatusCodes } from "http-status-codes";
 class CourseController {
   createCourse = catchAsync(
     async (req: CustomRequest<CreateCourseProps>, res: Response) => {
-      const teacher = req.user as UserPayload;
-      const teacherId = teacher.id;
-      const course = await CourseService.createCourse(req.body, teacherId);
+      // const teacher = req.user as UserPayload;
+      // const teacherId = teacher.id;
+      const course = await CourseService.createCourse(req.body);
       res.status(StatusCodes.CREATED).json({
         message: "Course created successfully",
         status: "success",

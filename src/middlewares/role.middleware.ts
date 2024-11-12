@@ -13,15 +13,15 @@ export const userRoleMiddleware = (...roles: Role[]) => {
       if (!user) {
         throw new CustomError(
           "User role is missing",
-          StatusCodes.BAD_REQUEST,
+          StatusCodes.UNAUTHORIZED,
           section,
         );
       }
-
+      console.log(user.role);
+      console.log(Role.admin);
       if (user.role === Role.admin) {
         next();
       }
-      console.log(user.role);
 
       if (!roles.includes(user.role)) {
         throw new CustomError(
