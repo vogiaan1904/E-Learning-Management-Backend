@@ -1,6 +1,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
-const { pathsToModuleNameMapper } = require("ts-jest");
-const { compilerOptions } = require("./tsconfig.jest.json");
+import { pathsToModuleNameMapper } from "ts-jest";
+import { compilerOptions } from "./tsconfig.jest.json";
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
