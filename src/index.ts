@@ -73,7 +73,6 @@ const startServer = () => {
 const main = async () => {
   try {
     console.log(`NODE_ENV: ${envConfig.NODE_ENV}`);
-    console.log(`DATABASE_URL: ${envConfig.DB_URL}`);
     const promises = [
       connectMultipleDB(),
       connectToRedis(),
