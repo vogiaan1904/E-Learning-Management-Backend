@@ -1,15 +1,19 @@
 export const envConfig = {
   // Server
   NAME: "E Learning Platform Backend",
-  PORT: process.env.PORT || 3000,
-  HOST:
-    process.env.NODE_ENV === "production"
-      ? process.env.HOST || "https://your-production-url.azurewebsites.net"
-      : "http://localhost:8000",
-  LOG_FILE: "server_info.log",
+  PORT: process.env.PORT || 8000,
   NODE_ENV: process.env.NODE_ENV || "development",
-  APIS: process.env.APIS || "/api/v1",
+
+  HOST: process.env.HOST || "localhost",
+
+  BASE_URL:
+    process.env.BASE_URL || `http://localhost:${process.env.PORT || 8000}`,
+
+  LOG_FILE: "server_info.log",
   LOG_LEVEL: process.env.LOG_LEVEL || "info",
+
+  APIS: process.env.APIS || "/api/v1",
+
   SESSION_SECRET: process.env.SESSION_SECRET || "session-secret",
 
   // Secret keys
