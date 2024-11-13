@@ -60,7 +60,7 @@ let serverInstance: Server;
 
 const startServer = () => {
   if (!serverInstance) {
-    serverInstance = app.listen(Number(envConfig.PORT), envConfig.HOST, () => {
+    serverInstance = app.listen(Number(envConfig.PORT), () => {
       logger.info(`Server is running on ${envConfig.BASE_URL}`);
       logger.info(`Swagger Docs is available at ${envConfig.BASE_URL}/docs`);
       startCronJobs();
