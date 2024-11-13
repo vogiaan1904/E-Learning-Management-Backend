@@ -19,7 +19,7 @@ export const userRoleMiddleware = (...roles: Role[]) => {
       }
       console.log(user.role);
       console.log(Role.admin);
-      if (user.role === Role.admin) {
+      if (user.role == Role.admin.toString()) {
         next();
       }
 

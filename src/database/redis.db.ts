@@ -37,7 +37,7 @@ class Redis {
     }
   }
 }
-console.log(envConfig.REDIS_URL);
+// console.log(envConfig.REDIS_URL);
 
 export const connectToRedis = async (): Promise<void> => {
   try {

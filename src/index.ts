@@ -60,11 +60,9 @@ let serverInstance: Server;
 
 const startServer = () => {
   if (!serverInstance) {
-    serverInstance = app.listen(envConfig.PORT, () => {
-      logger.info(`Server is running on http://localhost:${envConfig.PORT}`);
-      logger.info(
-        `Swagger Docs is avaliable at http://localhost:${envConfig.PORT}/docs`,
-      );
+    serverInstance = app.listen(Number(envConfig.PORT), "0.0.0.0", () => {
+      logger.info(`Server is running on ${envConfig.HOST}`);
+      logger.info(`Swagger Docs is available at ${envConfig.HOST}/docs`);
       startCronJobs();
     });
   }
@@ -74,6 +72,8 @@ const startServer = () => {
 // Connect to db and start the server
 const main = async () => {
   try {
+    console.log(`NODE_ENV: ${envConfig.NODE_ENV}`);
+    console.log(`DATABASE_URL: ${envConfig.DB_URL}`);
     const promises = [
       connectMultipleDB(),
       connectToRedis(),
