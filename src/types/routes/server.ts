@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { DefaultRouteProps } from "@/types/routes/default";
 
 interface ServerRoutesProps extends DefaultRouteProps {}

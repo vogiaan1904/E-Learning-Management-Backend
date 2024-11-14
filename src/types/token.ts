@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { User } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
 
