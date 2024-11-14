@@ -58,9 +58,9 @@ class UserRepository {
     });
   }
 
-  async deleteMany(): Promise<Prisma.BatchPayload> {
-    return await prisma.user.deleteMany({});
-  }
+  // async deleteMany(): Promise<Prisma.BatchPayload> {
+  //   return await prisma.user.deleteMany({});
+  // }
   /* --------------------------------- Profile -------------------------------- */
 
   async getProfile(

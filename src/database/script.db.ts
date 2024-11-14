@@ -1,10 +1,11 @@
+import { envConfig } from "@/configs";
 import logger from "@/configs/logger.config";
 import userRepo from "@/repositories/user.repo";
 import { generateCustomAvatarUrl } from "@/utils/avatar";
 import { hashData } from "@/utils/bcrypt";
 import { Role } from "@prisma/client";
 export const executePrescriptDB = async () => {
-  if (process.env.NODE_ENV === "test") {
+  if (envConfig.NODE_ENV === "test") {
     logger.info("Skipping prescriptDB in test environment.");
     return;
   }

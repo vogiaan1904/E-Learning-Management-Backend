@@ -26,15 +26,15 @@ router.post(
 );
 
 router.get(
-  enrollmentRoute.getEnrollment,
-  userRoleMiddleware(Role.user),
-  enrollmentController.getEnrollment,
-);
-
-router.get(
   enrollmentRoute.getEnrollments,
   userRoleMiddleware(Role.user),
   enrollmentController.getEnrollments,
+);
+
+router.get(
+  enrollmentRoute.getEnrollment,
+  userRoleMiddleware(Role.user),
+  enrollmentController.getEnrollment,
 );
 
 router.patch(
