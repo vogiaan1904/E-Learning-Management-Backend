@@ -1,6 +1,7 @@
 # Node Modules
 node_modules/
 dist/
+
 .env
 .env.*
 
@@ -17,3 +18,7 @@ Logs/
 *.log
 
 jest.config.old.js
+
+
+
+
