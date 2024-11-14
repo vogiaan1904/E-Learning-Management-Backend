@@ -29,20 +29,20 @@ paths:
               required:
                 - courseId
       responses:
-        200:
-          description: OK
+        201:
+          description: Enrollment Created Successfully
           content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResGetEnrollment" 
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResCreateEnrollment" 
         400:
           description: Bad Request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResError"
-        404:
-          description: Not Found
+        401:
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -59,6 +59,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResError"
+  /enrollemtns/many:
+    get:
+      tags:
+        - Enrollment
+      summary: Get All Enrollments
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetEnrollments"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+    
   
   /enrollments/{id}:
     get:
@@ -379,25 +398,58 @@ components:
       properties:
         id:
           type: string
-          example: "123"
+          example: "8cb4994d-e4b8-4844-ae9b-759cacc40abf"
         studentId:
           type: string
-          example: "123"
+          example: "48309873-2ec9-438a-b81f-f960a387bcd7"
         courseId:
           type: string
-          example: "123"
+          example: "95e30afa-020f-463a-907f-142888fa5de1"
         grade:
-          type: string
-          example: "8.5"
+          type: integer
+          example: 0
         feedback:
           type: string
-          example: "it's hard, I gave up."
+          nullable: true
+          example: null
         status:
           type: string
-          example: "In progress"
+          example: "IN_PROGRESS"
         completion:
+          type: integer
+          example: 0
+        completedLessonsIds:
+          type: array
+          items:
+            type: string
+            example: "lesson-id-1"
+          example: []
+        completedModulesIds:
+          type: array
+          items:
+            type: string
+            example: "module-id-1"
+          example: []
+        enrolledAt:
           type: string
-          example: "50%"
+          format: date-time
+          example: "2024-11-14T07:07:31.700Z"
+        cancelledAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    ResCreateEnrollment:
+      type: object
+      properties: 
+        message: 
+          type: string
+          example: "Enrolled course successfully"
+        status:
+          type: string
+          example: "success"
+        enrollment: 
+          $ref: "#/components/schemas/Enrollment"
     ResGetEnrollment:
       type: object
       properties: 
@@ -408,6 +460,20 @@ components:
         enrollment:
           type: object
           $ref: "#/components/schemas/Enrollment"
+    ResGetEnrollments:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Get enrollments successfully"
+        status:
+          type: string
+          example: "success"
+        enrollments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Enrollment"
+          example: []
     ResError:
       type: object
       properties:

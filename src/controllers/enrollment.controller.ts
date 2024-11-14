@@ -45,6 +45,17 @@ class EnrollmentController {
     },
   );
 
+  getEnrollments = catchAsync(async (req: Request, res: Response) => {
+    const user = req.user as UserPayload;
+    const studentId = user.id;
+    const enrollments = await enrollmentService.getEnrollments({ studentId });
+    return res.status(StatusCodes.OK).json({
+      message: "Get enrollments successfully",
+      status: "success",
+      enrollments: enrollments,
+    });
+  });
+
   updateEnrollment = catchAsync(
     async (req: CustomRequest<UpdateEnrollmentProps>, res: Response) => {
       const enrollmentId = req.params.id;
