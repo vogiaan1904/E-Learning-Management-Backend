@@ -21,6 +21,13 @@ router.get(courseRoute.status, (req: Request, res: Response) => {
   });
 });
 
+router.get(
+  courseRoute.getCourses,
+  // userRoleMiddleware(Role.teacher),
+  queryValidation(CourseQuerySchema),
+  courseController.getCourses,
+);
+
 router.use(accessTokenMiddleware);
 
 router.post(
@@ -28,13 +35,6 @@ router.post(
   userRoleMiddleware(Role.teacher),
   dataValidation(CreateCourseSchema),
   courseController.createCourse,
-);
-
-router.get(
-  courseRoute.getCourses,
-  userRoleMiddleware(Role.teacher),
-  queryValidation(CourseQuerySchema),
-  courseController.getCourses,
 );
 
 router.get(courseRoute.getCourse, courseController.getCourseById);

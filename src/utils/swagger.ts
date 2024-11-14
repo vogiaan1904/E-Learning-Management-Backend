@@ -1,14 +1,14 @@
 import { envConfig } from "@/configs";
 import swaggerJsdoc from "swagger-jsdoc";
 
-const serverUrl = `localhost:${envConfig.PORT}${envConfig.APIS}`;
+// const serverUrl = `localhost:${envConfig.PORT}${envConfig.APIS}`;
 
 const options = {
   definition: {
     openapi: "3.0.0",
     info: {
       title: `${envConfig.NAME} API Documentation`,
-      description: `This is the API Docs for using internally. Base URL: [${serverUrl}](${serverUrl})`,
+      description: `This is the API Docs for using internally. Base URL: ${envConfig.BASE_URL}`,
       termsOfService: "http://swagger.io/terms/",
       license: {
         name: "Apache License, Version 2.0",
@@ -22,8 +22,14 @@ const options = {
     },
     servers: [
       {
-        url: `${envConfig.HOST}${envConfig.APIS}`,
-        description: "Development server",
+        url:
+          envConfig.NODE_ENV === "production"
+            ? `${envConfig.BASE_URL}${envConfig.APIS}`
+            : `${envConfig.HOST}:${envConfig.PORT}${envConfig.APIS}`,
+        description:
+          envConfig.NODE_ENV === "production"
+            ? "Production server"
+            : "Development server",
       },
     ],
     tags: [

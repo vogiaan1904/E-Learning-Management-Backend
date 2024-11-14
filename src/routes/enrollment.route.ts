@@ -31,6 +31,12 @@ router.get(
   enrollmentController.getEnrollment,
 );
 
+router.get(
+  enrollmentRoute.getEnrollments,
+  userRoleMiddleware(Role.user),
+  enrollmentController.getEnrollments,
+);
+
 router.patch(
   enrollmentRoute.feedBack,
   userRoleMiddleware(Role.user),

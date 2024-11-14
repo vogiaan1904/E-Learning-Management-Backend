@@ -56,7 +56,7 @@ model UserVerification {
   updatedAt DateTime  @default(now())
   expiredAt DateTime?
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("UserVerifications")
 }

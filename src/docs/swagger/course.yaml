@@ -29,11 +29,15 @@ paths:
                 description:
                   type: string
                   example: "An advanced course on Data Structures and Algorithms"
+                teacherId:
+                  type: string
+                  example: "123e4567-e"
                 categories:
                   type: array
                   items:
                     type: string
                   description: Optional list of categories for the course (e.g., "WebDevelopment", "MachineLearning")
+
               required:
                 - teacherId
                 - name
@@ -254,16 +258,41 @@ components:
       properties:
         id:
           type: string
-          example: "course123"
+          example: "95e30afa-020f-463a-907f-142888fa5de1"
+        slug:
+          type: string
+          example: "advanced-web-development"
         name:
           type: string
-          example: "Data Structures"
-        description:
-          type: string
-          example: "An advanced course on data structures"
+          example: "Advanced Web Development"
         teacherId:
           type: string
-          example: "teacher123"
+          example: "d5df66a6-82e1-48d9-918d-01b11ca42601"
+        description:
+          type: string
+          example: "Deep dive into modern web development frameworks and best practices."
+        isDeleted:
+          type: boolean
+          example: false
+        numEnrollments:
+          type: integer
+          example: 0
+        numLessons:
+          type: integer
+          example: 0
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-11-14T06:43:37.982Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-11-14T06:43:37.982Z"
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
     Enrollment:
       type: object
       properties:
@@ -302,42 +331,58 @@ components:
           type: string
         description:
           type: string
-
     ResCreateCourse:
       type: object
-      properties: 
-        message: 
+      properties:
+        message:
           type: string
-        success:
-          type: boolean
-        course: 
+          example: "Course created successfully"
+        status:
+          type: string
+          example: "success"
+        course:
           $ref: "#/components/schemas/Course"
+      required:
+        - message
+        - status
+        - course
     ResGetCourse:
       type: object
       properties: 
-        message: 
+        message:
           type: string
-        success:
-          type: boolean
-        course: 
+          example: "Get course successfully"
+        status:
+          type: string
+          example: "success"
+        course:
           $ref: "#/components/schemas/Course"
         moduleIds:
           type: array
           items:
-            type: object
+            type: string
+            example: "module-id-1"
+          description: "List of module IDs associated with the course."
+          example: []
         enrollment:
           type: object
+          nullable: true
+          description: "Enrollment details for the course."
+          example: null
     ResGetCourses:
       properties: 
-        message: 
+        message:
           type: string
-        success:
-          type: boolean
+          example: "Get courses successfully"
+        status:
+          type: string
+          example: "success"
         courses:
           type: array
-          items: 
-            type: object
+          items:
             $ref: "#/components/schemas/Course"
+          description: "List of courses retrieved."
+          example: []
     ResDeleteCourse:
       type: object
       properties: 

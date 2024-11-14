@@ -22,7 +22,7 @@ export const VerifyCodeSchema = Joi.object<VerifyCodeProps>().keys({
 export const SignInSchema = Joi.object<SignInProps>().keys({
   username: Joi.string().alphanum().required(),
   email: Joi.string().email().required(),
-  password: Joi.string().regex(passwordRegex).required(),
+  password: Joi.string().required(),
   method: Joi.string().valid("email", "username").required(),
 });
 

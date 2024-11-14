@@ -1,14 +1,19 @@
-import "dotenv/config";
-
 export const envConfig = {
   // Server
   NAME: "E Learning Platform Backend",
-  PORT: process.env.PORT || 3000,
-  HOST: process.env.HOST || "http://localhost:8000",
-  LOG_FILE: "server_info.log",
+  PORT: process.env.PORT || 8000,
   NODE_ENV: process.env.NODE_ENV || "development",
-  APIS: process.env.APIS || "/api/v1",
+
+  HOST: process.env.HOST || "localhost",
+
+  BASE_URL:
+    process.env.BASE_URL || `http://localhost:${process.env.PORT || 8000}`,
+
+  LOG_FILE: "server_info.log",
   LOG_LEVEL: process.env.LOG_LEVEL || "info",
+
+  APIS: process.env.APIS || "/api/v1",
+
   SESSION_SECRET: process.env.SESSION_SECRET || "session-secret",
 
   // Secret keys
@@ -28,6 +33,7 @@ export const envConfig = {
 
   // Database
   DB_URL: process.env.DATABASE_URL || "db_url",
+  DIRECT_URL: process.env.DIRECT_URL || "direct_url",
   DB_NAME: process.env.POSTGRES_DB || "db_name",
   DB_USER: process.env.POSTGRES_USER || "db_user",
   DB_PASSWORD: process.env.POSTGRES_PASSWORD || "db_password",
@@ -36,9 +42,8 @@ export const envConfig = {
 
   // Redis
   REDIS_HOST: process.env.REDIS_HOST || "localhost",
-  REDIS_PORT: process.env.REDIS_PORT || "6379",
-  REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
-
+  REDIS_PORT: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6380,
+  REDIS_URL: process.env.REDIS_URL || "redis://localhost:6380/0",
   // Email Service
   NODEMAILER_USER:
     process.env.NODEMAILER_USER || "acusvncodingprojects@gmail.com",

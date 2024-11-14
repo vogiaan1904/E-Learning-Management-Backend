@@ -3,9 +3,9 @@ import { CreateCourseProps } from "@/types/course";
 import { Course, Prisma } from "@prisma/client";
 import slugify from "slugify";
 class CourseRepository {
-  async create(data: CreateCourseProps, teacherId: string): Promise<Course> {
+  async create(data: CreateCourseProps): Promise<Course> {
     // with or without categories
-    const { name, description, categories } = data;
+    const { name, description, categories, teacherId } = data;
     const slug = slugify(name, { lower: true });
     return await prisma.course.create({
       data: {

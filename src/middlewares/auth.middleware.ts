@@ -71,7 +71,7 @@ export const accessTokenMiddleware = async (
     } else {
       throw new CustomError(
         "Access token is missing",
-        StatusCodes.BAD_REQUEST,
+        StatusCodes.UNAUTHORIZED,
         section,
       );
     }

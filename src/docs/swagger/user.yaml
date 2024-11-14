@@ -138,22 +138,35 @@ components:
       properties:
         id:
           type: string
+          example: "48309873-2ec9-438a-b81f-f960a387bcd7"
         email:
           type: string
+          example: "student@gmail.com"
         username:
           type: string
+          example: "student"
         role:
           type: string
+          example: "user"
         isVerified:
           type: boolean
+          example: true
         userProfileId:
           type: string
+          example: "e2a86b52-c740-49cb-8905-d85cd9919d82"
         createdAt:
           type: string
           format: date-time
+          example: "2024-11-14T06:56:31.024Z"
         updatedAt:
           type: string
           format: date-time
+          example: "2024-11-14T06:56:31.024Z"
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
     UserProfile:
       type: object
       properties:

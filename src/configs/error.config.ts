@@ -12,7 +12,7 @@ export class CustomError extends Error {
   ) {
     super(message);
     this.statusCode = statusCode;
-    this.status = statusCode >= 400 && statusCode < 500 ? "fail" : "";
+    this.status = statusCode >= 400 && statusCode < 500 ? "failed" : "";
     this.data = data;
     this.section = section;
 

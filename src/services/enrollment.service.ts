@@ -48,6 +48,10 @@ class EnrollmentService {
     return enrollment;
   };
 
+  getEnrollments = async (filter: Prisma.EnrollmentWhereInput) => {
+    return await enrollmentRepo.getMany(filter);
+  };
+
   cancelEnrollment = async (filter: Prisma.EnrollmentWhereInput) => {
     const enrollment = await enrollmentRepo.getOne(filter);
     if (!enrollment) {

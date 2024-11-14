@@ -1,5 +1,24 @@
+# Node Modules
 node_modules/
 dist/
-.env*
+
+.env
+.env.*
+
+# Docker Compose Override File
+docker-compose.override.yml
+
 .clinic/
+
+# OS Files
 .DS_Store
+
+# Logs
+Logs/
+*.log
+
+jest.config.old.js
+
+
+
+

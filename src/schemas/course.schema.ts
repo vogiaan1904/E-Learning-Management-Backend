@@ -8,6 +8,7 @@ import Joi from "joi";
 export const CreateCourseSchema = Joi.object<CreateCourseProps>().keys({
   name: Joi.string().required(),
   description: Joi.string().required(),
+  teacherId: Joi.string().uuid().required(),
   categories: Joi.array().items(Joi.string()).optional(),
 });
 export const CourseQuerySchema = Joi.object<GetCoursesProps>().keys({

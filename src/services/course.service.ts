@@ -14,7 +14,7 @@ import { StatusCodes } from "http-status-codes";
 class CourseService {
   private section = CourseService.name;
 
-  createCourse = async (courseData: CreateCourseProps, teacherId: string) => {
+  createCourse = async (courseData: CreateCourseProps) => {
     const { name } = courseData;
 
     const existedCourse = await courseRepo.getOne({ name });
@@ -25,7 +25,7 @@ class CourseService {
         this.section,
       );
     }
-    const course = await courseRepo.create(courseData, teacherId);
+    const course = await courseRepo.create(courseData);
     return course;
   };
 
