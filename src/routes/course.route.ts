@@ -11,7 +11,7 @@ import { queryValidation } from "@/validations/query.validation";
 import { Role } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import multer from "Multer";
+import multer from "multer";
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const router = Router();
