@@ -27,7 +27,7 @@
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:validate": "npx prisma validate",
     "prisma:init": "npx prisma init",
-    "prepare": "node -e \"if (process.env.NODE_ENV !== 'production') { require('husky').install(); }\""
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
