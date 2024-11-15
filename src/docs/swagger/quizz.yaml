@@ -28,10 +28,10 @@ paths:
                   example: "1923846r2u3tr2973o8ryf082d3ur"
                 name:
                   type: string
-                  example: "How to learn HTML"
+                  example: "HTML Basics Quiz"
                 description:
                   type: string
-                  example: "You will learn ..."
+                  example: "Test your knowledge on HTML fundamentals."
 
                 timeLimit:
                   type: number
