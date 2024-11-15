@@ -9,7 +9,7 @@
     "test:docker": "docker-compose -f docker-compose.test.yml up -d redis_test && yarn migrate:test && yarn test && docker-compose -f docker-compose.test.yml down",
     "clean": "echo \"Cleaning build and dependencies\" && rm -rf ./dist && rm -rf ./node_modules && echo \"Done\"",
     "prebuild": "echo \"Cleaning build\" && rm -rf ./dist && echo \"Done\"",
-    "build": "yarn --frozen-lockfile install && tsc && tsc-alias && copyfiles -u 1 \"src/templates/**/*\" \"dist\"",
+    "build": "yarn --frozen-lockfile install && tsc && tsc-alias && copyfiles -u 1 \"src/templates/**/*\" \"dist\" && cp package.json dist/",
     "start:prod": "cross-env NODE_ENV=production node ./dist/index.js",
     "start:dev": "nodemon",
     "start:bug": "DEBUG=express:* && nodemon",
