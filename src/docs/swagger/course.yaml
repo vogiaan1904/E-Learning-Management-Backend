@@ -247,7 +247,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResCourseError"
-
+  /courses/{id}/thumbnail:
+    patch:
+      tags:
+        - Course
+      summary: Update Course Thumbnail - Teacher, Admin
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      requestBody:
+        description: Request body for updating a course thumbnail
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetCourse" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
 
 
 

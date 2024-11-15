@@ -11,6 +11,9 @@ import { queryValidation } from "@/validations/query.validation";
 import { Role } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
+import multer from "Multer";
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 const router = Router();
 const { courseRoute } = routesConfig;
 
@@ -39,6 +42,12 @@ router.post(
 
 router.get(courseRoute.getCourse, courseController.getCourseById);
 
+router.patch(
+  courseRoute.uploadThumbnail,
+  userRoleMiddleware(Role.teacher),
+  upload.single("image"),
+  courseController.uploadThumbnail,
+);
 router.patch(
   courseRoute.updateCourse,
   userRoleMiddleware(Role.teacher),

@@ -9,6 +9,7 @@ model Course {
     name           String
     teacherId      String
     description    String
+    thumbnailUrl   String                @default("https://i.imgur.com/hAV6F86.jpeg")
     isDeleted      Boolean               @default(false)
     numEnrollments Int                   @default(0)
     numLessons     Int                   @default(0)

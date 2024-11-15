@@ -52,6 +52,10 @@ export const envConfig = {
     process.env.NODEMAILER_USER || "acusvncodingprojects@gmail.com",
   NODEMAILER_DEFAULT_RECEIVER: "acuscodinghcm@gmail.com",
 
+  //Imgur Service
+  IMGUR_CLIENT_ID: process.env.IMGUR_CLIENT_ID || "imgur-client-id",
+  IMGUR_CLIENT_SECRET: process.env.IMGUR_CLIENT_SECRET || "imgur-client-secret",
+
   // Google OAuth 2.0
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "google-client-id",
   GOOGLE_CLIENT_SECRET:

@@ -1,9 +1,7 @@
 import logger from "@/configs/logger.config";
 import { PrismaClient } from "@prisma/client";
 
-export const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
-});
+export const prisma = new PrismaClient();
 
 const clients = [
   {
