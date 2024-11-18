@@ -284,9 +284,6 @@ class QuizzService {
       const selectedOptionObjs: Option[] = optionsObjs.filter((opt) =>
         submissionAnswer.selectedOptions.includes(opt.option),
       );
-      console.log("selectedOptionObjs", selectedOptionObjs);
-
-      console.log("selectedOptions", submissionAnswer.selectedOptions);
 
       if (
         selectedOptionObjs.length !== submissionAnswer.selectedOptions.length
