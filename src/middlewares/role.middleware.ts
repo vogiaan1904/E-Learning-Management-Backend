@@ -17,11 +17,6 @@ export const userRoleMiddleware = (...roles: Role[]) => {
           section,
         );
       }
-      console.log(user.role);
-      console.log(Role.admin);
-      if (user.role == Role.admin.toString()) {
-        next();
-      }
 
       if (!roles.includes(user.role)) {
         throw new CustomError(

@@ -35,7 +35,7 @@ router.use(accessTokenMiddleware);
 
 router.post(
   courseRoute.createCourse,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   dataValidation(CreateCourseSchema),
   courseController.createCourse,
 );
@@ -44,20 +44,20 @@ router.get(courseRoute.getCourse, courseController.getCourseById);
 
 router.patch(
   courseRoute.uploadThumbnail,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   upload.single("image"),
   courseController.uploadThumbnail,
 );
 router.patch(
   courseRoute.updateCourse,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   dataValidation(UpdateCourseSchema),
   courseController.updateCourse,
 );
 
 router.delete(
   courseRoute.deleteCourse,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   courseController.deleteCourse,
 );
 

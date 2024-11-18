@@ -27,31 +27,22 @@ model Enrollment {
 }
 
 model QuizzSubmission {
-    id                String             @id @default(uuid())
-    quizzId           String
-    enrollmentId      String
-    score             Int
-    quizz             Quizz              @relation(fields: [quizzId], references: [id], onDelete: Cascade)
-    status            SubmissionStatus   @default(unfinished)
-    enrollment        Enrollment         @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-    submissionAnswers SubmissionAnswer[]
-    submittedAt       DateTime           @default(now())
-}
-
-model SubmissionAnswer {
-    id                String          @id @default(uuid())
-    // questionAnswerId  String
-    // questionAnswer    QuestionAnswer  @relation(fields: [questionAnswerId], references: [id])
-    quizzSubmissionId String
-    quizzSubmission   QuizzSubmission @relation(fields: [quizzSubmissionId], references: [id], onDelete: Cascade)
-    createdAt         DateTime        @default(now())
-
-    @@map("submissionAnswers")
+    id                    String           @id @default(uuid())
+    quizzId               String
+    enrollmentId          String
+    score                 Int              @default(0)
+    quizz                 Quizz            @relation(fields: [quizzId], references: [id], onDelete: Cascade)
+    status                SubmissionStatus @default(UNFINISHED)
+    enrollment            Enrollment       @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+    submissionEvaluations Json[]
+    createdAt             DateTime         @default(now())
+    dueAt                 DateTime
+    submittedAt           DateTime?
 }
 
 enum SubmissionStatus {
-    finished
-    unfinished
+    UNFINISHED
+    COMPLETED
 }
 
 enum EnrollmentStatus {
