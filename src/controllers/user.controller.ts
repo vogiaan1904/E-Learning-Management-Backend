@@ -50,7 +50,10 @@ class UserController {
 
   getAUser = catchAsync(async (req: Request, res: Response) => {
     const userId = req.params.id;
-    const user = await userService.getUser({ id: userId });
+    const user = await userService.getUser(
+      { id: userId },
+      { includeProfile: true },
+    );
     return res.status(StatusCodes.OK).json({
       message: "Get user successfully",
       status: "success",

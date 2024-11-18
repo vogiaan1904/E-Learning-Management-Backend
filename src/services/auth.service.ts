@@ -84,10 +84,13 @@ class AuthService {
 
   async signIn(userData: SignInProps) {
     const { email, username, password, method } = userData;
-    const user = await userService.getUser({
-      email: method === "email" ? email : "",
-      username: method === "username" ? username : "",
-    });
+    const user = await userService.getUser(
+      {
+        email: method === "email" ? email : "",
+        username: method === "username" ? username : "",
+      },
+      { includeProfile: true },
+    );
     if (!user) {
       throw new CustomError(
         "User not found. Please sign up",
