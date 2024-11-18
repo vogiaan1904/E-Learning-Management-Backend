@@ -25,7 +25,7 @@ router.use(accessTokenMiddleware);
 
 router.post(
   moduleRoute.createModule,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   moduleController.createModule,
 );
 
@@ -39,14 +39,14 @@ router.get(moduleRoute.getModule, moduleController.getModuleById);
 
 router.patch(
   moduleRoute.updateModule,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   dataValidation(UpdateModuleSchema),
   moduleController.updateModule,
 );
 
 router.delete(
   moduleRoute.deleteModule,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   moduleController.deleteModule,
 );
 export const moduleApis = router;

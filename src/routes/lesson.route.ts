@@ -22,7 +22,7 @@ router.use(accessTokenMiddleware);
 
 router.post(
   lessonRoute.createLesson,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   lessonController.createLesson,
 );
 
@@ -36,13 +36,13 @@ router.get(lessonRoute.getLesson, lessonController.getLesson);
 
 router.patch(
   lessonRoute.updateLesson,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   lessonController.updateLesson,
 );
 
 router.delete(
   lessonRoute.deleteLesson,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   lessonController.deleteLesson,
 );
 

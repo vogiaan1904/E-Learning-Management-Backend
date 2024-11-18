@@ -18,13 +18,13 @@ router.use(accessTokenMiddleware);
 
 router.get(
   studentRoute.getEnrollments,
-  userRoleMiddleware(Role.user),
+  userRoleMiddleware(Role.user, Role.admin),
   studentController.getEnrollments,
 );
 
 router.get(
   studentRoute.getStudents,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   studentController.getManyStudents,
 );
 

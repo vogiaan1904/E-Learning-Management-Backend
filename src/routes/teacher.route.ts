@@ -18,7 +18,7 @@ router.use(accessTokenMiddleware);
 
 router.get(
   teacherRoute.getCourses,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   teacherController.getCourses,
 );
 

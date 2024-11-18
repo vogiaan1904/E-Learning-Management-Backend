@@ -262,6 +262,124 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResError"
+
+  /quizzes/{id}/start:
+    post:
+      tags:
+        - Quizz
+      summary: Start Quiz - Authenticated Students
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The quiz's ID
+      responses:
+        201:
+          description: Quiz started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+                  submission:
+                    $ref: "#/components/schemas/QuizzSubmission"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Quiz Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+
+  /quizzes/{id}/submit/{submissionId}:
+    patch:
+      tags:
+        - Quizz
+      summary: Submit Quiz Answers - Authenticated Students
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The quiz's ID
+        - in: path
+          name: submissionId
+          schema:
+            type: string
+          required: true
+          description: The submission's ID
+      requestBody:
+        description: User's answers
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                submissionAnswers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      questionId:
+                        type: string
+                        example: "q123"
+                      selectedOptions:
+                        type: array
+                        items:
+                          type: string
+                        example: ["Option A", "Option C"]
+              required:
+                - submissionAnswers
+      responses:
+        200:
+          description: Quiz submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResSubmitQuizz"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Quiz or Submission Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
 components:
   schemas:
     ResStatus:
@@ -315,6 +433,77 @@ components:
         quizzes:
           type: object
           $ref: "#/components/schemas/quizz"
+    QuizzSubmission:
+      type: object
+      properties:
+        id:
+          type: string
+        quizzId:
+          type: string
+        enrollmentId:
+          type: string
+        score:
+          type: integer
+        status:
+          type: string
+        submissionAnswers:
+          type: array
+          items:
+            type: object
+            properties:
+              questionId:
+                type: string
+              selectedOptions:
+                type: array
+                items:
+                  type: string
+        createdAt:
+          type: string
+          format: date-time
+        dueAt:
+          type: string
+          format: date-time
+        submittedAt:
+          type: string
+          format: date-time
+
+    ResSubmitQuizz:
+      type: object
+      properties:
+        message:
+          type: string
+        success:
+          type: boolean
+        result:
+          type: object
+          properties:
+            score:
+              type: number
+              example: 8
+            totalQuestions:
+              type: number
+              example: 10
+            percentage:
+              type: number
+              example: 80
+            results:
+              type: array
+              items:
+                type: object
+                properties:
+                  questionId:
+                    type: string
+                  correct:
+                    type: boolean
+                  selectedOptionContents:
+                    type: array
+                    items:
+                      type: string
+                  correctOptionContents:
+                    type: array
+                    items:
+                      type: string
+
     ResError:
       type: object
       properties:

@@ -6,6 +6,8 @@ interface QuizzRouteProps extends DefaultRouteProps {
   createQuizz: string;
   updateQuizz: string;
   deleteQuizz: string;
+  startQuizz: string;
+  submitQuizz: string;
 }
 export const quizzRoute: QuizzRouteProps = {
   index: "/quizzes",
@@ -16,4 +18,6 @@ export const quizzRoute: QuizzRouteProps = {
   getQuizzes: "/many",
   updateQuizz: "/:id",
   deleteQuizz: "/:id",
+  startQuizz: "/:id/start",
+  submitQuizz: "/:id/submit/:submissionId",
 };
