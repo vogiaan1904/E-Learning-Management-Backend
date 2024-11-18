@@ -26,10 +26,11 @@ router.get(courseRoute.status, (req: Request, res: Response) => {
 
 router.get(
   courseRoute.getCourses,
-  // userRoleMiddleware(Role.teacher),
   queryValidation(CourseQuerySchema),
   courseController.getCourses,
 );
+
+router.get(courseRoute.getCourse, courseController.getCourseById);
 
 router.use(accessTokenMiddleware);
 
@@ -39,8 +40,6 @@ router.post(
   dataValidation(CreateCourseSchema),
   courseController.createCourse,
 );
-
-router.get(courseRoute.getCourse, courseController.getCourseById);
 
 router.patch(
   courseRoute.uploadThumbnail,
