@@ -410,11 +410,6 @@ components:
             example: "module-id-1"
           description: "List of module IDs associated with the course."
           example: []
-        enrollment:
-          type: object
-          nullable: true
-          description: "Enrollment details for the course."
-          example: null
     ResGetCourses:
       properties: 
         message:

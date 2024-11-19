@@ -21,26 +21,20 @@ class CourseController {
     },
   );
 
-  getCourseById = catchAsync(
-    async (req: CustomUserRequest<UserPayload>, res: Response) => {
-      const userId = req.user.id;
-      const courseId = req.params.id;
-      const { course, moduleIds, enrollment } = await courseService.getCourse(
-        {
-          id: courseId,
-        },
-        userId,
-      );
+  getCourseById = catchAsync(async (req: Request, res: Response) => {
+    const courseId = req.params.id;
 
-      return res.status(StatusCodes.OK).json({
-        message: "Get course successfully",
-        status: "success",
-        course: course,
-        moduleIds: moduleIds,
-        enrollment: enrollment,
-      });
-    },
-  );
+    const { course, moduleIds } = await courseService.getCourse({
+      id: courseId,
+    });
+
+    return res.status(StatusCodes.OK).json({
+      message: "Get course successfully",
+      status: "success",
+      course: course,
+      moduleIds: moduleIds,
+    });
+  });
 
   getCourses = catchAsync(async (req: Request, res: Response) => {
     const courses = await courseService.getCourses(req.query);

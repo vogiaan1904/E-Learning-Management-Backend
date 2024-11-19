@@ -1,6 +1,5 @@
 import { CustomError } from "@/configs";
 import courseRepo from "@/repositories/course.repo";
-import enrollmentRepo from "@/repositories/enrollment.repo";
 import moduleRepo from "@/repositories/module.repo";
 import {
   CreateCourseProps,
@@ -31,7 +30,7 @@ class CourseService {
 
   getCourse = async (
     filter: Prisma.CourseWhereInput,
-    userId: string,
+    userId?: string,
     options?: object,
   ) => {
     const { name, id, slug } = filter;
@@ -62,13 +61,9 @@ class CourseService {
       { courseId: course.id },
       { orderBy: { position: "asc" } },
     );
-    const enrollment = await enrollmentRepo.getOne({
-      studentId: userId,
-      courseId: course.id,
-    });
     const moduleIds = modules.map((module) => module.id);
 
-    return { course, moduleIds, enrollment };
+    return { course, moduleIds };
   };
 
   getCourses = async (query: GetCoursesProps) => {

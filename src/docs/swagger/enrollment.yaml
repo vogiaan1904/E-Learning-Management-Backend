@@ -59,7 +59,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResError"
-  /enrollemtns/many:
+  /enrollments/many:
     get:
       tags:
         - Enrollment

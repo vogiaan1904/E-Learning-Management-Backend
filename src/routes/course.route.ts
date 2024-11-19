@@ -24,6 +24,14 @@ router.get(courseRoute.status, (req: Request, res: Response) => {
   });
 });
 
+router.post(
+  courseRoute.createCourse,
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.teacher, Role.admin),
+  dataValidation(CreateCourseSchema),
+  courseController.createCourse,
+);
+
 router.get(
   courseRoute.getCourses,
   queryValidation(CourseQuerySchema),
@@ -32,23 +40,16 @@ router.get(
 
 router.get(courseRoute.getCourse, courseController.getCourseById);
 
-router.use(accessTokenMiddleware);
-
-router.post(
-  courseRoute.createCourse,
-  userRoleMiddleware(Role.teacher, Role.admin),
-  dataValidation(CreateCourseSchema),
-  courseController.createCourse,
-);
-
 router.patch(
   courseRoute.uploadThumbnail,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   upload.single("image"),
   courseController.uploadThumbnail,
 );
 router.patch(
   courseRoute.updateCourse,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   dataValidation(UpdateCourseSchema),
   courseController.updateCourse,
@@ -56,6 +57,7 @@ router.patch(
 
 router.delete(
   courseRoute.deleteCourse,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   courseController.deleteCourse,
 );
