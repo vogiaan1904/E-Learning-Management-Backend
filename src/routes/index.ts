@@ -11,6 +11,7 @@ import { moduleApis } from "./module.route";
 import { lessonApis } from "./lesson.route";
 import { quizzApis } from "./quizz.route";
 import { questionApis } from "./question.route";
+import { searchApis } from "./search.route";
 
 interface ConfigsProps {
   index: string;
@@ -63,6 +64,11 @@ const apiConfigs: ConfigsProps[] = [
   {
     index: routesConfig.questionRoute.index,
     api: questionApis,
+  },
+
+  {
+    index: routesConfig.searchRoute.index,
+    api: searchApis,
   },
 ];
 

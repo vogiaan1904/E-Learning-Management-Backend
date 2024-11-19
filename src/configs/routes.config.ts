@@ -10,6 +10,7 @@ import { studentRoute } from "@/types/routes/student";
 import { teacherRoute } from "@/types/routes/teacher";
 import { userRoute } from "@/types/routes/user";
 import { questionRoute } from "@/types/routes/question";
+import { searchRoute } from "@/types/routes/search";
 
 export const routesConfig = {
   default: "/",
@@ -31,4 +32,5 @@ export const routesConfig = {
   lessonRoute: lessonRoute,
   quizzRoute: quizzRoute,
   questionRoute: questionRoute,
+  searchRoute: searchRoute,
 } as const;

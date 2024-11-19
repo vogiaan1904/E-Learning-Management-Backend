@@ -17,4 +17,10 @@ export interface GetCoursesProps {
   category?: string;
 }
 
+export interface SearchQueryProp {
+  query?: string;
+  limit?: number;
+  skip?: number;
+}
+
 /* ------------------------------- Enrollment ------------------------------- */
