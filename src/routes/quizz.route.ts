@@ -1,6 +1,7 @@
 import { routesConfig } from "@/configs";
 import quizzController from "@/controllers/quizz.controller";
 import { accessTokenMiddleware, userRoleMiddleware } from "@/middlewares";
+import { CreateQuizzSchema, UpdateQuizzSchema } from "@/schemas/quizz.schema";
 import { CreateQuizzSubmissionSchema } from "@/schemas/quizzSubmission.schema";
 import { dataValidation } from "@/validations/data.validation";
 import { Role } from "@prisma/client";
@@ -26,6 +27,7 @@ router.post(
 router.post(
   quizzRoute.createQuizz,
   accessTokenMiddleware,
+  dataValidation(CreateQuizzSchema),
   userRoleMiddleware(Role.teacher, Role.admin),
   quizzController.createQuizz,
 );
@@ -53,6 +55,7 @@ router.patch(
 router.patch(
   quizzRoute.updateQuizz,
   accessTokenMiddleware,
+  dataValidation(UpdateQuizzSchema),
   userRoleMiddleware(Role.teacher, Role.admin),
   quizzController.updateQuizz,
 );
