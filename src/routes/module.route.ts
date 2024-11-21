@@ -14,7 +14,6 @@ const router = Router({ mergeParams: true });
 const { moduleRoute } = routesConfig;
 
 router.get(moduleRoute.status, (req: Request, res: Response) => {
-  console.log(req.params);
   res.status(StatusCodes.OK).json({
     message: "Module APIs",
     status: "success",

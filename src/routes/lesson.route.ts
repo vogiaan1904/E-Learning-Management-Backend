@@ -11,7 +11,6 @@ const router = Router({ mergeParams: true });
 const { lessonRoute } = routesConfig;
 
 router.get(lessonRoute.status, (req: Request, res: Response) => {
-  console.log(req.params);
   res.status(StatusCodes.OK).json({
     message: "Lesson APIs",
     status: "success",

@@ -84,7 +84,6 @@ class CourseController {
       throw new CustomError("Image is required", StatusCodes.BAD_REQUEST);
     }
     const thumbnailUrl = await imgurService.uploadImage(image);
-    console.log(thumbnailUrl);
     const updatedCourse = await courseService.updateCourse(
       { id: courseId },
       userId,

@@ -10,7 +10,6 @@ import { StatusCodes } from "http-status-codes";
 const router = Router({ mergeParams: true });
 const { quizzRoute } = routesConfig;
 router.get(quizzRoute.status, (req: Request, res: Response) => {
-  console.log(req.params);
   res.status(StatusCodes.OK).json({
     message: "Quizz APIs",
     status: "success",

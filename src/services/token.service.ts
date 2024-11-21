@@ -22,6 +22,19 @@ class TokenService {
     return jwt.verify(token, secretKey) as T;
   };
 
+  getResetPasswordToken = async (fields: JwtFieldProps) => {
+    try {
+      const { tokenId } = fields;
+      const token = await this.generateJwtToken(fields, "rpt");
+      return {
+        token,
+        tokenId,
+      };
+    } catch (error) {
+      logger.error(error);
+      throw new Error(String(error));
+    }
+  };
   getJwtTokens = async (fields: JwtFieldProps) => {
     try {
       const { tokenId } = fields;
@@ -54,12 +67,16 @@ class TokenService {
       const secret =
         tokenType === "at"
           ? envConfig.ACCESS_TOKEN_SECRET
-          : envConfig.REFRESH_TOKEN_SECRET;
+          : tokenType === "rt"
+            ? envConfig.REFRESH_TOKEN_SECRET
+            : envConfig.RESET_PASSWORD_TOKEN_SECRET;
       const expiresIn =
         customExpiresIn ||
         (tokenType === "at"
           ? envConfig.ACCESS_TOKEN_EXPIRED
-          : envConfig.REFRESH_TOKEN_EXPIRED);
+          : tokenType === "rt"
+            ? envConfig.REFRESH_TOKEN_EXPIRED
+            : envConfig.RESET_PASSWORD_TOKEN_EXPIRED);
       return jwt.sign(payload, secret, {
         expiresIn: expiresIn,
       });
@@ -90,6 +107,10 @@ class TokenService {
 
   generateUserSessionKey = (id: string) => {
     return `user-session:${id}`;
+  };
+
+  generateResetPasswordKey = (tokenId: string) => {
+    return `reset-password:${tokenId}`;
   };
 }
 

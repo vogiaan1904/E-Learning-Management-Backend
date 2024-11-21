@@ -17,6 +17,7 @@ class SearcheService {
           return {
             [field]: {
               contains: searchQuery.query,
+              mode: "insensitive",
             },
           };
         }),
