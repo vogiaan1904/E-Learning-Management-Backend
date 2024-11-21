@@ -15,7 +15,7 @@ paths:
     get:
       tags:
         - User
-      summary: Get users - Admin
+      summary: Get users
       responses:
         200:
           description: Get users successfully
@@ -33,7 +33,7 @@ paths:
     get:
       tags:
         - User
-      summary: Get a user by Id - Admin
+      summary: Get a user by Id
       parameters:
         - in: path
           name: id

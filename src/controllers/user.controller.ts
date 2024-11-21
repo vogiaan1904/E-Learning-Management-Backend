@@ -62,6 +62,19 @@ class UserController {
       },
     });
   });
+
+  getUsers = catchAsync(async (req: Request, res: Response) => {
+    const users = await userService.getUsers(undefined, {
+      includeProfile: true,
+    });
+    return res.status(StatusCodes.OK).json({
+      message: "Get users successfully",
+      status: "success",
+      users: users.map((user) => {
+        return removeFieldsFromObject(user, ["password"]);
+      }),
+    });
+  });
 }
 
 export default new UserController();
