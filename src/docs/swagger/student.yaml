@@ -84,9 +84,6 @@ components:
         grade:
           type: string
           example: "8.5"
-        feedback:
-          type: string
-          example: "it's hard, I gave up."
         status:
           type: string
           example: "In progress"

@@ -25,6 +25,7 @@ model Course {
     categories     CategoriesOnCourses[]
     enrollments    Enrollment[]
     reviews        Review[]
+    numReviews     Int                   @default(0)
     teacher        Teacher               @relation(fields: [teacherId], references: [id])
     createdAt      DateTime              @default(now())
     updatedAt      DateTime              @updatedAt

@@ -1,6 +1,6 @@
 import { routesConfig } from "@/configs";
 import studentController from "@/controllers/student.controller";
-import { accessTokenMiddleware, userRoleMiddleware } from "@/middlewares";
+import { userRoleMiddleware } from "@/middlewares";
 import { Role } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
@@ -13,8 +13,6 @@ router.get(studentRoute.status, (req: Request, res: Response) => {
     status: "success",
   });
 });
-
-router.use(accessTokenMiddleware);
 
 router.get(
   studentRoute.getEnrollments,

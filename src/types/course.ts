@@ -3,12 +3,15 @@ import { OmitAndPartial } from "./object";
 
 /* --------------------------------- Course --------------------------------- */
 export interface CreateCourseProps
-  extends Pick<Course, "name" | "description" | "teacherId"> {
+  extends Pick<Course, "name" | "description" | "teacherId" | "level"> {
   categories?: Array<string>;
 }
 
 export interface UpdateCourseProps
-  extends OmitAndPartial<Course, "createdAt" | "id" | "teacherId"> {}
+  extends OmitAndPartial<
+    Course,
+    "createdAt" | "id" | "teacherId" | "updatedAt" | "deletedAt"
+  > {}
 
 export interface GetCoursesProps {
   skip?: string;

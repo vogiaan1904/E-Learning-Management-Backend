@@ -2,6 +2,7 @@ import { routesConfig } from "@/configs";
 import courseController from "@/controllers/course.controller";
 import { accessTokenMiddleware, userRoleMiddleware } from "@/middlewares";
 import {
+  AddReviewSchema,
   CourseQuerySchema,
   CreateCourseSchema,
   UpdateCourseSchema,
@@ -32,6 +33,14 @@ router.post(
   courseController.createCourse,
 );
 
+router.post(
+  courseRoute.addReview,
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.user, Role.admin),
+  dataValidation(AddReviewSchema),
+  courseController.addReview,
+);
+
 router.get(
   courseRoute.getCourses,
   queryValidation(CourseQuerySchema),
@@ -39,6 +48,8 @@ router.get(
 );
 
 router.get(courseRoute.getCourse, courseController.getCourseById);
+
+router.get(courseRoute.getReviews, courseController.getReviews);
 
 router.patch(
   courseRoute.uploadThumbnail,

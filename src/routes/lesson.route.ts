@@ -17,10 +17,9 @@ router.get(lessonRoute.status, (req: Request, res: Response) => {
   });
 });
 
-router.use(accessTokenMiddleware);
-
 router.post(
   lessonRoute.createLesson,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   lessonController.createLesson,
 );
@@ -35,12 +34,14 @@ router.get(lessonRoute.getLesson, lessonController.getLesson);
 
 router.patch(
   lessonRoute.updateLesson,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   lessonController.updateLesson,
 );
 
 router.delete(
   lessonRoute.deleteLesson,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   lessonController.deleteLesson,
 );

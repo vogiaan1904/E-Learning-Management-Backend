@@ -19,10 +19,9 @@ router.get(userRoute.status, (req: Request, res: Response) => {
   });
 });
 
-router.use(accessTokenMiddleware);
-
 router.patch(
   userRoute.updateUser,
+  accessTokenMiddleware,
   dataValidation(UpdateUserProfileSchema),
   userController.updateAUserProfile,
 );
@@ -31,6 +30,7 @@ router.get(userRoute.getUser, userController.getAUser);
 
 router.post(
   userRoute.createUser,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.admin),
   dataValidation(CreateUserSchema),
   userController.createAUser,

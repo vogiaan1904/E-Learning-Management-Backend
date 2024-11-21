@@ -9,7 +9,9 @@ import {
 import { generateCourseFilter } from "@/utils/generateCourseFilter";
 import { Course, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
-
+interface CourseOptions {
+  includeTeacher?: boolean;
+}
 class CourseService {
   private section = CourseService.name;
 
@@ -30,10 +32,10 @@ class CourseService {
 
   getCourse = async (
     filter: Prisma.CourseWhereInput,
-    userId?: string,
-    options?: object,
+    options?: CourseOptions,
   ) => {
     const { name, id, slug } = filter;
+    const { includeTeacher } = options || {};
     const course = await courseRepo.getOne(
       {
         OR: [
@@ -48,7 +50,11 @@ class CourseService {
           },
         ],
       },
-      options,
+      {
+        include: {
+          teacher: includeTeacher,
+        },
+      },
     );
     if (!course) {
       throw new CustomError(

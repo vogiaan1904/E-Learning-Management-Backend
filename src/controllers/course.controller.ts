@@ -7,6 +7,8 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import imgurService from "@/services/imgur.service";
 import { CustomError } from "@/configs";
+import reviewService from "@/services/review.service";
+import { CreateReviewProps } from "@/types/review";
 class CourseController {
   createCourse = catchAsync(
     async (req: CustomRequest<CreateCourseProps>, res: Response) => {
@@ -95,6 +97,32 @@ class CourseController {
       message: "Upload thumbnail successfully",
       status: "success",
       course: updatedCourse,
+    });
+  });
+
+  addReview = catchAsync(
+    async (req: CustomRequest<CreateReviewProps>, res: Response) => {
+      const courseId = req.params.id;
+      const user = req.user as UserPayload;
+      const review = await reviewService.createReview(
+        req.body,
+        user.id,
+        courseId,
+      );
+      return res.status(StatusCodes.OK).json({
+        message: "Add review successfully",
+        status: "success",
+        review: review,
+      });
+    },
+  );
+  getReviews = catchAsync(async (req: Request, res: Response) => {
+    const courseId = req.params.id;
+    const reviews = await reviewService.getReviews({ courseId });
+    return res.status(StatusCodes.OK).json({
+      message: "Get reviews successfully",
+      status: "success",
+      reviews: reviews,
     });
   });
 }

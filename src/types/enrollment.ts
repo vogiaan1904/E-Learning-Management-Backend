@@ -27,5 +27,3 @@ export interface UpdateModuleProgessProp {
 }
 
 export interface EnrollCourseProps extends Pick<Enrollment, "courseId"> {}
-
-export interface FeedBackCourseProps extends Pick<Enrollment, "feedback"> {}

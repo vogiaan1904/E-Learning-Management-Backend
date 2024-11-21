@@ -1,0 +1,26 @@
+components:
+  schema:
+    Review: 
+      type: object
+      properties:
+        id:
+          type: string
+          example: "5f8f4b3b5f3b9e001f3b4b3b"
+        courseId:
+          type: string
+          example: "5f8f4b3b5f3b9e001f3b4b3b"
+        enrollmentId:
+          type: string
+          example: "5f8f4b3b5f3b9e001f3b4b3b"
+        rating:
+          type: number
+          example: 4.5
+        comment:
+          type: string
+          example: "This course is very useful"
+        createdAt:
+          type: string
+          example: "2020-10-20T00:00:00.000Z"
+        updatedAt:
+          type: string
+          example: "2020-10-20T00:00:00.000Z"

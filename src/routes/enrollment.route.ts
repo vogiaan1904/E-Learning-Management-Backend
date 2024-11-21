@@ -38,12 +38,6 @@ router.get(
 );
 
 router.patch(
-  enrollmentRoute.feedBack,
-  userRoleMiddleware(Role.user),
-  enrollmentController.feedBack,
-);
-
-router.patch(
   enrollmentRoute.cancelEnrollment,
   userRoleMiddleware(Role.user),
   enrollmentController.cancelEnrollment,

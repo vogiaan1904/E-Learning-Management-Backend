@@ -20,10 +20,9 @@ router.get(moduleRoute.status, (req: Request, res: Response) => {
   });
 });
 
-router.use(accessTokenMiddleware);
-
 router.post(
   moduleRoute.createModule,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   moduleController.createModule,
 );
@@ -38,6 +37,7 @@ router.get(moduleRoute.getModule, moduleController.getModuleById);
 
 router.patch(
   moduleRoute.updateModule,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   dataValidation(UpdateModuleSchema),
   moduleController.updateModule,
@@ -45,6 +45,7 @@ router.patch(
 
 router.delete(
   moduleRoute.deleteModule,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   moduleController.deleteModule,
 );

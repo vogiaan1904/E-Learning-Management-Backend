@@ -37,6 +37,10 @@ paths:
                   items:
                     type: string
                   description: Optional list of categories for the course (e.g., "WebDevelopment", "MachineLearning")
+                  example: ["WebDevelopment", "MachineLearning"]
+                level:
+                  type: string
+                  example: "ADVANCED"
 
               required:
                 - teacherId
@@ -294,8 +298,87 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResCourseError"
-
-
+  /courses/{id}/reviews:
+    post:
+      tags:
+        - Course
+      summary: Add Course Review - Student
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      requestBody:
+        description: Request body for creating a course review (1-5)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  example: 5
+                comment:
+                  type: string
+                  example: "Great course!"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResStatus"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+    get:
+      tags:
+        - Course
+      summary: Get Course Reviews - Authenticated
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The course's Id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResGetCourse" 
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCourseError"
+    
 
 components:
   schemas:
@@ -317,6 +400,9 @@ components:
         description:
           type: string
           example: "Deep dive into modern web development frameworks and best practices."
+        level:
+          type: string
+          example: "ADVANCED"
         isDeleted:
           type: boolean
           example: false
@@ -326,6 +412,17 @@ components:
         numLessons:
           type: integer
           example: 0
+        numReview:
+          type: integer
+          example: 0
+        rating:
+          type: number
+          example: 0
+        categories:
+          type: array
+          items:
+            type: string
+          example: ["WebDevelopment", "MachineLearning"]
         createdAt:
           type: string
           format: date-time
@@ -350,12 +447,34 @@ components:
           type: string
         grade:
           type: string
-        feedback:
-          type: string
         status:
           type: string
         completion:
           type: string
+    Review: 
+      type: object
+      properties:
+        id:
+          type: string
+          example: "5f8f4b3b5f3b9e001f3b4b3b"
+        courseId:
+          type: string
+          example: "5f8f4b3b5f3b9e001f3b4b3b"
+        enrollmentId:
+          type: string
+          example: "5f8f4b3b5f3b9e001f3b4b3b"
+        rating:
+          type: number
+          example: 4.5
+        comment:
+          type: string
+          example: "This course is very useful"
+        createdAt:
+          type: string
+          example: "2020-10-20T00:00:00.000Z"
+        updatedAt:
+          type: string
+          example: "2020-10-20T00:00:00.000Z"
     ReqCreateCourse:
       type: object
       properties:
@@ -451,6 +570,19 @@ components:
         enrollment:
           type: object
           $ref: "#/components/schemas/Enrollment"
+    ResGetReviews:
+      type: object
+      properties: 
+        message: 
+          type: string
+        status:
+          type: string
+          example: "success"
+        reviews:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Review"
     ResStatus:
       type: object
       properties: 

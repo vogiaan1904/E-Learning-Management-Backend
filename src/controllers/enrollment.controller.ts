@@ -1,7 +1,6 @@
 import enrollmentService from "@/services/enrollment.service";
 import {
   EnrollCourseProps,
-  FeedBackCourseProps,
   UpdateEnrollmentProps,
   UpdateLessonProgessProp,
   UpdateModuleProgessProp,
@@ -103,21 +102,6 @@ class EnrollmentController {
       );
       return res.status(StatusCodes.OK).json({
         message: "Updated Enrollment successfully",
-        status: "success",
-        enrollment: enrollment,
-      });
-    },
-  );
-
-  feedBack = catchAsync(
-    async (req: CustomRequest<FeedBackCourseProps>, res: Response) => {
-      const enrollmentId = req.params.id;
-      const enrollment = await enrollmentService.feedBack(
-        { id: enrollmentId },
-        req.body,
-      );
-      return res.status(StatusCodes.OK).json({
-        message: "Fed back successfully",
         status: "success",
         enrollment: enrollment,
       });

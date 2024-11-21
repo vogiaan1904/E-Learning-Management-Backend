@@ -16,26 +16,35 @@ router.get(quizzRoute.status, (req: Request, res: Response) => {
   });
 });
 
-router.use(accessTokenMiddleware);
-
 router.post(
   quizzRoute.startQuizz,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.user),
   quizzController.startQuizz,
 );
 
 router.post(
   quizzRoute.createQuizz,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   quizzController.createQuizz,
 );
 
-router.get(quizzRoute.getQuizz, quizzController.getQuizz);
+router.get(
+  quizzRoute.getQuizz,
+  accessTokenMiddleware,
+  quizzController.getQuizz,
+);
 
-router.get(quizzRoute.getQuizzes, quizzController.getQuizzes);
+router.get(
+  quizzRoute.getQuizzes,
+  accessTokenMiddleware,
+  quizzController.getQuizzes,
+);
 
 router.patch(
   quizzRoute.submitQuizz,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.user),
   dataValidation(CreateQuizzSubmissionSchema),
   quizzController.submitQuizz,
@@ -43,12 +52,14 @@ router.patch(
 
 router.patch(
   quizzRoute.updateQuizz,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   quizzController.updateQuizz,
 );
 
 router.delete(
   quizzRoute.deleteQuizz,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   quizzController.deleteQuizz,
 );
