@@ -1,0 +1,83 @@
+paths:
+  /upload-image/api-status:
+    get:
+      tags:
+        - Upload Image
+      summary: Check Enrollment APIs status
+      responses:
+        200: 
+          description: OK
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResStatus"
+  /upload-image:
+    post:
+      tags:
+        - Upload Image
+      summary: Upload Image
+      requestBody:
+        description: Request body
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+              required:
+                - image
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUploadImage" 
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResError"
+components:
+  schemas:
+    Image:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "image123"
+        url:
+          type: string
+          example: "https://www.example.com/image.jpg"
+    ResUploadImage:
+      type: object
+      properties:
+        image:
+          $ref: "#/components/schemas/Image"
+    ResError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error message"
+    ResStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"

@@ -12,6 +12,7 @@ import { userRoute } from "@/types/routes/user";
 import { questionRoute } from "@/types/routes/question";
 import { searchRoute } from "@/types/routes/search";
 import { reviewRoute } from "@/types/routes/review";
+import { uploadImageRoute } from "@/types/routes/uploadImage";
 
 export const routesConfig = {
   default: "/",
@@ -35,4 +36,5 @@ export const routesConfig = {
   questionRoute: questionRoute,
   searchRoute: searchRoute,
   reviewRoute: reviewRoute,
+  uploadImageRoute: uploadImageRoute,
 } as const;
