@@ -34,16 +34,13 @@ class CourseService {
     filter: Prisma.CourseWhereInput,
     options?: CourseOptions,
   ) => {
-    const { name, id, slug } = filter;
+    const { id, slug } = filter;
     const { includeTeacher } = options || {};
     const course = await courseRepo.getOne(
       {
         OR: [
           {
             id,
-          },
-          {
-            name,
           },
           {
             slug,

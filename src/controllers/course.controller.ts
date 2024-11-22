@@ -24,11 +24,16 @@ class CourseController {
   );
 
   getCourseById = catchAsync(async (req: Request, res: Response) => {
-    const courseId = req.params.id;
+    const courseIdentifier = req.params.id;
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        courseIdentifier,
+      );
 
-    const { course, moduleIds } = await courseService.getCourse({
-      id: courseId,
-    });
+    const filter = isUuid
+      ? { id: courseIdentifier }
+      : { slug: courseIdentifier };
+    const { course, moduleIds } = await courseService.getCourse(filter);
 
     return res.status(StatusCodes.OK).json({
       message: "Get course successfully",

@@ -133,14 +133,14 @@ paths:
     get:
       tags:
         - Course
-      summary: Get Course By Id - Authenticated
+      summary: Get Course By Id or Slug- Authenticated
       parameters:
         - in: path
           name: id
           schema:
             type: string
           required: true
-          description: The course's Id
+          description: The course's Id or Slug
       responses:
         200:
           description: OK
