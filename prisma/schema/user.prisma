@@ -18,6 +18,8 @@ model User {
   role             Role               @default(user)
   isVerified       Boolean            @default(false)
   userVerification UserVerification[]
+  notifications    Notification[]
+  FCMTokens        FCMToken[]
   userProfileId    String             @unique
   userProfile      UserProfifle       @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
   student          Student?
