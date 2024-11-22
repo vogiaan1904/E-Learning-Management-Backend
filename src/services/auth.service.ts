@@ -49,7 +49,6 @@ class AuthService {
     });
 
     const user = await userRepo.create({
-      // nested creattion all sub tables, (userProfile, Student or Teacher)
       username: username,
       email: email,
       password: hashData(password),
@@ -198,9 +197,12 @@ class AuthService {
 
   async verifyCode(data: VerifyCodeProps) {
     const { id, code, userId } = data;
-    const user = await userService.getUser({
-      id: userId,
-    });
+    const user = await userService.getUser(
+      {
+        id: userId,
+      },
+      { includeProfile: true },
+    );
     if (!user) {
       throw new CustomError(
         "User not found. Please sign up",
@@ -260,7 +262,7 @@ class AuthService {
       tokens.refreshToken,
       convertToSeconds(envConfig.REFRESH_TOKEN_EXPIRED),
     );
-    return { tokens };
+    return { tokens, user };
   }
 
   async refreshToken(data: RefreshTokenProps) {

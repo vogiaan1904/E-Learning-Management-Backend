@@ -119,6 +119,9 @@ class AuthController {
           tokens: {
             ...removeFieldsFromObject(result.tokens, ["tokenId"]),
           },
+          user: {
+            ...removeFieldsFromObject(result.user, ["password"]),
+          },
           message: "Verify success",
           status: "success",
         });

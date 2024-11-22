@@ -11,8 +11,12 @@ import RedisStore from "connect-redis";
 import { redis } from "@/database/redis.db";
 export const enableServerMiddleware = (server: Express) => {
   // Middlewares
-  server.use(cors());
-  server.options("*", cors());
+  server.use(
+    cors({
+      origin: ["http://localhost:5173"],
+      credentials: true,
+    }),
+  );
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
   server.use(cookieParser());
