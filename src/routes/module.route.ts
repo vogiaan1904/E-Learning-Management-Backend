@@ -14,17 +14,15 @@ const router = Router({ mergeParams: true });
 const { moduleRoute } = routesConfig;
 
 router.get(moduleRoute.status, (req: Request, res: Response) => {
-  console.log(req.params);
   res.status(StatusCodes.OK).json({
     message: "Module APIs",
     status: "success",
   });
 });
 
-router.use(accessTokenMiddleware);
-
 router.post(
   moduleRoute.createModule,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   moduleController.createModule,
 );
@@ -39,6 +37,7 @@ router.get(moduleRoute.getModule, moduleController.getModuleById);
 
 router.patch(
   moduleRoute.updateModule,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   dataValidation(UpdateModuleSchema),
   moduleController.updateModule,
@@ -46,6 +45,7 @@ router.patch(
 
 router.delete(
   moduleRoute.deleteModule,
+  accessTokenMiddleware,
   userRoleMiddleware(Role.teacher, Role.admin),
   moduleController.deleteModule,
 );

@@ -7,6 +7,8 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import imgurService from "@/services/imgur.service";
 import { CustomError } from "@/configs";
+import reviewService from "@/services/review.service";
+import { CreateReviewProps } from "@/types/review";
 class CourseController {
   createCourse = catchAsync(
     async (req: CustomRequest<CreateCourseProps>, res: Response) => {
@@ -22,11 +24,16 @@ class CourseController {
   );
 
   getCourseById = catchAsync(async (req: Request, res: Response) => {
-    const courseId = req.params.id;
+    const courseIdentifier = req.params.id;
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        courseIdentifier,
+      );
 
-    const { course, moduleIds } = await courseService.getCourse({
-      id: courseId,
-    });
+    const filter = isUuid
+      ? { id: courseIdentifier }
+      : { slug: courseIdentifier };
+    const { course, moduleIds } = await courseService.getCourse(filter);
 
     return res.status(StatusCodes.OK).json({
       message: "Get course successfully",
@@ -84,7 +91,6 @@ class CourseController {
       throw new CustomError("Image is required", StatusCodes.BAD_REQUEST);
     }
     const thumbnailUrl = await imgurService.uploadImage(image);
-    console.log(thumbnailUrl);
     const updatedCourse = await courseService.updateCourse(
       { id: courseId },
       userId,
@@ -96,6 +102,32 @@ class CourseController {
       message: "Upload thumbnail successfully",
       status: "success",
       course: updatedCourse,
+    });
+  });
+
+  addReview = catchAsync(
+    async (req: CustomRequest<CreateReviewProps>, res: Response) => {
+      const courseId = req.params.id;
+      const user = req.user as UserPayload;
+      const review = await reviewService.createReview(
+        req.body,
+        user.id,
+        courseId,
+      );
+      return res.status(StatusCodes.OK).json({
+        message: "Add review successfully",
+        status: "success",
+        review: review,
+      });
+    },
+  );
+  getReviews = catchAsync(async (req: Request, res: Response) => {
+    const courseId = req.params.id;
+    const reviews = await reviewService.getReviews({ courseId });
+    return res.status(StatusCodes.OK).json({
+      message: "Get reviews successfully",
+      status: "success",
+      reviews: reviews,
     });
   });
 }

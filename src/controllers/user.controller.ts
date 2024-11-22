@@ -49,17 +49,34 @@ class UserController {
   );
 
   getAUser = catchAsync(async (req: Request, res: Response) => {
-    const userId = req.params.id;
-    const user = await userService.getUser(
-      { id: userId },
-      { includeProfile: true },
-    );
+    const identifier = req.params.id;
+    console.log(identifier);
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        identifier,
+      );
+
+    const filter = isUuid ? { id: identifier } : { username: identifier };
+    const user = await userService.getUser(filter, { includeProfile: true });
     return res.status(StatusCodes.OK).json({
       message: "Get user successfully",
       status: "success",
       user: {
         ...removeFieldsFromObject(user, ["password"]),
       },
+    });
+  });
+
+  getUsers = catchAsync(async (req: Request, res: Response) => {
+    const users = await userService.getUsers(undefined, {
+      includeProfile: true,
+    });
+    return res.status(StatusCodes.OK).json({
+      message: "Get users successfully",
+      status: "success",
+      users: users.map((user) => {
+        return removeFieldsFromObject(user, ["password"]);
+      }),
     });
   });
 }

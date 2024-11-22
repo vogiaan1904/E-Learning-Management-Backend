@@ -8,7 +8,6 @@ interface EnrollmentRouteProps extends DefaultRouteProps {
   updateLessonProgress: string;
   updateModuleProgress: string;
   cancelEnrollment: string;
-  feedBack: string;
   deleteEnrollment: string;
 }
 
@@ -24,6 +23,5 @@ export const enrollmentRoute: EnrollmentRouteProps = {
   updateLessonProgress: "/:id/lesson-progress",
   updateModuleProgress: "/:id/module-progress",
   cancelEnrollment: "/:id/cancel",
-  feedBack: "/:id/feed-back",
   deleteEnrollment: "/:id",
 };

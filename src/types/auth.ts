@@ -21,6 +21,16 @@ export interface SendCodeProps
 export interface VerifyCodeProps
   extends Pick<UserVerification, "id" | "code" | "userId"> {}
 
+export interface ForgotPasswordProps extends Pick<User, "email" | "username"> {}
+
+export interface ResetPasswordProps {
+  newPassword: string;
+}
+
+export interface ResetPasswordQueryProps {
+  token?: string;
+}
+
 export interface FacebookProfileProps {
   email: string;
   last_name: string;

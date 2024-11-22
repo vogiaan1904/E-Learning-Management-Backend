@@ -15,7 +15,7 @@ paths:
     get:
       tags:
         - User
-      summary: Get users - Admin
+      summary: Get users
       responses:
         200:
           description: Get users successfully
@@ -33,14 +33,14 @@ paths:
     get:
       tags:
         - User
-      summary: Get a user by Id - Admin
+      summary: Get a user by Id
       parameters:
         - in: path
           name: id
           schema:
             type: string
           required: true
-          description: The user's ID
+          description: The user's identifier (id or username)
       responses:
         200:
           description: User got successfully
@@ -61,36 +61,6 @@ paths:
           content:
             application/json:
               schemas:  
-                $ref: "#/components/schemas/ResUserError"
-    /users:
-    post:
-      tags:
-        - User
-      summary: Create a user - Admin
-      requestBody:
-        description: Request body (Include role)
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ReqCreateUser"
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResCreateUser"
-        409:
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResUserError"
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
                 $ref: "#/components/schemas/ResUserError"
     patch:
       tags:
@@ -129,6 +99,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResUserError"
+  
+  /users:
+    post:
+      tags:
+        - User
+      summary: Create a user - Admin
+      requestBody:
+        description: Request body (Include role)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqCreateUser"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCreateUser"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUserError"
+    
 
   
 components:

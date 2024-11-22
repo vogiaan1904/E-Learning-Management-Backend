@@ -14,9 +14,9 @@ model Enrollment {
     course              Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
     quizzSubmissions    QuizzSubmission[]
     grade               Int               @default(0)
-    feedback            String?
     status              EnrollmentStatus  @default(IN_PROGRESS)
     completion          Int               @default(0)
+    reviews             Review[]
     completedLessonsIds String[]
     completedModulesIds String[]
     enrolledAt          DateTime          @default(now())
@@ -38,6 +38,19 @@ model QuizzSubmission {
     createdAt             DateTime         @default(now())
     dueAt                 DateTime
     submittedAt           DateTime?
+}
+
+model Review {
+    id           String     @id @default(uuid())
+    enrollmentId String     @unique
+    rating       Float
+    comment      String?
+    createdAt    DateTime   @default(now())
+    enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+    course       Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+    courseId     String
+
+    @@map("Reviews")
 }
 
 enum SubmissionStatus {

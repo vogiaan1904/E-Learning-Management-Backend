@@ -1,0 +1,133 @@
+paths:
+  /reviews/api-status:
+    get:
+      tags:
+        - Review
+      summary: Check Review APIs status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResStatus'
+  /reviews/{id}:
+    get:
+      tags:
+        - Review
+      summary: Get a review by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The review ID
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResError'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResError'
+    patch:
+      tags:
+        - Review
+      summary: Update a review by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The review ID
+      requestBody:
+        description: Request body for updating a course
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: number
+                  example: 4.5
+                comment:
+                  type: string
+                  example: "This course is very useful"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResError'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResError'
+components:
+  schemas:
+    Review: 
+      type: object
+      properties:
+        id:
+          type: string
+          example: "5f8f4b3b5f3b9e001f3b4b3b"
+        courseId:
+          type: string
+          example: "5f8f4b3b5f3b9e001f3b4b3b"
+        enrollmentId:
+          type: string
+          example: "5f8f4b3b5f3b9e001f3b4b3b"
+        rating:
+          type: number
+          example: 4.5
+        comment:
+          type: string
+          example: "This course is very useful"
+        createdAt:
+          type: string
+          example: "2020-10-20T00:00:00.000Z"
+        updatedAt:
+          type: string
+          example: "2020-10-20T00:00:00.000Z"
+    ResError:
+      type: object
+      properties:
+        message: 
+          type: string
+        status:
+          type: string
+          example: "failed"
