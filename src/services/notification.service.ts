@@ -1,6 +1,8 @@
 import { CustomError } from "@/configs";
+import fcmTokenRepo from "@/repositories/fcmToken.repo";
 import notificationRepo from "@/repositories/notification.repo";
 import userRepo from "@/repositories/user.repo";
+import { CreateFCMTokenProps, DeleteFCMTokenProps } from "@/types/fcmToken";
 import { CreateNotificationProps } from "@/types/notification";
 import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
@@ -32,6 +34,32 @@ class NotificationService {
 
   deleteNotification = async (filter: Prisma.NotificationWhereUniqueInput) => {
     return await notificationRepo.delete(filter);
+  };
+
+  /* --------------------------- FCM Token --------------------------- */
+  storeToken = async (data: CreateFCMTokenProps) => {
+    const { token } = data;
+    const existedToken = await fcmTokenRepo.getOne({ token: token });
+    if (existedToken) {
+      return await fcmTokenRepo.update(
+        { token: token },
+        { lastActiveAt: new Date() },
+      );
+    } else {
+      return await fcmTokenRepo.create(data);
+    }
+  };
+
+  deleteToken = async (filter: DeleteFCMTokenProps) => {
+    const existedToken = await fcmTokenRepo.getOne(filter);
+    if (!existedToken) {
+      throw new CustomError(
+        "No token found",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
+    }
+    return await fcmTokenRepo.delete(filter);
   };
 }
 

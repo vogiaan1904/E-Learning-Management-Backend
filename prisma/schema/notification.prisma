@@ -13,6 +13,7 @@ model FCMToken {
     token  String @unique
     userId String
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+    createdAt DateTime @default(now())
+    lastActiveAt DateTime @default(now())
     @@map("FCMTokens")
 }
