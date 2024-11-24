@@ -4,7 +4,9 @@ import notificationRepo from "@/repositories/notification.repo";
 import userRepo from "@/repositories/user.repo";
 import { CreateFCMTokenProps, DeleteFCMTokenProps } from "@/types/fcmToken";
 import { CreateNotificationProps } from "@/types/notification";
+import { sendToOneToken } from "@/utils/notification";
 import { Prisma } from "@prisma/client";
+import { FirebaseError } from "firebase-admin";
 import { StatusCodes } from "http-status-codes";
 
 class NotificationService {
@@ -34,6 +36,33 @@ class NotificationService {
 
   deleteNotification = async (filter: Prisma.NotificationWhereUniqueInput) => {
     return await notificationRepo.delete(filter);
+  };
+
+  /* --------------------------- Send Notification --------------------------- */
+
+  sendNotification = async (
+    content: { [key: string]: string },
+    tokens: string[],
+  ) => {
+    const successfulMessages: Array<string> = [];
+    tokens.forEach(async (token) => {
+      sendToOneToken(content, token)
+        .then((messageId) => {
+          successfulMessages.push(messageId);
+        })
+        .catch(async (err: FirebaseError) => {
+          if (
+            err.code == "messaging/invalid-registration-token" ||
+            err.code == "messaging/registration-token-not-registered"
+          ) {
+            const existedToken = await fcmTokenRepo.getOne({ token });
+            if (existedToken) {
+              await fcmTokenRepo.delete({ token });
+            }
+          }
+        });
+    });
+    return successfulMessages;
   };
 
   /* --------------------------- FCM Token --------------------------- */
