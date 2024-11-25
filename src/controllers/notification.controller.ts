@@ -44,13 +44,12 @@ class NotificationController {
     },
   );
 
+  //For testing
   sendNotification = catchAsync(async (req: Request, res: Response) => {
     const content = {
       message: "Testing",
     };
-    const tokens = [
-      "fz5QkGVcJKK_mKOt44CVpX:APA91bGNodiHLN9HJc7aT19nq59EvAVTV_jCsrj5MbmaDAll9-r8dK6Rt00QzOKLnGaY5IiTPe0zhqELhJMBYKbeVufbtNzUc7jtI6I_jTFKxQv2hk3l1PE",
-    ];
+    const tokens = ["Testing token here"];
     const result = await Promise.allSettled(
       notificationService.sendNotification(content, tokens),
     );
