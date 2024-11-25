@@ -40,17 +40,12 @@ class NotificationService {
 
   /* --------------------------- Send Notification --------------------------- */
 
-  sendNotification = async (
-    content: { [key: string]: string },
-    tokens: string[],
-  ) => {
-    const successfulMessages: Array<string> = [];
+  sendNotification = (content: { [key: string]: string }, tokens: string[]) => {
+    const successfulMessages: Promise<string>[] = [];
     tokens.forEach(async (token) => {
-      sendToOneToken(content, token)
-        .then((messageId) => {
-          successfulMessages.push(messageId);
-        })
-        .catch(async (err: FirebaseError) => {
+      successfulMessages.push(
+        sendToOneToken(content, token).catch(async (err: FirebaseError) => {
+          console.log(err);
           if (
             err.code == "messaging/invalid-registration-token" ||
             err.code == "messaging/registration-token-not-registered"
@@ -60,31 +55,47 @@ class NotificationService {
               await fcmTokenRepo.delete({ token });
             }
           }
-        });
+          return err.message;
+        }),
+      );
     });
     return successfulMessages;
   };
 
   /* --------------------------- FCM Token --------------------------- */
   storeToken = async (data: CreateFCMTokenProps) => {
-    const { token } = data;
+    const { token, userId } = data;
     const existedToken = await fcmTokenRepo.getOne({ token: token });
     if (existedToken) {
       return await fcmTokenRepo.update(
         { token: token },
-        { lastActiveAt: new Date() },
+        {
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
+          lastActiveAt: new Date(),
+        },
       );
     } else {
       return await fcmTokenRepo.create(data);
     }
   };
 
-  deleteToken = async (filter: DeleteFCMTokenProps) => {
+  deleteToken = async (filter: DeleteFCMTokenProps, userId: string) => {
     const existedToken = await fcmTokenRepo.getOne(filter);
     if (!existedToken) {
       throw new CustomError(
         "No token found",
         StatusCodes.NOT_FOUND,
+        this.section,
+      );
+    }
+    if (userId != existedToken.userId) {
+      throw new CustomError(
+        "Token not belong to this user",
+        StatusCodes.BAD_REQUEST,
         this.section,
       );
     }

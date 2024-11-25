@@ -6,7 +6,6 @@ const serviceAccount: ServiceAccount = {
   privateKey: envConfig.FIREBASE_PRIVATE_KEY,
   clientEmail: envConfig.FIREBASE_CLIENT_EMAIL,
 };
-console.log(serviceAccount);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
