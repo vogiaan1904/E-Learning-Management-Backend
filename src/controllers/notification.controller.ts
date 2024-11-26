@@ -76,7 +76,7 @@ class NotificationController {
     };
     const tokens = ["Testing token here"];
     const result = await Promise.allSettled(
-      notificationService.sendNotification(content, tokens),
+      await notificationService.sendNotification(content, tokens),
     );
     res.status(StatusCodes.OK).json(result);
   });
