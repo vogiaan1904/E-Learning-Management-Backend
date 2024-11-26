@@ -6,7 +6,7 @@ import { CreateFCMTokenProps, DeleteFCMTokenProps } from "@/types/fcmToken";
 import { CreateNotificationProps } from "@/types/notification";
 import { sendToOneToken } from "@/utils/notification";
 import { Prisma } from "@prisma/client";
-import { FirebaseError } from "firebase-admin";
+import { FirebaseError } from "firebase-admin/lib/utils/error";
 import { StatusCodes } from "http-status-codes";
 
 class NotificationService {
@@ -40,25 +40,30 @@ class NotificationService {
 
   /* --------------------------- Send Notification --------------------------- */
 
-  sendNotification = (content: { [key: string]: string }, tokens: string[]) => {
-    const successfulMessages: Promise<string>[] = [];
-    tokens.forEach(async (token) => {
-      successfulMessages.push(
-        sendToOneToken(content, token).catch(async (err: FirebaseError) => {
-          console.log(err);
+  sendNotification = async (
+    content: { [key: string]: string },
+    tokens: string[],
+  ) => {
+    const successfulMessages: string[] = [];
+    for (const token of tokens) {
+      try {
+        const messageId = await sendToOneToken(content, token);
+        successfulMessages.push(messageId);
+      } catch (err) {
+        console.log(err);
+        if (err instanceof FirebaseError) {
           if (
-            err.code == "messaging/invalid-registration-token" ||
-            err.code == "messaging/registration-token-not-registered"
+            err.code === "messaging/invalid-registration-token" ||
+            err.code === "messaging/registration-token-not-registered"
           ) {
             const existedToken = await fcmTokenRepo.getOne({ token });
             if (existedToken) {
               await fcmTokenRepo.delete({ token });
             }
           }
-          return err.message;
-        }),
-      );
-    });
+        }
+      }
+    }
     return successfulMessages;
   };
 
