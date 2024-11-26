@@ -6,7 +6,7 @@ import { CreateFCMTokenProps, DeleteFCMTokenProps } from "@/types/fcmToken";
 import { CreateNotificationProps } from "@/types/notification";
 import { sendToOneToken } from "@/utils/notification";
 import { Prisma } from "@prisma/client";
-import { FirebaseError } from "firebase-admin/lib/utils/error";
+import { FirebaseError } from "@firebase/util";
 import { StatusCodes } from "http-status-codes";
 
 class NotificationService {
