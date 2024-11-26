@@ -22,15 +22,18 @@ class ModuleController {
 
   getModuleById = catchAsync(async (req: Request, res: Response) => {
     const moduleId = req.params.id;
-    const { module, lessonIds, quizzIds } = await moduleService.getModule({
-      id: moduleId,
-    });
+
+    const { module, lessonsIdAndName, quizzesIdAndName } =
+      await moduleService.getModule({
+        id: moduleId,
+      });
+
     return res.status(StatusCodes.OK).json({
       message: "Get module successfully",
       status: "success",
       module: module,
-      lessonIds: lessonIds,
-      quizzIds: quizzIds,
+      lessons: lessonsIdAndName,
+      quizzes: quizzesIdAndName,
     });
   });
 

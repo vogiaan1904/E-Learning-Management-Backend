@@ -1,6 +1,5 @@
 import { routesConfig } from "@/configs";
 import notificationController from "@/controllers/notification.controller";
-import { accessTokenMiddleware } from "@/middlewares";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
 
@@ -13,8 +12,6 @@ router.get(notificationRoute.status, (req: Request, res: Response) => {
     status: "success",
   });
 });
-
-router.use(accessTokenMiddleware);
 
 router.post(
   notificationRoute.sendNotification,

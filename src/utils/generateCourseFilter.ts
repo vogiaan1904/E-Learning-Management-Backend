@@ -46,3 +46,13 @@ export const generateCourseFilter = (query: GetCoursesProps) => {
 
   return { filter, options };
 };
+
+export const generateCourseIdentifierFilter = (courseIdentifier: string) => {
+  const isUuid =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      courseIdentifier,
+    );
+
+  const filter = isUuid ? { id: courseIdentifier } : { slug: courseIdentifier };
+  return filter;
+};
