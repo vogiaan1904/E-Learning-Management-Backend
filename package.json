@@ -48,6 +48,7 @@
     "express-handlebars": "^8.0.1",
     "express-rate-limit": "^7.4.1",
     "express-session": "^1.18.0",
+    "firebase-admin": "^13.0.1",
     "global": "^4.4.0",
     "hbs": "^4.2.0",
     "helmet": "^7.1.0",

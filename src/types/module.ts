@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { Module } from "@prisma/client";
 import { OmitAndPartial } from "./object";
 

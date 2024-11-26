@@ -62,6 +62,11 @@ export const envConfig = {
   IMGUR_CLIENT_ID: process.env.IMGUR_CLIENT_ID || "imgur-client-id",
   IMGUR_CLIENT_SECRET: process.env.IMGUR_CLIENT_SECRET || "imgur-client-secret",
 
+  //FIREBASE ADMIN
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID!,
+  FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+  FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL!,
+
   // Google OAuth 2.0
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "google-client-id",
   GOOGLE_CLIENT_SECRET:

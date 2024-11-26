@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { User, UserProfifle, UserVerification } from "@prisma/client";
 
 export interface PreSigninProps extends Pick<User, "password"> {

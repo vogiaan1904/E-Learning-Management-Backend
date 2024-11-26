@@ -13,6 +13,7 @@ import { quizzApis } from "./quizz.route";
 import { questionApis } from "./question.route";
 import { searchApis } from "./search.route";
 import { uploadImageApis } from "./uploadImage.route";
+import { notificationApis } from "./notification.route";
 
 interface ConfigsProps {
   index: string;
@@ -75,6 +76,11 @@ const apiConfigs: ConfigsProps[] = [
   {
     index: routesConfig.uploadImageRoute.index,
     api: uploadImageApis,
+  },
+
+  {
+    index: routesConfig.notificationRoute.index,
+    api: notificationApis,
   },
 ];
 
