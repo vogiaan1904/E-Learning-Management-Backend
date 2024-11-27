@@ -11,12 +11,33 @@ import RedisStore from "connect-redis";
 import { redis } from "@/database/redis.db";
 export const enableServerMiddleware = (server: Express) => {
   // Middlewares
-  server.use(
-    cors({
-      origin: ["http://localhost:5173"],
-      credentials: true,
-    }),
-  );
+  const isDevelopment = envConfig.NODE_ENV === "development";
+  const allowedOrigins = [
+    `http://localhost:${envConfig.PORT}`,
+    "https://example.com",
+    "http://localhost:5173",
+  ];
+
+  const corsOptions: cors.CorsOptions = {
+    origin: (origin, callback) => {
+      if (isDevelopment) {
+        // Development: Allow all origins
+        if (!origin) return callback(null, true);
+        return callback(null, origin);
+      } else {
+        // Production: Allow only specific origins
+        if (!origin || allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        } else {
+          const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+          return callback(new Error(msg), false);
+        }
+      }
+    },
+    credentials: true,
+  };
+  server.use(cors(corsOptions));
+  server.options("*", cors(corsOptions));
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
   server.use(cookieParser());

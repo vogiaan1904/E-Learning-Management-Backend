@@ -336,7 +336,7 @@ components:
       properties:
         id: 
           type: string
-        email:
+        userId:
           type: string
     ReqAuthVerifyCode:
       type: object

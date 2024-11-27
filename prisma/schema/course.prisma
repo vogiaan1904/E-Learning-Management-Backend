@@ -55,7 +55,7 @@ model CategoriesOnCourses {
 model Module {
     id          String   @id @default(uuid())
     courseId    String
-    slug        String   @unique
+    slug        String
     position    Int
     name        String
     description String
@@ -72,7 +72,7 @@ model Module {
 model Lesson {
     id          String @id @default(uuid())
     moduleId    String
-    slug        String @unique
+    slug        String
     position    Int
     name        String
     description String
@@ -113,106 +113,3 @@ model Question {
     @@unique([position, quizzId])
     @@map("Questions")
 }
-
-// model QuestionAnswer {
-//     id                String             @id @default(uuid())
-//     quizzId           String
-//     questionId        String
-//     quizz             Quizz              @relation(fields: [quizzId], references: [id])
-//     question          Question           @relation(fields: [questionId], references: [id])
-//     isCorrect         Boolean            @default(false)
-//     content           String?
-//     submissionAnswers SubmissionAnswer[]
-//     createdAt         DateTime           @default(now())
-//     updatedAt         DateTime           @default(now())
-
-//     @@map("QuestionAnswers")
-// }
-
-// /* -------------------------------- FrontEnd -------------------------------- */
-// <form id="questionForm">
-//   <label for="content">Question Content:</label>
-//   <input type="text" id="content" name="content" required><br>
-
-//   <label for="correctOption">Correct Option:</label>
-//   <input type="text" id="correctOption" name="correctOption" required><br>
-
-//   <label for="wrongOptions">Wrong Options:</label>
-//   <input type="text" name="wrongOption" required placeholder="Wrong Option 1"><br>
-//   <input type="text" name="wrongOption" required placeholder="Wrong Option 2"><br>
-//   <input type="text" name="wrongOption" required placeholder="Wrong Option 3"><br>
-
-//   <input type="submit" value="Submit">
-// </form>
-
-// document.getElementById('questionForm').addEventListener('submit', function (event) {
-//   event.preventDefault();
-
-//   // Get the question content
-//   const content = document.getElementById('content').value;
-
-//   // Get the correct option
-//   const correctOption = document.getElementById('correctOption').value;
-
-//   // Get the wrong options from the form inputs
-//   const wrongOptions = Array.from(document.getElementsByName('wrongOption')).map(input => input.value);
-
-//   // Structure the options array
-//   const options = [
-//     { option: correctOption, isCorrect: true },  // Correct option
-//     ...wrongOptions.map(wrong => ({ option: wrong, isCorrect: false }))  // Wrong options
-//   ];
-
-//   // Construct the question data
-//   const questionData = {
-//     content: content,
-//     options: options,  // Array of options (1 correct, 3 wrong)
-//   };
-
-//   console.log(questionData);
-
-//   // Send the data to the server (API request)
-//   // fetch('/api/question', { method: 'POST', body: JSON.stringify(questionData), headers: { 'Content-Type': 'application/json' } })
-// });
-
-// /* --------------------------------- Backend -------------------------------- */
-
-// app.post('/api/question', (req, res) => {
-//   const { content, options } = req.body;
-
-//   const correctOption = options.find(option => option.isCorrect);
-//   const wrongOptions = options.filter(option => !option.isCorrect);
-
-//   const questionData = {
-//     content,
-//     correctOption: correctOption ? JSON.stringify(correctOption) : null,
-//     wrongOptions: JSON.stringify(wrongOptions),
-//     quizzId: "some_quiz_id"
-//   };
-
-//   // Save the question in the database
-//   // prisma.question.create({ data: questionData }).then(result => res.json(result));
-// });
-
-// /* --------------------------------- Example -------------------------------- */
-// {
-//   "content": "What is the capital of France?",
-//   "options": [
-//     {
-//       "option": "Paris",
-//       "isCorrect": true
-//     },
-//     {
-//       "option": "London",
-//       "isCorrect": false
-//     },
-//     {
-//       "option": "Berlin",
-//       "isCorrect": false
-//     },
-//     {
-//       "option": "Madrid",
-//       "isCorrect": false
-//     }
-//   ]
-// }

@@ -64,9 +64,11 @@ class CourseService {
       { courseId: course.id },
       { orderBy: { position: "asc" } },
     );
-    const moduleIds = modules.map((module) => module.id);
+    const modulesIdAndName = modules.map((module) => {
+      return { id: module.id, name: module.name };
+    });
 
-    return { course, moduleIds };
+    return { course, modulesIdAndName };
   };
 
   getCourses = async (query: GetCoursesProps) => {

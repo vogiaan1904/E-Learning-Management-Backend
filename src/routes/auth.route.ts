@@ -8,7 +8,6 @@ import {
 import { forgotPasswordLimiter } from "@/middlewares/rateLimiter";
 import { isServerRequest } from "@/middlewares/server.middleware";
 import {
-  RefreshTokenSchema,
   SendCodeSchema,
   SignInSchema,
   SignUpSchema,
@@ -74,7 +73,6 @@ router.post(
 router.post(
   authRoute.refreshToken,
   refreshTokenMiddleware,
-  dataValidation(RefreshTokenSchema),
   authController.refreshToken,
 );
 

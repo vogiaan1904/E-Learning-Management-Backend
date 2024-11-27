@@ -9,6 +9,7 @@ import imgurService from "@/services/imgur.service";
 import { CustomError } from "@/configs";
 import reviewService from "@/services/review.service";
 import { CreateReviewProps } from "@/types/review";
+import { generateCourseIdentifierFilter } from "@/utils/generateCourseFilter";
 class CourseController {
   createCourse = catchAsync(
     async (req: CustomRequest<CreateCourseProps>, res: Response) => {
@@ -23,21 +24,15 @@ class CourseController {
 
   getCourseById = catchAsync(async (req: Request, res: Response) => {
     const courseIdentifier = req.params.id;
-    const isUuid =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        courseIdentifier,
-      );
 
-    const filter = isUuid
-      ? { id: courseIdentifier }
-      : { slug: courseIdentifier };
-    const { course, moduleIds } = await courseService.getCourse(filter);
+    const filter = generateCourseIdentifierFilter(courseIdentifier);
+    const { course, modulesIdAndName } = await courseService.getCourse(filter);
 
     return res.status(StatusCodes.OK).json({
       message: "Get course successfully",
       status: "success",
       course: course,
-      moduleIds: moduleIds,
+      modules: modulesIdAndName,
     });
   });
 

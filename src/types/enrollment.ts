@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { Course, Enrollment, EnrollmentStatus, Student } from "@prisma/client";
 import { OmitAndPartial } from "./object";
 /* ------------------------------- Enrollment ------------------------------- */
