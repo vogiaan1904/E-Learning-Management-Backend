@@ -13,14 +13,32 @@ class SearcheService {
     const skip = (searchQuery.skip || 0) * 1;
     const results = await prisma.course.findMany({
       where: {
-        OR: ["name", "description"].map((field) => {
-          return {
-            [field]: {
+        OR: [
+          {
+            name: {
               contains: searchQuery.query,
               mode: "insensitive",
             },
-          };
-        }),
+          },
+          {
+            description: {
+              contains: searchQuery.query,
+              mode: "insensitive",
+            },
+          },
+          {
+            categories: {
+              some: {
+                category: {
+                  name: {
+                    contains: searchQuery.query,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            },
+          },
+        ],
       },
       orderBy: {
         numEnrollments: "desc",
