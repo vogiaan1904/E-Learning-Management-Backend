@@ -3,7 +3,7 @@ import { CreateFCMTokenProps, DeleteFCMTokenProps } from "@/types/fcmToken";
 import { CustomRequest } from "@/types/request";
 import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
 class NotificationController {
@@ -44,6 +44,31 @@ class NotificationController {
     },
   );
 
+  getNotifications = catchAsync(async (req: Request, res: Response) => {
+    const user = req.user as UserPayload;
+    const userId = user.id;
+    const notifications = await notificationService.getNotifications({
+      userId,
+    });
+    res.status(StatusCodes.OK).json({
+      message: "Get notifications successfully",
+      status: "success",
+      notifications: notifications,
+    });
+  });
+
+  getNotification = catchAsync(async (req: Request, res: Response) => {
+    const notificationId = req.params.id;
+    const notification = await notificationService.getNotification({
+      id: notificationId,
+    });
+    res.status(StatusCodes.OK).json({
+      message: "Get notification successfully",
+      status: "success",
+      notification: notification,
+    });
+  });
+
   //For testing
   sendNotification = catchAsync(async (req: Request, res: Response) => {
     const content = {
@@ -51,7 +76,7 @@ class NotificationController {
     };
     const tokens = ["Testing token here"];
     const result = await Promise.allSettled(
-      notificationService.sendNotification(content, tokens),
+      await notificationService.sendNotification(content, tokens),
     );
     res.status(StatusCodes.OK).json(result);
   });
