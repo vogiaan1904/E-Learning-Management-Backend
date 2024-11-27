@@ -12,6 +12,7 @@ export const CreateCourseSchema = Joi.object<CreateCourseProps>().keys({
   teacherId: Joi.string().uuid().required(),
   categories: Joi.array().items(Joi.string()).optional(),
   level: Joi.string().valid("BEGINNER", "INTERMEDIATE", "ADVANCED").required(),
+  thumbnailUrl: Joi.string().optional(),
 });
 export const CourseQuerySchema = Joi.object<GetCoursesProps>().keys({
   teacherId: Joi.string().uuid().optional(),

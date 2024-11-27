@@ -12,8 +12,6 @@ import { CreateReviewProps } from "@/types/review";
 class CourseController {
   createCourse = catchAsync(
     async (req: CustomRequest<CreateCourseProps>, res: Response) => {
-      // const teacher = req.user as UserPayload;
-      // const teacherId = teacher.id;
       const course = await courseService.createCourse(req.body);
       res.status(StatusCodes.CREATED).json({
         message: "Course created successfully",
