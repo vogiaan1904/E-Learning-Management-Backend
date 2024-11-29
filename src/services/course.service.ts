@@ -1,4 +1,5 @@
 import { CustomError } from "@/configs";
+import { prisma } from "@/database/connect.db";
 import courseRepo from "@/repositories/course.repo";
 import moduleRepo from "@/repositories/module.repo";
 import {
@@ -78,7 +79,23 @@ class CourseService {
         },
       },
     );
-    return { course, modules };
+    const categoriesObj = await prisma.categoriesOnCourses.findMany({
+      where: {
+        course: {
+          id: course.id,
+        },
+      },
+      select: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+    const categories = categoriesObj.map((category) => category.category.name);
+
+    return { course, modules, categories };
   };
 
   getCourses = async (query: GetCoursesProps) => {

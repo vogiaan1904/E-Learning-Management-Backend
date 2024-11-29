@@ -3,7 +3,7 @@ import path from "path";
 const envFile = (() => {
   switch (process.env.NODE_ENV) {
     case "development":
-      return ".env";
+      return ".env.development";
     case "production":
       return ".env";
     case "test":

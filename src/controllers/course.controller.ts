@@ -26,13 +26,15 @@ class CourseController {
     const courseIdentifier = req.params.id;
 
     const filter = generateCourseIdentifierFilter(courseIdentifier);
-    const { course, modules } = await courseService.getCourse(filter);
+    const { course, modules, categories } =
+      await courseService.getCourse(filter);
 
     return res.status(StatusCodes.OK).json({
       message: "Get course successfully",
       status: "success",
       course: course,
       modules: modules,
+      categories: categories,
     });
   });
 
