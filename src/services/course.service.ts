@@ -62,13 +62,23 @@ class CourseService {
     }
     const modules = await moduleRepo.getMany(
       { courseId: course.id },
-      { orderBy: { position: "asc" } },
+      {
+        orderBy: { position: "asc" },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          position: true,
+          lessons: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
     );
-    const modulesIdAndName = modules.map((module) => {
-      return { id: module.id, name: module.name };
-    });
-
-    return { course, modulesIdAndName };
+    return { course, modules };
   };
 
   getCourses = async (query: GetCoursesProps) => {

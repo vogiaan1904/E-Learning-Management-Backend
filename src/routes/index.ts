@@ -13,7 +13,7 @@ import { quizzApis } from "./quizz.route";
 import { questionApis } from "./question.route";
 import { searchApis } from "./search.route";
 import { uploadImageApis } from "./uploadImage.route";
-import { notificationApis } from "./notification.route";
+// import { notificationApis } from "./notification.route";
 
 interface ConfigsProps {
   index: string;
@@ -78,10 +78,10 @@ const apiConfigs: ConfigsProps[] = [
     api: uploadImageApis,
   },
 
-  {
-    index: routesConfig.notificationRoute.index,
-    api: notificationApis,
-  },
+  // {
+  //   index: routesConfig.notificationRoute.index,
+  //   api: notificationApis,
+  // },
 ];
 
 apiConfigs.forEach((c) => router.use(c.index, c.api));
