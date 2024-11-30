@@ -32,7 +32,12 @@ class EnrollmentService {
         this.section,
       );
     }
-    return await enrollmentRepo.create(data);
+    const enrollment = await enrollmentRepo.create(data);
+    await courseRepo.update(
+      { id: courseId },
+      { numEnrollments: { increment: 1 } },
+    );
+    return enrollment;
   };
 
   getEnrollment = async (filter: Prisma.EnrollmentWhereInput) => {
@@ -205,7 +210,13 @@ class EnrollmentService {
         this.section,
       );
     }
-    return await enrollmentRepo.delete(filter);
+    const deletedEnrollment = await enrollmentRepo.delete(filter);
+
+    await courseRepo.update(
+      { id: enrollment.courseId },
+      { numEnrollments: { decrement: 1 } },
+    );
+    return deletedEnrollment;
   };
 }
 

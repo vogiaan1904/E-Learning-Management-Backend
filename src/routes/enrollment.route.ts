@@ -58,7 +58,7 @@ router.patch(
 
 router.delete(
   enrollmentRoute.deleteEnrollment,
-  userRoleMiddleware(Role.user),
+  userRoleMiddleware(Role.admin),
   enrollmentController.deleteEnrollment,
 );
 
