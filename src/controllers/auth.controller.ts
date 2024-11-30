@@ -4,6 +4,8 @@ import authService from "@/services/auth.service";
 import userService from "@/services/user.service";
 import {
   FacebookProfileProps,
+  ForgotPasswordProps,
+  ResetPasswordProps,
   SendCodeProps,
   SignInProps,
   SignUpProps,
@@ -119,6 +121,9 @@ class AuthController {
           tokens: {
             ...removeFieldsFromObject(result.tokens, ["tokenId"]),
           },
+          user: {
+            ...removeFieldsFromObject(result.user, ["password"]),
+          },
           message: "Verify success",
           status: "success",
         });
@@ -135,6 +140,22 @@ class AuthController {
         message: "Refresh token success",
         status: "success",
       });
+    },
+  );
+
+  forgotPassword = catchAsync(
+    async (req: CustomRequest<ForgotPasswordProps>, res: Response) => {
+      const { email } = req.body;
+      const result = await authService.forgotPassword(email);
+      return res.status(StatusCodes.OK).json(result);
+    },
+  );
+
+  resetPassword = catchAsync(
+    async (req: CustomRequest<ResetPasswordProps>, res: Response) => {
+      const { newPassword } = req.body;
+      const result = await authService.resetPassword(req.query, newPassword);
+      return res.status(StatusCodes.OK).json(result);
     },
   );
 }

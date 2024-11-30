@@ -1,6 +1,6 @@
 import { CustomError } from "@/configs";
+import { prisma } from "@/database/connect.db";
 import courseRepo from "@/repositories/course.repo";
-import enrollmentRepo from "@/repositories/enrollment.repo";
 import moduleRepo from "@/repositories/module.repo";
 import {
   CreateCourseProps,
@@ -10,7 +10,9 @@ import {
 import { generateCourseFilter } from "@/utils/generateCourseFilter";
 import { Course, Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
-
+interface CourseOptions {
+  includeTeacher?: boolean;
+}
 class CourseService {
   private section = CourseService.name;
 
@@ -31,10 +33,10 @@ class CourseService {
 
   getCourse = async (
     filter: Prisma.CourseWhereInput,
-    userId: string,
-    options?: object,
+    options?: CourseOptions,
   ) => {
-    const { name, id, slug } = filter;
+    const { id, slug } = filter;
+    const { includeTeacher } = options || {};
     const course = await courseRepo.getOne(
       {
         OR: [
@@ -42,14 +44,15 @@ class CourseService {
             id,
           },
           {
-            name,
-          },
-          {
             slug,
           },
         ],
       },
-      options,
+      {
+        include: {
+          teacher: includeTeacher,
+        },
+      },
     );
     if (!course) {
       throw new CustomError(
@@ -60,15 +63,39 @@ class CourseService {
     }
     const modules = await moduleRepo.getMany(
       { courseId: course.id },
-      { orderBy: { position: "asc" } },
+      {
+        orderBy: { position: "asc" },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          position: true,
+          lessons: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
     );
-    const enrollment = await enrollmentRepo.getOne({
-      studentId: userId,
-      courseId: course.id,
+    const categoriesObj = await prisma.categoriesOnCourses.findMany({
+      where: {
+        course: {
+          id: course.id,
+        },
+      },
+      select: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
-    const moduleIds = modules.map((module) => module.id);
+    const categories = categoriesObj.map((category) => category.category.name);
 
-    return { course, moduleIds, enrollment };
+    return { course, modules, categories };
   };
 
   getCourses = async (query: GetCoursesProps) => {

@@ -9,7 +9,6 @@ export const UpdateEnrollmentSchema = Joi.object<UpdateEnrollmentProps>().keys({
   status: Joi.string()
     .valid("IN_PROGRESS", "COMPLETED", "CANCELLED")
     .optional(),
-  feedback: Joi.string().min(10).optional(),
 });
 
 export const UpdateLessonProgressSchema =

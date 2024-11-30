@@ -6,7 +6,6 @@ import lessonRepo from "@/repositories/lesson.repo";
 import moduleRepo from "@/repositories/module.repo";
 import {
   CreateEnrollmentProps,
-  FeedBackCourseProps,
   UpdateEnrollmentProps,
 } from "@/types/enrollment";
 import { Enrollment, EnrollmentStatus, Prisma } from "@prisma/client";
@@ -33,7 +32,12 @@ class EnrollmentService {
         this.section,
       );
     }
-    return await enrollmentRepo.create(data);
+    const enrollment = await enrollmentRepo.create(data);
+    await courseRepo.update(
+      { id: courseId },
+      { numEnrollments: { increment: 1 } },
+    );
+    return enrollment;
   };
 
   getEnrollment = async (filter: Prisma.EnrollmentWhereInput) => {
@@ -197,21 +201,6 @@ class EnrollmentService {
     return updatedEnrollment;
   };
 
-  feedBack = async (
-    filter: Pick<Enrollment, "id">,
-    feedback: FeedBackCourseProps,
-  ) => {
-    const enrollment = await enrollmentRepo.getOne(filter);
-    if (!enrollment) {
-      throw new CustomError(
-        "Enrollment not found.",
-        StatusCodes.NOT_FOUND,
-        this.section,
-      );
-    }
-    return await enrollmentRepo.update(filter, feedback);
-  };
-
   deleteEnrollment = async (filter: Pick<Enrollment, "id">) => {
     const enrollment = await enrollmentRepo.getOne(filter);
     if (!enrollment) {
@@ -221,7 +210,13 @@ class EnrollmentService {
         this.section,
       );
     }
-    return await enrollmentRepo.delete(filter);
+    const deletedEnrollment = await enrollmentRepo.delete(filter);
+
+    await courseRepo.update(
+      { id: enrollment.courseId },
+      { numEnrollments: { decrement: 1 } },
+    );
+    return deletedEnrollment;
   };
 }
 

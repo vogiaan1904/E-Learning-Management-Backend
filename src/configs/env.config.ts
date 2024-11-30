@@ -20,10 +20,16 @@ export const envConfig = {
   ACCESS_TOKEN_SECRET:
     process.env.ACCESS_TOKEN_SECRET || "express-typescript-template-backend-at",
   ACCESS_TOKEN_EXPIRED: process.env.ACCESS_TOKEN_EXPIRED || "30m", // 30 mins
+
   REFRESH_TOKEN_SECRET:
     process.env.REFRESH_TOKEN_SECRET ||
     "express-typescript-template-backend-rt",
   REFRESH_TOKEN_EXPIRED: process.env.REFRESH_TOKEN_EXPIRED || "1d", // 1 day
+
+  RESET_PASSWORD_TOKEN_SECRET:
+    process.env.RESET_PASSWORD_SECRET ||
+    "express-typescript-template-backend-rp",
+  RESET_PASSWORD_TOKEN_EXPIRED: process.env.RESET_PASSWORD_EXPIRED || "15m", // 15 mins
 
   // Models
   PERMISSION_USER_NAME: "user",
@@ -52,6 +58,15 @@ export const envConfig = {
     process.env.NODEMAILER_USER || "acusvncodingprojects@gmail.com",
   NODEMAILER_DEFAULT_RECEIVER: "acuscodinghcm@gmail.com",
 
+  // Imgur Service
+  IMGUR_CLIENT_ID: process.env.IMGUR_CLIENT_ID || "imgur-client-id",
+  IMGUR_CLIENT_SECRET: process.env.IMGUR_CLIENT_SECRET || "imgur-client-secret",
+
+  // Firebase admin
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID!,
+  FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+  FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL!,
+
   // Google OAuth 2.0
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "google-client-id",
   GOOGLE_CLIENT_SECRET:
@@ -63,4 +78,6 @@ export const envConfig = {
   FACEBOOK_CLIENT_SECRET:
     process.env.FACEBOOK_CLIENT_SECRET || "facebook-client-secret",
   FACEBOOK_DIRECT_URL: process.env.FACEBOOK_DIRECT_URL || "facebook-direct-url",
+
+  FRONT_END_URL: process.env.FRONT_END_URL || "http://localhost:3000",
 };

@@ -11,18 +11,16 @@ const router = Router({ mergeParams: true });
 const { lessonRoute } = routesConfig;
 
 router.get(lessonRoute.status, (req: Request, res: Response) => {
-  console.log(req.params);
   res.status(StatusCodes.OK).json({
     message: "Lesson APIs",
     status: "success",
   });
 });
 
-router.use(accessTokenMiddleware);
-
 router.post(
   lessonRoute.createLesson,
-  userRoleMiddleware(Role.teacher),
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.teacher, Role.admin),
   lessonController.createLesson,
 );
 
@@ -36,13 +34,15 @@ router.get(lessonRoute.getLesson, lessonController.getLesson);
 
 router.patch(
   lessonRoute.updateLesson,
-  userRoleMiddleware(Role.teacher),
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.teacher, Role.admin),
   lessonController.updateLesson,
 );
 
 router.delete(
   lessonRoute.deleteLesson,
-  userRoleMiddleware(Role.teacher),
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.teacher, Role.admin),
   lessonController.deleteLesson,
 );
 

@@ -5,7 +5,6 @@ export const generateEnrollmentFilter = (query: GetEnrollmentsProps) => {
   const { skip, limit, studentId, myLearningTab } = query;
   const filter: Prisma.EnrollmentWhereInput = {};
   const options: { skip?: number; take?: number } = {};
-  console.log(query);
   filter.studentId = studentId;
   if (skip) {
     options.skip = parseInt(skip, 10);

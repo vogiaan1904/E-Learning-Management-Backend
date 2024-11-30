@@ -8,6 +8,7 @@ import {
   BaseUpdateQuestionProps,
   GetQuestionsProp,
 } from "@/types/question";
+import { UserPayload } from "@/types/user";
 import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 
@@ -41,34 +42,36 @@ class QuestionService {
     }
     return course;
   };
-  createQuestion = async (data: BaseCreateQuestionProps, teacherId: string) => {
+  createQuestion = async (data: BaseCreateQuestionProps, user: UserPayload) => {
     const { quizzId, options } = data;
 
     const parsedOptions = options as Array<{
-      option: string;
+      content: string;
       isCorrect: boolean;
     }>;
     const correctOptionsCount = parsedOptions.filter(
       (option) => option.isCorrect,
     ).length;
 
-    if (correctOptionsCount !== 1) {
+    if (correctOptionsCount === 0) {
       throw new CustomError(
-        "There must be exactly one correct option",
+        "There must be at least one correct option",
         StatusCodes.BAD_REQUEST,
         this.section,
       );
     }
 
     const course = await this.getCourseByQuizzId(quizzId);
-
-    if (teacherId !== course.teacherId) {
-      throw new CustomError(
-        "Course not belong to teacher",
-        StatusCodes.BAD_REQUEST,
-        this.section,
-      );
+    if (user.role.toString() !== "admin") {
+      if (user.id !== course.teacherId) {
+        throw new CustomError(
+          "Course not belong to teacher",
+          StatusCodes.BAD_REQUEST,
+          this.section,
+        );
+      }
     }
+
     const questions = await questionRepo.getMany({ quizzId });
     const position = questions.length;
     return await questionRepo.create(data, position);
@@ -93,7 +96,7 @@ class QuestionService {
   updateQuestion = async (
     filter: Prisma.QuestionWhereUniqueInput,
     data: BaseUpdateQuestionProps,
-    teacherId: string,
+    user: UserPayload,
   ) => {
     const question = await questionRepo.getOne(filter);
     if (!question) {
@@ -103,9 +106,20 @@ class QuestionService {
         this.section,
       );
     }
+    const course = await this.getCourseByQuizzId(question.quizzId);
+
+    if (user.role.toString() !== "admin") {
+      if (user.id !== course.teacherId) {
+        throw new CustomError(
+          "Course not belong to teacher",
+          StatusCodes.BAD_REQUEST,
+          this.section,
+        );
+      }
+    }
     const { options } = data;
     const parsedOptions = options as Array<{
-      option: string;
+      content: string;
       isCorrect: boolean;
     }>;
     const correctOptionsCount = parsedOptions.filter(
@@ -120,21 +134,12 @@ class QuestionService {
       );
     }
 
-    const course = await this.getCourseByQuizzId(question.quizzId);
-
-    if (teacherId !== course.teacherId) {
-      throw new CustomError(
-        "Course not belong to teacher",
-        StatusCodes.BAD_REQUEST,
-        this.section,
-      );
-    }
     return await questionRepo.update(filter, data);
   };
 
   deleteQuestion = async (
     filter: Prisma.QuestionWhereUniqueInput,
-    teacherId: string,
+    user: UserPayload,
   ) => {
     const question = await questionRepo.getOne(filter);
     if (!question) {
@@ -144,14 +149,17 @@ class QuestionService {
         this.section,
       );
     }
+
     const course = await this.getCourseByQuizzId(question.quizzId);
 
-    if (teacherId !== course.teacherId) {
-      throw new CustomError(
-        "Course not belong to teacher",
-        StatusCodes.BAD_REQUEST,
-        this.section,
-      );
+    if (user.role.toString() !== "admin") {
+      if (user.id !== course.teacherId) {
+        throw new CustomError(
+          "Course not belong to teacher",
+          StatusCodes.BAD_REQUEST,
+          this.section,
+        );
+      }
     }
     const deletedQuestion = await questionRepo.delete(filter);
     const questionsBehind = await questionRepo.getMany(

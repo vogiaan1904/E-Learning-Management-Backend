@@ -28,6 +28,7 @@ paths:
                   example: "123"
                 content: 
                   type: string
+                  example: "What does HTML stand for?"
                 options:
                   type: array
                   items:
@@ -35,9 +36,10 @@ paths:
                     properties:
                       option:
                         type: string
+                        example: "HyperText Markup Language"
                       isCorrect: 
                         type: boolean
-  
+                        example: true
               required:
                 - quizzId
                 - content

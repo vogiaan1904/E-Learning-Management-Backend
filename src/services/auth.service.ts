@@ -1,12 +1,13 @@
 import { CustomError, envConfig } from "@/configs";
 import userRepo from "@/repositories/user.repo";
 import {
+  ResetPasswordQueryProps,
   SendCodeProps,
   SignInProps,
   SignUpProps,
   VerifyCodeProps,
 } from "@/types/auth";
-import { RefreshTokenProps } from "@/types/token";
+import { RefreshTokenProps, ResetPasswordTokenProps } from "@/types/token";
 import { generateCustomAvatarUrl } from "@/utils/avatar";
 import { compareHashData, hashData } from "@/utils/bcrypt";
 import { convertToSeconds } from "@/utils/date";
@@ -49,7 +50,6 @@ class AuthService {
     });
 
     const user = await userRepo.create({
-      // nested creattion all sub tables, (userProfile, Student or Teacher)
       username: username,
       email: email,
       password: hashData(password),
@@ -84,10 +84,13 @@ class AuthService {
 
   async signIn(userData: SignInProps) {
     const { email, username, password, method } = userData;
-    const user = await userService.getUser({
-      email: method === "email" ? email : "",
-      username: method === "username" ? username : "",
-    });
+    const user = await userService.getUser(
+      {
+        email: method === "email" ? email : "",
+        username: method === "username" ? username : "",
+      },
+      { includeProfile: true },
+    );
     if (!user) {
       throw new CustomError(
         "User not found. Please sign up",
@@ -195,9 +198,12 @@ class AuthService {
 
   async verifyCode(data: VerifyCodeProps) {
     const { id, code, userId } = data;
-    const user = await userService.getUser({
-      id: userId,
-    });
+    const user = await userService.getUser(
+      {
+        id: userId,
+      },
+      { includeProfile: true },
+    );
     if (!user) {
       throw new CustomError(
         "User not found. Please sign up",
@@ -257,11 +263,12 @@ class AuthService {
       tokens.refreshToken,
       convertToSeconds(envConfig.REFRESH_TOKEN_EXPIRED),
     );
-    return { tokens };
+    return { tokens, user };
   }
 
   async refreshToken(data: RefreshTokenProps) {
     const { sub, tokenId, email, role } = data;
+    console.log(sub);
     const foundUser = await userService.getUser({
       id: sub,
     });
@@ -292,6 +299,108 @@ class AuthService {
       "at",
     );
     return { accessToken };
+  }
+
+  async forgotPassword(email: string) {
+    const user = await userService.getUser({ email });
+    if (!user) {
+      return {
+        message:
+          "If a user with that email exists, a password reset link has been sent.",
+        status: "success",
+      };
+    }
+    const tokenId = uuidv4();
+    const token = await tokenService.generateJwtToken(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        tokenId: tokenId,
+      },
+      "rpt",
+      envConfig.RESET_PASSWORD_TOKEN_EXPIRED,
+    );
+
+    const redisKey = tokenService.generateResetPasswordKey(tokenId);
+
+    await redisService.setKey(
+      redisKey,
+      user.id,
+      convertToSeconds(envConfig.RESET_PASSWORD_TOKEN_EXPIRED),
+    );
+
+    const resetURL = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    const mailOptions = generateMailOptions({
+      receiverEmail: user.email,
+      subject: "Reset password",
+      template: "forgot-password",
+      context: {
+        name: user.username,
+        resetURL,
+      },
+    });
+
+    try {
+      await sendMail(mailOptions);
+    } catch (error) {
+      console.log("error:", error);
+      throw new CustomError(
+        "Failed to send reset email.",
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        this.section,
+      );
+    }
+
+    return {
+      message:
+        "If a user with that email exists, a password reset link has been sent.",
+      status: "success",
+    };
+  }
+
+  async resetPassword(query: ResetPasswordQueryProps, password: string) {
+    if (!query.token) {
+      throw new CustomError(
+        "Invalid token",
+        StatusCodes.BAD_REQUEST,
+        this.section,
+      );
+    }
+    const decoded = tokenService.verifyToken<ResetPasswordTokenProps>(
+      query.token,
+      envConfig.RESET_PASSWORD_TOKEN_SECRET,
+    );
+    const { sub: userId, tokenId } = decoded;
+    if (!userId || !tokenId) {
+      throw new CustomError(
+        "Invalid token payload",
+        StatusCodes.BAD_REQUEST,
+        this.section,
+      );
+    }
+
+    const redisKey = tokenService.generateResetPasswordKey(tokenId);
+
+    const foundUserId = await redisService.getKey(redisKey);
+    if (!foundUserId || foundUserId !== userId) {
+      throw new CustomError(
+        "Invalid or expired reset password token",
+        StatusCodes.BAD_REQUEST,
+        this.section,
+      );
+    }
+
+    const hashedPassword = hashData(password);
+    await userService.updateUser({ id: userId }, { password: hashedPassword });
+
+    await redisService.deleteKey(redisKey);
+
+    return {
+      message: "Password has been reset successfully.",
+      status: "success",
+    };
   }
 }
 

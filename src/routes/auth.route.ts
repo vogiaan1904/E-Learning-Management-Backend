@@ -5,12 +5,14 @@ import {
   preSignInMiddleware,
   refreshTokenMiddleware,
 } from "@/middlewares/auth.middleware";
+import { forgotPasswordLimiter } from "@/middlewares/rateLimiter";
 import { isServerRequest } from "@/middlewares/server.middleware";
 import {
-  RefreshTokenSchema,
   SendCodeSchema,
   SignInSchema,
   SignUpSchema,
+  ValidateEmailSchema,
+  ValidatePasswordSchema,
   VerifyCodeSchema,
 } from "@/schemas/auth.schema";
 import { dataValidation } from "@/validations/data.validation";
@@ -41,6 +43,19 @@ router.post(
   authController.signIn,
 );
 
+router.post(
+  authRoute.forgotPassword,
+  forgotPasswordLimiter,
+  dataValidation(ValidateEmailSchema),
+  authController.forgotPassword,
+);
+
+router.post(
+  authRoute.resetPassword,
+  dataValidation(ValidatePasswordSchema),
+  authController.resetPassword,
+);
+
 router.post(authRoute.signOut, authController.signOut);
 
 router.post(
@@ -58,7 +73,6 @@ router.post(
 router.post(
   authRoute.refreshToken,
   refreshTokenMiddleware,
-  dataValidation(RefreshTokenSchema),
   authController.refreshToken,
 );
 

@@ -26,21 +26,15 @@ router.post(
 );
 
 router.get(
-  enrollmentRoute.getEnrollment,
-  userRoleMiddleware(Role.user),
-  enrollmentController.getEnrollment,
-);
-
-router.get(
   enrollmentRoute.getEnrollments,
   userRoleMiddleware(Role.user),
   enrollmentController.getEnrollments,
 );
 
-router.patch(
-  enrollmentRoute.feedBack,
+router.get(
+  enrollmentRoute.getEnrollment,
   userRoleMiddleware(Role.user),
-  enrollmentController.feedBack,
+  enrollmentController.getEnrollment,
 );
 
 router.patch(
@@ -64,7 +58,7 @@ router.patch(
 
 router.delete(
   enrollmentRoute.deleteEnrollment,
-  userRoleMiddleware(Role.user),
+  userRoleMiddleware(Role.admin),
   enrollmentController.deleteEnrollment,
 );
 

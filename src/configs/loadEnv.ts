@@ -13,10 +13,8 @@ const envFile = (() => {
   }
 })();
 
-// Resolve the absolute path to the .env file located at the project root
 const envPath = path.resolve(__dirname, `../../${envFile}`);
 
-// Load environment variables from the resolved .env file
 dotenv.config({
   path: envPath,
 });

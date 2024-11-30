@@ -9,7 +9,7 @@ interface AuthRouteProps extends DefaultRouteProps {
   refreshToken: string;
   signOut: string;
   forgotPassword: string;
-  resetPasssword: string;
+  resetPassword: string;
   googleSignIn: string;
   googleCallbackUrl: string;
   facebookSignIn: string;
@@ -28,7 +28,7 @@ export const authRoute: AuthRouteProps = {
   refreshToken: "/refresh-token",
   signOut: "/signout",
   forgotPassword: "/forgot-password",
-  resetPasssword: "/reset-password",
+  resetPassword: "/reset-password",
   googleSignIn: "/google",
   googleCallbackUrl: "/google/callback",
   facebookSignIn: "/facebook",

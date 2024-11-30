@@ -18,7 +18,6 @@ import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
-import { Server } from "http";
 
 // const a = "teacher";
 // console.log(prisma[a]);
@@ -56,23 +55,18 @@ app.all("*", () => {
 // Error middleware must always be the last middleware
 app.use(errorMiddleware);
 
-let serverInstance: Server;
-
 const startServer = () => {
-  if (!serverInstance) {
-    serverInstance = app.listen(Number(envConfig.PORT), () => {
-      logger.info(`Server is running on ${envConfig.BASE_URL}`);
-      logger.info(`Swagger Docs is available at ${envConfig.BASE_URL}/docs`);
-      startCronJobs();
-    });
-  }
-  return serverInstance;
+  return app.listen(Number(envConfig.PORT), () => {
+    logger.info(`Server is running on ${envConfig.BASE_URL}`);
+    logger.info(`Swagger Docs is available at ${envConfig.BASE_URL}/docs`);
+
+    startCronJobs();
+  });
 };
 
 // Connect to db and start the server
 const main = async () => {
   try {
-    console.log(`NODE_ENV: ${envConfig.NODE_ENV}`);
     const promises = [
       connectMultipleDB(),
       connectToRedis(),
@@ -80,25 +74,15 @@ const main = async () => {
       executePrescriptRedis(),
     ];
     await Promise.all(promises);
-    startServer();
+    const server = startServer();
     // Handle server shutdown
     if (envConfig.NODE_ENV === "production") {
-      process.on(
-        "SIGINT",
-        async () => await handleServerShutDown(serverInstance),
-      );
-      process.on(
-        "SIGTERM",
-        async () => await handleServerShutDown(serverInstance),
-      );
+      process.on("SIGINT", async () => await handleServerShutDown(server));
+      process.on("SIGTERM", async () => await handleServerShutDown(server));
     }
   } catch (error) {
     console.error("Failed to start the server:", error);
     process.exit(1);
   }
 };
-if (process.env.NODE_ENV !== "test") {
-  main();
-}
-
-export { app, startServer };
+main();

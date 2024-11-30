@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { User, UserProfifle, UserVerification } from "@prisma/client";
 
 export interface PreSigninProps extends Pick<User, "password"> {
@@ -20,6 +21,16 @@ export interface SendCodeProps
 
 export interface VerifyCodeProps
   extends Pick<UserVerification, "id" | "code" | "userId"> {}
+
+export interface ForgotPasswordProps extends Pick<User, "email" | "username"> {}
+
+export interface ResetPasswordProps {
+  newPassword: string;
+}
+
+export interface ResetPasswordQueryProps {
+  token?: string;
+}
 
 export interface FacebookProfileProps {
   email: string;

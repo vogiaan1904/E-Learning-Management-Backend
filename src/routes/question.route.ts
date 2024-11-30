@@ -15,7 +15,6 @@ const router = Router({ mergeParams: true });
 const { questionRoute } = routesConfig;
 
 router.get(questionRoute.status, (req: Request, res: Response) => {
-  console.log(req.params);
   res.status(StatusCodes.OK).json({
     message: "Question APIs",
     status: "success",
@@ -26,7 +25,7 @@ router.use(accessTokenMiddleware);
 
 router.post(
   questionRoute.createQuestion,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   dataValidation(CreateQuestionSchema),
   questionController.createQuestion,
 );
@@ -41,14 +40,14 @@ router.get(
 
 router.patch(
   questionRoute.updateQuestion,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   dataValidation(UpdateQuestionSchema),
   questionController.updateQuestion,
 );
 
 router.delete(
   questionRoute.deleteQuestion,
-  userRoleMiddleware(Role.teacher),
+  userRoleMiddleware(Role.teacher, Role.admin),
   questionController.deleteQuestion,
 );
 

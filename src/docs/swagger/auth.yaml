@@ -161,6 +161,89 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResAuthRefreshToken"
+  /auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: Initiate password reset by sending a reset email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+              required:
+                - email
+      responses:
+        '200':
+          description: Password reset email sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResForgotPassword'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResForgotPasswordError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResForgotPasswordError'
+  /auth/reset-password:
+    post:
+      tags:
+        - Auth
+      summary: Reset user password using the reset token
+      parameters:
+        - name: token
+          in: query
+          description: token received in the email
+          required: true
+          schema:
+            type: string
+            example: "1dshfgjsdgfksdhkfjsdncxadigfyiad..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newPassword:
+                  type: string
+                  example: "NewSecurePass123!"
+              required:
+                - token
+                - newPassword
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResResetPassword'
+        '400':
+          description: Invalid or expired token / Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResResetPasswordError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResResetPasswordError'
+  
 components:
   schemas:
     ResAuthStatus:
@@ -253,7 +336,7 @@ components:
       properties:
         id: 
           type: string
-        email:
+        userId:
           type: string
     ReqAuthVerifyCode:
       type: object
@@ -288,8 +371,43 @@ components:
     ResAuthError:
       type: object
       properties:
-        message: 
+        message:
           type: string
+          example: "Not authenticated"
+        status:
+          type: string
+          example: "success"
+    ResForgotPassword:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Password has been reset successfully."
+        status:
+          type: string
+          example: "success"
+    ResForgotPasswordError: 
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error"
+        status:
+          type: string
+          example: "failed" 
+    ResResetPassword:
+      type: object
+      properties:
+        message:
+          type: string
+        success:
+          type: boolean
+    ResResetPasswordError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error"
         status:
           type: string
           example: "failed"

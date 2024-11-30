@@ -51,3 +51,13 @@ export const AccessTokenSchema = Joi.object<AccessTokenProps>().keys({
   iat: Joi.number(),
   exp: Joi.number(),
 });
+
+export const ValidateEmailSchema = Joi.object<{ email: string }>().keys({
+  email: Joi.string().email().required(),
+});
+
+export const ValidatePasswordSchema = Joi.object<{
+  newPassword: string;
+}>().keys({
+  newPassword: Joi.string().regex(passwordRegex).required(),
+});

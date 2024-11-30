@@ -10,6 +10,10 @@ import { studentRoute } from "@/types/routes/student";
 import { teacherRoute } from "@/types/routes/teacher";
 import { userRoute } from "@/types/routes/user";
 import { questionRoute } from "@/types/routes/question";
+import { searchRoute } from "@/types/routes/search";
+import { reviewRoute } from "@/types/routes/review";
+import { uploadImageRoute } from "@/types/routes/uploadImage";
+import { notificationRoutes } from "@/types/routes/notification";
 
 export const routesConfig = {
   default: "/",
@@ -31,4 +35,8 @@ export const routesConfig = {
   lessonRoute: lessonRoute,
   quizzRoute: quizzRoute,
   questionRoute: questionRoute,
+  searchRoute: searchRoute,
+  reviewRoute: reviewRoute,
+  uploadImageRoute: uploadImageRoute,
+  notificationRoute: notificationRoutes,
 } as const;

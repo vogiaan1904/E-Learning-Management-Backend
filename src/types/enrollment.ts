@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { Course, Enrollment, EnrollmentStatus, Student } from "@prisma/client";
 import { OmitAndPartial } from "./object";
 /* ------------------------------- Enrollment ------------------------------- */
@@ -27,5 +28,3 @@ export interface UpdateModuleProgessProp {
 }
 
 export interface EnrollCourseProps extends Pick<Enrollment, "courseId"> {}
-
-export interface FeedBackCourseProps extends Pick<Enrollment, "feedback"> {}

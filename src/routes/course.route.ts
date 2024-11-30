@@ -2,6 +2,7 @@ import { routesConfig } from "@/configs";
 import courseController from "@/controllers/course.controller";
 import { accessTokenMiddleware, userRoleMiddleware } from "@/middlewares";
 import {
+  AddReviewSchema,
   CourseQuerySchema,
   CreateCourseSchema,
   UpdateCourseSchema,
@@ -11,6 +12,7 @@ import { queryValidation } from "@/validations/query.validation";
 import { Role } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
+import upload from "@configs/multer.config";
 const router = Router();
 const { courseRoute } = routesConfig;
 
@@ -21,34 +23,51 @@ router.get(courseRoute.status, (req: Request, res: Response) => {
   });
 });
 
-router.get(
-  courseRoute.getCourses,
-  // userRoleMiddleware(Role.teacher),
-  queryValidation(CourseQuerySchema),
-  courseController.getCourses,
-);
-
-router.use(accessTokenMiddleware);
-
 router.post(
   courseRoute.createCourse,
-  userRoleMiddleware(Role.teacher),
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.teacher, Role.admin),
   dataValidation(CreateCourseSchema),
   courseController.createCourse,
 );
 
+router.post(
+  courseRoute.addReview,
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.user, Role.admin),
+  dataValidation(AddReviewSchema),
+  courseController.addReview,
+);
+
+router.get(
+  courseRoute.getCourses,
+  queryValidation(CourseQuerySchema),
+  courseController.getCourses,
+);
+
 router.get(courseRoute.getCourse, courseController.getCourseById);
 
+router.get(courseRoute.getReviews, courseController.getReviews);
+
+router.patch(
+  courseRoute.uploadThumbnail,
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.teacher, Role.admin),
+  upload.single("image"),
+  courseController.uploadThumbnail,
+);
 router.patch(
   courseRoute.updateCourse,
-  userRoleMiddleware(Role.teacher),
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.teacher, Role.admin),
   dataValidation(UpdateCourseSchema),
   courseController.updateCourse,
 );
 
 router.delete(
   courseRoute.deleteCourse,
-  userRoleMiddleware(Role.teacher),
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.teacher, Role.admin),
   courseController.deleteCourse,
 );
 

@@ -29,7 +29,7 @@ jobs:
 
       - name: Zip artifact for deployment
         run: |
-          zip -r release.zip . -x "*.git*" "node_modules/*" "tests/*" ".github/*"
+          zip -r release.zip . -x "*.git*" "tests/*" ".github/*"
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:

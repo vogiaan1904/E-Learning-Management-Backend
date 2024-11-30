@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { Question } from "@prisma/client";
 import { OmitAndPartial } from "./object";
 import { Prisma } from "@prisma/client";
 
+export interface Option {
+  option: string;
+  isCorrect: boolean;
+}
 export interface BaseCreateQuestionProps
   extends Pick<Question, "content" | "quizzId" | "options"> {}
 

@@ -57,6 +57,7 @@ class ModuleService {
         this.section,
       );
     }
+
     const lessons = await lessonRepo.getMany(
       { moduleId: module.id },
       { orderBy: { position: "asc" } },
@@ -65,10 +66,16 @@ class ModuleService {
       { moduleId: module.id },
       { orderBy: { position: "asc" } },
     );
-    const lessonIds = lessons.map((lesson) => lesson.id);
-    const quizzIds = quizzes.map((quizz) => quizz.id);
 
-    return { module, lessonIds, quizzIds };
+    const lessonsIdAndName = lessons.map((lesson) => {
+      return { id: lesson.id, name: lesson.name };
+    });
+
+    const quizzesIdAndName = quizzes.map((quizz) => {
+      return { id: quizz.id, name: quizz.name };
+    });
+
+    return { module, lessonsIdAndName, quizzesIdAndName };
   };
 
   getModules = async (filter: GetModulesProps) => {
