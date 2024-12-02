@@ -16,6 +16,7 @@ export const enableServerMiddleware = (server: Express) => {
     `http://localhost:${envConfig.PORT}`,
     "https://example.com",
     "http://localhost:5173",
+    "https://elearning-hcmiu.azurewebsites.net",
   ];
 
   const corsOptions: cors.CorsOptions = {
