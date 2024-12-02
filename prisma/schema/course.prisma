@@ -15,7 +15,7 @@ model Course {
     name           String
     teacherId      String
     description    String
-    thumbnailUrl   String                @default("https://i.imgur.com/hAV6F86.jpeg")
+    thumbnailUrl   String?
     isDeleted      Boolean               @default(false)
     rating         Float                 @default(0)
     level          CourseLevel           @default(BEGINNER)
