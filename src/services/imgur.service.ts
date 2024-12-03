@@ -6,18 +6,17 @@ const imgurClient = new ImgurClient({ clientId: envConfig.IMGUR_CLIENT_ID });
 class ImgurService {
   private section = ImgurService.name;
   uploadImage = async (imageFile: Express.Multer.File) => {
-    try {
-      const res = await imgurClient.upload({
-        image: imageFile.buffer.toString("base64"),
-      });
-      return res.data.link;
-    } catch (error) {
+    const res = await imgurClient.upload({
+      image: imageFile.buffer.toString("base64"),
+    });
+    if (!res.success) {
       throw new CustomError(
-        `Upload image failed with error: ${error}`,
+        `Upload image failed with error: ${res.data}`,
         StatusCodes.BAD_REQUEST,
         this.section,
       );
     }
+    return res.data.link;
   };
 }
 

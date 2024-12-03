@@ -38,6 +38,9 @@ paths:
                     type: string
                   description: Optional list of categories for the course (e.g., "WebDevelopment", "MachineLearning")
                   example: ["WebDevelopment", "MachineLearning"]
+                thumbnailUrl:
+                  type: string
+                  example: "https://www.example.com/thumbnail.jpg"
                 level:
                   type: string
                   example: "ADVANCED"
