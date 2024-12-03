@@ -209,13 +209,17 @@ components:
           type: string
           description: username
           example: "vogiaan1904"
-        birth:
+        gender:
           type: string
           description: gender
           example: "CUSTOM"
           enum:
             - MALE
             - FEMALE
+        birth: 
+          type: string
+          description: birth
+          example: "1999-04-19"
         address:
           type: string
           description: address
@@ -224,6 +228,7 @@ components:
           type: string
           description: phone number
           example: "0746294759"
+        
     ReqCreateUser:
       type: object
       properties:
