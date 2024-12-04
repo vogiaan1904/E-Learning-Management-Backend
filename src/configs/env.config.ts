@@ -50,6 +50,7 @@ export const envConfig = {
   REDIS_HOST: process.env.REDIS_HOST || "localhost",
   REDIS_PORT: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6380,
   REDIS_URL: process.env.REDIS_URL || "redis://localhost:6380/0",
+
   // Email Service
   NODEMAILER_USER:
     process.env.NODEMAILER_USER || "acusvncodingprojects@gmail.com",
