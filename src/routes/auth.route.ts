@@ -8,6 +8,7 @@ import {
 import { forgotPasswordLimiter } from "@/middlewares/rateLimiter";
 import { isServerRequest } from "@/middlewares/server.middleware";
 import {
+  changePasswordSchema,
   SendCodeSchema,
   SignInSchema,
   SignUpSchema,
@@ -107,5 +108,12 @@ router.get(authRoute.me, accessTokenMiddleware, (req, res) => {
     ...req.user,
   });
 });
+
+router.patch(
+  authRoute.changePassword,
+  accessTokenMiddleware,
+  dataValidation(changePasswordSchema),
+  authController.changePassword,
+);
 
 export const authApis = router;

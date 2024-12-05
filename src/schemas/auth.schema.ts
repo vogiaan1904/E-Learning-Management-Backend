@@ -61,3 +61,11 @@ export const ValidatePasswordSchema = Joi.object<{
 }>().keys({
   newPassword: Joi.string().regex(passwordRegex).required(),
 });
+
+export const changePasswordSchema = Joi.object<{
+  currentPassword: string;
+  newPassword: string;
+}>().keys({
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string().regex(passwordRegex).required(),
+});

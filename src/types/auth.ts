@@ -28,6 +28,11 @@ export interface ResetPasswordProps {
   newPassword: string;
 }
 
+export interface changePasswordProps {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface ResetPasswordQueryProps {
   token?: string;
 }

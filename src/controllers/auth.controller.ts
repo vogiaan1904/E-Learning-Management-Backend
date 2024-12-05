@@ -3,6 +3,7 @@ import { createWinstonLogger } from "@/configs/logger.config";
 import authService from "@/services/auth.service";
 import userService from "@/services/user.service";
 import {
+  changePasswordProps,
   FacebookProfileProps,
   ForgotPasswordProps,
   ResetPasswordProps,
@@ -13,6 +14,7 @@ import {
 } from "@/types/auth";
 import { CustomRequest, CustomUserRequest } from "@/types/request";
 import { RefreshTokenProps } from "@/types/token";
+import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
 import { convertToMilliseconds } from "@/utils/date";
 import { removeFieldsFromObject } from "@/utils/object";
@@ -155,6 +157,14 @@ class AuthController {
     async (req: CustomRequest<ResetPasswordProps>, res: Response) => {
       const { newPassword } = req.body;
       const result = await authService.resetPassword(req.query, newPassword);
+      return res.status(StatusCodes.OK).json(result);
+    },
+  );
+
+  changePassword = catchAsync(
+    async (req: CustomRequest<changePasswordProps>, res: Response) => {
+      const user = req.user as UserPayload;
+      const result = await authService.changePassword(user.id, req.body);
       return res.status(StatusCodes.OK).json(result);
     },
   );

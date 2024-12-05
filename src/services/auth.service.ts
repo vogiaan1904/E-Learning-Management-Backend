@@ -1,6 +1,7 @@
 import { CustomError, envConfig } from "@/configs";
 import userRepo from "@/repositories/user.repo";
 import {
+  changePasswordProps,
   ResetPasswordQueryProps,
   SendCodeProps,
   SignInProps,
@@ -399,6 +400,31 @@ class AuthService {
 
     return {
       message: "Password has been reset successfully.",
+      status: "success",
+    };
+  }
+
+  async changePassword(userId: string, data: changePasswordProps) {
+    const { currentPassword, newPassword } = data;
+    const user = await userService.getUser({ id: userId });
+    if (!user) {
+      throw new CustomError(
+        "User not found",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
+    }
+    if (!compareHashData(currentPassword, user.password)) {
+      throw new CustomError(
+        "Current password is wrong",
+        StatusCodes.UNAUTHORIZED,
+        this.section,
+      );
+    }
+    const hashedPassword = hashData(newPassword);
+    await userService.updateUser({ id: userId }, { password: hashedPassword });
+    return {
+      message: "Password has been changed successfully.",
       status: "success",
     };
   }
