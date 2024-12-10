@@ -230,9 +230,50 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResResetPassword'
+                $ref: '#/components/schemas/ResChangePassword'
         '400':
           description: Invalid or expired token / Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResChangePasswordError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResChangePasswordError'
+
+  /auth/change-password:
+    patch:
+      tags:
+        - Auth
+      summary: Change user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  example: "CurrentSecurePass123!"
+                newPassword:
+                  type: string
+                  example: "NewSecurePass123!"
+              required:
+                - currentPassword
+                - newPassword
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResResetPassword'
+        '400':
+          description: Bad Request
           content:
             application/json:
               schema:
@@ -403,6 +444,22 @@ components:
         success:
           type: boolean
     ResResetPasswordError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error"
+        status:
+          type: string
+          example: "failed"
+    ResChangePassword:
+      type: object
+      properties:
+        message:
+          type: string
+        success:
+          type: boolean
+    ResChangePasswordError:
       type: object
       properties:
         message:

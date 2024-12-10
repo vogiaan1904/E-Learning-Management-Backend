@@ -27,7 +27,6 @@ export const convertToMilliseconds = (time: string): number => {
 export const convertToSeconds = (time: string): number => {
   const timeValue = parseInt(time.slice(0, -1), 10);
   const timeUnit = time.slice(-1);
-
   switch (timeUnit) {
     case "s": // seconds
       return timeValue;

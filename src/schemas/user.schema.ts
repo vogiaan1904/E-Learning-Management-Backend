@@ -10,6 +10,7 @@ export const UpdateUserProfileSchema = Joi.object<UpdateUserProfileProps>()
     address: Joi.string().optional(),
     birth: Joi.date().optional(),
     avatar: Joi.string().optional(),
+    gender: Joi.string().optional(),
   })
   .min(1);
 

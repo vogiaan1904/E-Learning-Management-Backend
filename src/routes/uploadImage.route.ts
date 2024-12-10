@@ -25,6 +25,13 @@ router.post(
       throw new CustomError("Image is required", StatusCodes.BAD_REQUEST);
     }
     const imageUrl = await imgurService.uploadImage(image);
+    if (!imageUrl) {
+      throw new CustomError(
+        "Upload image failed",
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+    console.log(imageUrl);
     return res.status(StatusCodes.OK).json({
       message: "Upload image successfully",
       status: "success",

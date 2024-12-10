@@ -1,6 +1,7 @@
 import { CustomError, envConfig } from "@/configs";
 import userRepo from "@/repositories/user.repo";
 import {
+  changePasswordProps,
   ResetPasswordQueryProps,
   SendCodeProps,
   SignInProps,
@@ -19,8 +20,92 @@ import { v4 as uuidv4 } from "uuid";
 import redisService from "./redis.service";
 import tokenService from "./token.service";
 import userService from "./user.service";
+import { Profile } from "passport-google-oauth20";
 class AuthService {
   private section = AuthService.name;
+
+  async googleSignIn(profile: Profile["_json"]) {
+    const { given_name, family_name, email, email_verified, picture } = profile;
+    const user = await userRepo.getOne({
+      email: email,
+    });
+    if (!user) {
+      const user = await userRepo.create({
+        username: `@${String(given_name).toLowerCase().replace(" ", "")}`,
+        email: email || "",
+        isVerified: Boolean(email_verified),
+        password: "",
+        userProfile: {
+          create: {
+            firstName: given_name || "",
+            lastName: family_name || "",
+            avatar: picture || "",
+          },
+        },
+        role: Role.user,
+      });
+      const verificationCode = tokenService.generateVerificationCode();
+      const userVerification = await userService.createUserVerification({
+        userId: user.id,
+        code: verificationCode,
+      });
+      const mailOptions = generateMailOptions({
+        receiverEmail: user.email,
+        subject: "Verification code",
+        template: "verification-code",
+        context: {
+          name: user.username,
+          activationCode: verificationCode,
+        },
+      });
+      await sendMail(mailOptions);
+      return { user, userVerification };
+    }
+    if (!user.isVerified) {
+      const verificationCode = tokenService.generateVerificationCode();
+      const userVerification = await userService.createUserVerification({
+        userId: user.id,
+        code: verificationCode,
+      });
+      const mailOptions = generateMailOptions({
+        receiverEmail: user.email,
+        subject: "Verification code",
+        template: "verification-code",
+        context: {
+          name: user.username,
+          activationCode: verificationCode,
+        },
+      });
+      await sendMail(mailOptions);
+      throw new CustomError(
+        "User is not verified. Please check your email.",
+        StatusCodes.UNAUTHORIZED,
+        this.section,
+        {
+          userVerification: {
+            id: userVerification.id,
+            userId: userVerification.userId,
+          },
+        },
+      );
+    }
+    const tokens = await tokenService.getJwtTokens({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      tokenId: uuidv4(),
+    });
+    await redisService.setKey(
+      tokenService.generateUserSessionKey(tokens.tokenId),
+      tokens.refreshToken,
+      convertToSeconds(envConfig.REFRESH_TOKEN_EXPIRED),
+    );
+    return {
+      user,
+      tokens,
+    };
+  }
+
   async signUp(userData: SignUpProps) {
     const { username, password, email, firstName, lastName, role } = userData;
     const existedUser = await userRepo.getOne({
@@ -399,6 +484,31 @@ class AuthService {
 
     return {
       message: "Password has been reset successfully.",
+      status: "success",
+    };
+  }
+
+  async changePassword(userId: string, data: changePasswordProps) {
+    const { currentPassword, newPassword } = data;
+    const user = await userService.getUser({ id: userId });
+    if (!user) {
+      throw new CustomError(
+        "User not found",
+        StatusCodes.NOT_FOUND,
+        this.section,
+      );
+    }
+    if (!compareHashData(currentPassword, user.password)) {
+      throw new CustomError(
+        "Current password is wrong",
+        StatusCodes.UNAUTHORIZED,
+        this.section,
+      );
+    }
+    const hashedPassword = hashData(newPassword);
+    await userService.updateUser({ id: userId }, { password: hashedPassword });
+    return {
+      message: "Password has been changed successfully.",
       status: "success",
     };
   }

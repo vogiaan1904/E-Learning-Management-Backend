@@ -5,7 +5,8 @@ import slugify from "slugify";
 class CourseRepository {
   async create(data: CreateCourseProps): Promise<Course> {
     // with or without categories
-    const { name, description, categories, teacherId, level } = data;
+    const { name, description, categories, teacherId, level, thumbnailUrl } =
+      data;
     const slug = slugify(name, { lower: true });
     return await prisma.course.create({
       data: {
@@ -13,6 +14,7 @@ class CourseRepository {
         description,
         slug,
         level,
+        thumbnailUrl,
         teacher: {
           connect: { id: teacherId },
         },
