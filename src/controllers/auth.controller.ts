@@ -18,12 +18,49 @@ import { UserPayload } from "@/types/user";
 import catchAsync from "@/utils/catchAsync";
 import { convertToMilliseconds } from "@/utils/date";
 import { removeFieldsFromObject } from "@/utils/object";
+import { User } from "@prisma/client";
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { Profile } from "passport-google-oauth20";
 class AuthController {
   private readonly logger = createWinstonLogger(AuthController.name);
 
   constructor() {}
+
+  getMe = catchAsync(async (req: CustomUserRequest<User>, res: Response) => {
+    const { id } = req.user;
+    const user = await userService.getUser(
+      { id },
+      {
+        includeProfile: true,
+      },
+    );
+    return res.status(StatusCodes.OK).json({
+      message: "Get user successfully",
+      status: "success",
+      user: {
+        ...removeFieldsFromObject(user, ["password"]),
+      },
+    });
+  });
+
+  googleSignIn = catchAsync(
+    async (req: CustomUserRequest<Profile["_json"]>, res: Response) => {
+      const response = await authService.googleSignIn(req.user);
+      if (response["userVerification"]) {
+        const { userVerification } = response;
+        return res.redirect(
+          `${envConfig.FRONT_END_URL}/verify/id=${userVerification.id}&userId=${userVerification.userId}`,
+        );
+      }
+      if (response["tokens"]) {
+        const { tokens } = response;
+        return res.redirect(
+          `${envConfig.FRONT_END_URL}/third-party?success=true&at=${tokens.accessToken}&rt=${tokens.refreshToken}`,
+        );
+      }
+    },
+  );
 
   facebookSignIn = catchAsync(
     async (req: CustomUserRequest<FacebookProfileProps>, res: Response) => {
