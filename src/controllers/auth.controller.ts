@@ -54,6 +54,7 @@ class AuthController {
           `${envConfig.FRONT_END_URL}/verify/id=${userVerification.id}&userId=${userVerification.userId}`,
         );
       }
+
       if (response["tokens"]) {
         const { tokens } = response;
         return res.redirect(

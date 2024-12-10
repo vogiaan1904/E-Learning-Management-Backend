@@ -43,22 +43,16 @@ class AuthService {
           },
         },
         role: Role.user,
+        student: {
+          create: {},
+        },
       });
       const verificationCode = tokenService.generateVerificationCode();
       const userVerification = await userService.createUserVerification({
         userId: user.id,
         code: verificationCode,
       });
-      const mailOptions = generateMailOptions({
-        receiverEmail: user.email,
-        subject: "Verification code",
-        template: "verification-code",
-        context: {
-          name: user.username,
-          activationCode: verificationCode,
-        },
-      });
-      await sendMail(mailOptions);
+
       return { user, userVerification };
     }
     if (!user.isVerified) {
