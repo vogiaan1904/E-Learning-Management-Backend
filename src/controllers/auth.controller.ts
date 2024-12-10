@@ -47,16 +47,8 @@ class AuthController {
 
   googleSignIn = catchAsync(
     async (req: CustomUserRequest<Profile["_json"]>, res: Response) => {
-      const response = await authService.googleSignIn(req.user);
-      if (response["userVerification"]) {
-        const { userVerification } = response;
-        return res.redirect(
-          `${envConfig.FRONT_END_URL}/verify/id=${userVerification.id}&userId=${userVerification.userId}`,
-        );
-      }
-
-      if (response["tokens"]) {
-        const { tokens } = response;
+      const { tokens } = await authService.googleSignIn(req.user);
+      if (tokens) {
         return res.redirect(
           `${envConfig.FRONT_END_URL}/third-party?success=true&at=${tokens.accessToken}&rt=${tokens.refreshToken}`,
         );
