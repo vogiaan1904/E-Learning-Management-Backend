@@ -6,7 +6,7 @@ import {
   refreshTokenMiddleware,
 } from "@/middlewares/auth.middleware";
 import { forgotPasswordLimiter } from "@/middlewares/rateLimiter";
-import { isServerRequest } from "@/middlewares/server.middleware";
+// import { isServerRequest } from "@/middlewares/server.middleware";
 import {
   changePasswordSchema,
   SendCodeSchema,
@@ -82,12 +82,7 @@ router.get(authRoute.googleSignIn, passport.authenticate("google"));
 router.get(
   authRoute.googleCallbackUrl,
   passport.authenticate("google"),
-  isServerRequest,
-  (req, res) => {
-    res.status(StatusCodes.OK).json({
-      ...req.user,
-    });
-  },
+  authController.googleSignIn,
 );
 
 router.get(authRoute.facebookSignIn, passport.authenticate("facebook"));
@@ -95,7 +90,6 @@ router.get(authRoute.facebookSignIn, passport.authenticate("facebook"));
 router.get(
   authRoute.facebookCallbackUrl,
   passport.authenticate("facebook"),
-  isServerRequest,
   (req, res) => {
     res.status(StatusCodes.OK).json({
       ...req.user,
@@ -103,11 +97,7 @@ router.get(
   },
 );
 
-router.get(authRoute.me, accessTokenMiddleware, (req, res) => {
-  res.status(StatusCodes.OK).json({
-    ...req.user,
-  });
-});
+router.get(authRoute.me, accessTokenMiddleware, authController.getMe);
 
 router.patch(
   authRoute.changePassword,
