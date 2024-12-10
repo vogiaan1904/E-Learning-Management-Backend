@@ -26,6 +26,7 @@ export const UpdateCourseSchema = Joi.object<UpdateCourseProps>().keys({
   description: Joi.string().optional(),
   numEnrollments: Joi.number().optional(),
   level: Joi.string().valid("BEGINNER", "INTERMEDIATE", "ADVANCED").optional(),
+  thumbnailUrl: Joi.string().optional(),
 });
 
 export const AddReviewSchema = Joi.object<CreateReviewProps>().keys({
