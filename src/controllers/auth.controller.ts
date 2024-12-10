@@ -35,6 +35,7 @@ class AuthController {
         includeProfile: true,
       },
     );
+    console.log(user);
     return res.status(StatusCodes.OK).json({
       message: "Get user successfully",
       status: "success",
