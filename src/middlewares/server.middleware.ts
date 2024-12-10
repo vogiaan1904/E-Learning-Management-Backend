@@ -17,7 +17,7 @@ export const enableServerMiddleware = (server: Express) => {
     "https://example.com",
     "http://localhost:5173",
     "https://elearning-hcmiu.azurewebsites.net",
-    "https://thy-giang-scholaro.netlify.app",
+    "https://scholaro-hcmiu.netlify.app",
   ];
 
   const corsOptions: cors.CorsOptions = {
