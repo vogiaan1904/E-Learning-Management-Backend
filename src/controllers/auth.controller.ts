@@ -103,6 +103,7 @@ class AuthController {
           httpOnly: false,
           secure: false,
           path: "/",
+          sameSite: "none",
           priority: "high",
           maxAge: convertToMilliseconds(envConfig.REFRESH_TOKEN_EXPIRED),
         })
@@ -144,6 +145,7 @@ class AuthController {
           httpOnly: false,
           secure: false,
           path: "/",
+          sameSite: "none",
           priority: "high",
           maxAge: convertToMilliseconds(envConfig.REFRESH_TOKEN_EXPIRED),
         })
