@@ -101,7 +101,7 @@ class AuthController {
       return res
         .cookie("refreshToken", result.tokens.refreshToken, {
           httpOnly: false,
-          secure: false,
+          secure: true,
           path: "/",
           sameSite: "none",
           priority: "high",
@@ -143,7 +143,7 @@ class AuthController {
       return res
         .cookie("refreshToken", result.tokens.refreshToken, {
           httpOnly: false,
-          secure: false,
+          secure: true,
           path: "/",
           sameSite: "none",
           priority: "high",
