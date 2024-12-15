@@ -27,9 +27,14 @@ router.post(
   userController.createAUser,
 );
 
-router.get(userRoute.getUsers, userController.getUsers);
+router.get(
+  userRoute.getUsers,
+  accessTokenMiddleware,
+  userRoleMiddleware(Role.admin),
+  userController.getUsers,
+);
 
-router.get(userRoute.getUser, userController.getAUser);
+router.get(userRoute.getUser, accessTokenMiddleware, userController.getAUser);
 
 router.patch(
   userRoute.updateUser,
