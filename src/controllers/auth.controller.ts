@@ -35,7 +35,6 @@ class AuthController {
         includeProfile: true,
       },
     );
-    console.log(user);
     return res.status(StatusCodes.OK).json({
       message: "Get user successfully",
       status: "success",
@@ -47,15 +46,8 @@ class AuthController {
 
   googleSignIn = catchAsync(
     async (req: CustomUserRequest<Profile["_json"]>, res: Response) => {
-      const response = await authService.googleSignIn(req.user);
-      if (response["userVerification"]) {
-        const { userVerification } = response;
-        return res.redirect(
-          `${envConfig.FRONT_END_URL}/verify/id=${userVerification.id}&userId=${userVerification.userId}`,
-        );
-      }
-      if (response["tokens"]) {
-        const { tokens } = response;
+      const { tokens } = await authService.googleSignIn(req.user);
+      if (tokens) {
         return res.redirect(
           `${envConfig.FRONT_END_URL}/third-party?success=true&at=${tokens.accessToken}&rt=${tokens.refreshToken}`,
         );
@@ -108,9 +100,9 @@ class AuthController {
       return res
         .cookie("refreshToken", result.tokens.refreshToken, {
           httpOnly: false,
-          secure: false,
+          secure: true,
           path: "/",
-          sameSite: "strict",
+          sameSite: "none",
           priority: "high",
           maxAge: convertToMilliseconds(envConfig.REFRESH_TOKEN_EXPIRED),
         })
@@ -150,9 +142,9 @@ class AuthController {
       return res
         .cookie("refreshToken", result.tokens.refreshToken, {
           httpOnly: false,
-          secure: false,
+          secure: true,
           path: "/",
-          sameSite: "strict",
+          sameSite: "none",
           priority: "high",
           maxAge: convertToMilliseconds(envConfig.REFRESH_TOKEN_EXPIRED),
         })

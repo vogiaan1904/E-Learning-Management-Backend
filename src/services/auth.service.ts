@@ -26,11 +26,11 @@ class AuthService {
 
   async googleSignIn(profile: Profile["_json"]) {
     const { given_name, family_name, email, email_verified, picture } = profile;
-    const user = await userRepo.getOne({
+    let user = await userRepo.getOne({
       email: email,
     });
     if (!user) {
-      const user = await userRepo.create({
+      user = await userRepo.create({
         username: `@${String(given_name).toLowerCase().replace(" ", "")}`,
         email: email || "",
         isVerified: Boolean(email_verified),
@@ -43,51 +43,10 @@ class AuthService {
           },
         },
         role: Role.user,
-      });
-      const verificationCode = tokenService.generateVerificationCode();
-      const userVerification = await userService.createUserVerification({
-        userId: user.id,
-        code: verificationCode,
-      });
-      const mailOptions = generateMailOptions({
-        receiverEmail: user.email,
-        subject: "Verification code",
-        template: "verification-code",
-        context: {
-          name: user.username,
-          activationCode: verificationCode,
+        student: {
+          create: {},
         },
       });
-      await sendMail(mailOptions);
-      return { user, userVerification };
-    }
-    if (!user.isVerified) {
-      const verificationCode = tokenService.generateVerificationCode();
-      const userVerification = await userService.createUserVerification({
-        userId: user.id,
-        code: verificationCode,
-      });
-      const mailOptions = generateMailOptions({
-        receiverEmail: user.email,
-        subject: "Verification code",
-        template: "verification-code",
-        context: {
-          name: user.username,
-          activationCode: verificationCode,
-        },
-      });
-      await sendMail(mailOptions);
-      throw new CustomError(
-        "User is not verified. Please check your email.",
-        StatusCodes.UNAUTHORIZED,
-        this.section,
-        {
-          userVerification: {
-            id: userVerification.id,
-            userId: userVerification.userId,
-          },
-        },
-      );
     }
     const tokens = await tokenService.getJwtTokens({
       id: user.id,
@@ -353,7 +312,6 @@ class AuthService {
 
   async refreshToken(data: RefreshTokenProps) {
     const { sub, tokenId, email, role } = data;
-    console.log(sub);
     const foundUser = await userService.getUser({
       id: sub,
     });

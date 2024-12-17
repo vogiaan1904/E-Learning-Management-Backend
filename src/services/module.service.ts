@@ -58,22 +58,34 @@ class ModuleService {
       );
     }
 
-    const lessons = await lessonRepo.getMany(
+    const lessonsIdAndName = await lessonRepo.getMany(
       { moduleId: module.id },
-      { orderBy: { position: "asc" } },
+      {
+        orderBy: { position: "asc" },
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     );
-    const quizzes = await quizzRepo.getMany(
+    const quizzesIdAndName = await quizzRepo.getMany(
       { moduleId: module.id },
-      { orderBy: { position: "asc" } },
+      {
+        orderBy: { position: "asc" },
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     );
 
-    const lessonsIdAndName = lessons.map((lesson) => {
-      return { id: lesson.id, name: lesson.name };
-    });
+    // const lessonsIdAndName = lessons.map((lesson) => {
+    //   return { id: lesson.id, name: lesson.name };
+    // });
 
-    const quizzesIdAndName = quizzes.map((quizz) => {
-      return { id: quizz.id, name: quizz.name };
-    });
+    // const quizzesIdAndName = quizzes.map((quizz) => {
+    //   return { id: quizz.id, name: quizz.name };
+    // });
 
     return { module, lessonsIdAndName, quizzesIdAndName };
   };

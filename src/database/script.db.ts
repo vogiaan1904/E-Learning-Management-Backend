@@ -44,7 +44,7 @@ export const createAdminAccount = async () => {
   await userRepo.create({
     email: "admin@mail.com",
     username: "admin",
-    password: hashData("admin123"),
+    password: hashData("adminscholaro@123"),
     role: Role.admin,
     isVerified: true,
     userProfile: {

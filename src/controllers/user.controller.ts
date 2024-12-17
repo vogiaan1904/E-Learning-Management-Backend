@@ -14,7 +14,6 @@ class UserController {
   createAUser = catchAsync(
     async (req: CustomRequest<CreateUserProps>, res: Response) => {
       const user = await userService.createUser(req.body);
-      console.log(user);
       return res.status(StatusCodes.OK).json({
         message: "Create user successfully",
         status: "success",

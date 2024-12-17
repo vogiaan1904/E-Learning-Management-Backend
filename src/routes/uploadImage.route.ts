@@ -31,7 +31,6 @@ router.post(
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
-    console.log(imageUrl);
     return res.status(StatusCodes.OK).json({
       message: "Upload image successfully",
       status: "success",

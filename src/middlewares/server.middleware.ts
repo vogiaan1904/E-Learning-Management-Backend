@@ -13,10 +13,8 @@ export const enableServerMiddleware = (server: Express) => {
   // Middlewares
   const isDevelopment = envConfig.NODE_ENV === "development";
   const allowedOrigins = [
-    `http://localhost:${envConfig.PORT}`,
-    "https://example.com",
-    "http://localhost:5173",
     "https://elearning-hcmiu.azurewebsites.net",
+    "https://scholaro-hcmiu.netlify.app",
   ];
 
   const corsOptions: cors.CorsOptions = {

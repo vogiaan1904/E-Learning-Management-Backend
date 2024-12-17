@@ -52,6 +52,7 @@ class CourseRepository {
     return await prisma.course.findMany({
       where: filter,
       ...options,
+      orderBy: { createdAt: "desc" },
     });
   }
 
