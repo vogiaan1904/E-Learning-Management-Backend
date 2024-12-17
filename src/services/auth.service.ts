@@ -312,7 +312,6 @@ class AuthService {
 
   async refreshToken(data: RefreshTokenProps) {
     const { sub, tokenId, email, role } = data;
-    console.log(sub);
     const foundUser = await userService.getUser({
       id: sub,
     });
