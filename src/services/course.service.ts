@@ -71,6 +71,7 @@ class CourseService {
           description: true,
           position: true,
           lessons: {
+            orderBy: { position: "asc" },
             select: {
               id: true,
               name: true,

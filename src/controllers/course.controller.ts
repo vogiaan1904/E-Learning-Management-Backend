@@ -28,7 +28,7 @@ class CourseController {
     const filter = generateCourseIdentifierFilter(courseIdentifier);
     const { course, modules, categories } =
       await courseService.getCourse(filter);
-
+    console.log(modules);
     return res.status(StatusCodes.OK).json({
       message: "Get course successfully",
       status: "success",

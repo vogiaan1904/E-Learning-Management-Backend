@@ -21,7 +21,10 @@ import { Prisma } from "@prisma/client";
 export const generateCourseFilter = (query: GetCoursesProps) => {
   const { skip, limit, teacherId, category } = query;
   const filter: Prisma.CourseWhereInput = {};
-  const options: { skip?: number; take?: number } = {};
+  const options: {
+    skip?: number;
+    take?: number;
+  } = {};
 
   if (skip) {
     options.skip = parseInt(skip, 10);

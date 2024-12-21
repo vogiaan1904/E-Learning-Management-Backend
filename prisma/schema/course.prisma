@@ -11,7 +11,7 @@ enum CourseLevel {
 
 model Course {
     id             String                @id @default(uuid())
-    slug           String                @unique
+    slug           String
     name           String
     teacherId      String
     description    String
